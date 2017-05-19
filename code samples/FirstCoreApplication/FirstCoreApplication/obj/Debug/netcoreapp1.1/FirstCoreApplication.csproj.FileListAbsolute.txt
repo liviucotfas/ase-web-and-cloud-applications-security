@@ -1,0 +1,9 @@
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\bin\Debug\netcoreapp1.1\FirstCoreApplication.deps.json
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\bin\Debug\netcoreapp1.1\FirstCoreApplication.runtimeconfig.json
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\bin\Debug\netcoreapp1.1\FirstCoreApplication.runtimeconfig.dev.json
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\bin\Debug\netcoreapp1.1\FirstCoreApplication.dll
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\bin\Debug\netcoreapp1.1\FirstCoreApplication.pdb
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\obj\Debug\netcoreapp1.1\FirstCoreApplication.csprojResolveAssemblyReference.cache
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\obj\Debug\netcoreapp1.1\FirstCoreApplication.AssemblyInfo.cs
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\obj\Debug\netcoreapp1.1\FirstCoreApplication.dll
+D:\Projects\ASE.WebApplicationsSecurity\code samples\FirstCoreApplication\FirstCoreApplication\obj\Debug\netcoreapp1.1\FirstCoreApplication.pdb
