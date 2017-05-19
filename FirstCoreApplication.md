@@ -120,7 +120,7 @@ and puts in some placeholder views to get the project started.
 12. Add the `Index` view
 13. Modify the `Index` view as follows
 
-    ```
+    ```c#
     @{
         Layout = null;
     }
