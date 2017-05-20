@@ -1,9 +1,0 @@
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\bin\Debug\netcoreapp1.1\SportsStore.deps.json
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\bin\Debug\netcoreapp1.1\SportsStore.runtimeconfig.json
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\bin\Debug\netcoreapp1.1\SportsStore.runtimeconfig.dev.json
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\bin\Debug\netcoreapp1.1\SportsStore.dll
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\obj\Debug\netcoreapp1.1\SportsStore.AssemblyInfo.cs
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\bin\Debug\netcoreapp1.1\SportsStore.pdb
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\obj\Debug\netcoreapp1.1\SportsStore.dll
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\obj\Debug\netcoreapp1.1\SportsStore.pdb
-D:\Projects\ASE.WebApplicationsSecurity\code samples\SportsStore\SportsStore\obj\Debug\netcoreapp1.1\SportsStore.csprojResolveAssemblyReference.cache
