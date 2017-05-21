@@ -1,6 +1,7 @@
 # Web and Cloud Applications Security
 
-## Books
+## Recommended Books
+- [Pro ASP.NET Core MVC](http://www.apress.com/us/book/9781484203989)
 - [ASP.NET Core Succinctly](https://www.syncfusion.com/resources/techportal/details/ebooks/ASP_NET_Core_Succinctly?utm_source=ebook&utm_medium=edm&utm_campaign=dotnetCoreApr17) (free)
 
 ## Software
