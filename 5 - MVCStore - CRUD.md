@@ -51,10 +51,10 @@
 			// Arrange - create the mock repository
 			Mock<IProductRepository> mock = new Mock<IProductRepository>();
 			mock.Setup(m => m.Products).Returns(new Product[] {
-new Product {ProductID = 1, Name = "P1"},
-new Product {ProductID = 2, Name = "P2"},
-new Product {ProductID = 3, Name = "P3"},
-});
+                new Product {ProductID = 1, Name = "P1"},
+                new Product {ProductID = 2, Name = "P2"},
+                new Product {ProductID = 3, Name = "P3"},
+                });
 			// Arrange - create a controller
 			AdminController target = new AdminController(mock.Object);
 			// Action
