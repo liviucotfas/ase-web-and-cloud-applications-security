@@ -1,8 +1,12 @@
 # Web and Cloud Applications Security
 
 ## Recommended Books
+- [Architecting Modern Web Applications with ASP.NET Core and Azure](https://blogs.msdn.microsoft.com/dotnet/2017/08/09/web-apps-aspnetcore-architecture-guidance/) (free)
 - [Pro ASP.NET Core MVC](http://www.apress.com/us/book/9781484203989)
 - [ASP.NET Core Succinctly](https://www.syncfusion.com/resources/techportal/details/ebooks/ASP_NET_Core_Succinctly?utm_source=ebook&utm_medium=edm&utm_campaign=dotnetCoreApr17) (free)
+
+## Recommended Links
+- [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture)
 
 ## Software
 - [Visual Studio 2017](https://www.visualstudio.com/downloads/)
