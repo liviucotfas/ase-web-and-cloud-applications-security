@@ -1,11 +1,13 @@
-# First ASP.NET Core Application
+# First ASP.NET Core **MVC** Application
+
+> The example follows 
 
 ## Creating the project
 1. Create the ASP.NET Core Project
     To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the ASP.NET Core Web Application (.NET Core) item, and enter `FirstCoreApplication` into the Name field.
 2. Run the project
 
-## Add a model
+## Adding the **Model**
 
 3. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
 
@@ -57,7 +59,7 @@ Add a new class file called `Repository.cs` in the `Models`.
 	}
      ```
 
-## Controllers
+## Adding the **Controller**
 
 6. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
 
