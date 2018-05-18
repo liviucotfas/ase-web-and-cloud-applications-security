@@ -7,9 +7,10 @@
 * 4. [Building the Form](#BuildingtheForm)
 * 5. [Receiving Form Data](#ReceivingFormData)
 * 6. [Using Model Binding](#UsingModelBinding)
-* 7. [Displaying the Responses](#DisplayingtheResponses)
-* 8. [Adding Validation](#AddingValidation)
-* 9. [Styling the Content](#StylingtheContent)
+* 7. [Storing Responses](#StoringResponses)
+* 8. [Displaying the Responses](#DisplayingtheResponses)
+* 9. [Adding Validation](#AddingValidation)
+* 10. [Styling the Content](#StylingtheContent)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -182,7 +183,7 @@ Imagine that we want to implement an application that allows people to electroni
 
     > **model binding** is a useful MVC feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The GuestResponse object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
 
-# Storing Responses
+##  7. <a name='StoringResponses'></a>Storing Responses
 1. The project will include a simple in-memory repository to store the responses from users. Add a new class file called `Repository.cs` in the `Models`.
 
     ``` c#
@@ -240,7 +241,7 @@ Imagine that we want to implement an application that allows people to electroni
     </html>
     ```
 
-##  7. <a name='DisplayingtheResponses'></a>Displaying the Responses
+##  8. <a name='DisplayingtheResponses'></a>Displaying the Responses
 
 1. Let's add the `ListResponses` action on the `HomeController`
 
@@ -286,7 +287,7 @@ Imagine that we want to implement an application that allows people to electroni
     </html>
     ```
 
-##  8. <a name='AddingValidation'></a>Adding Validation
+##  9. <a name='AddingValidation'></a>Adding Validation
 
     >Without validation, users could enter nonsense data or even submit an empty form. In an MVC application, you typically apply validation to the domain model rather than in the user interface. This means that you define validation in one place, but it takes effect anywhere in the application that the model class is used. 
 
@@ -348,7 +349,7 @@ Imagine that we want to implement an application that allows people to electroni
     <link rel="stylesheet" href="/css/styles.css" /> 
     ```
 
-##  9. <a name='StylingtheContent'></a>Styling the Content
+##  10. <a name='StylingtheContent'></a>Styling the Content
 
 > Bootstrap is already included in the project. If you are not familiar with it check [http://getbootstrap.com/](http://getbootstrap.com/)
 
