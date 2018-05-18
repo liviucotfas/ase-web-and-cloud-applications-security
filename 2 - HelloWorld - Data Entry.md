@@ -381,117 +381,117 @@ Imagine that we want to implement an application that allows people to electroni
     @model PartyInvites.Models.GuestResponse
     @{
         Layout = null;
-        }
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>RsvpForm</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
-</head>
-<body>
-    <div class="panel panel-success"> 
-        <div class="panel-heading text-center"><h4>RSVP</h4></div> 
-        <div class="panel-body"> 
-            <form class="p-a-1" asp-action="RsvpForm" method="post"> 
-                <div asp-validation-summary="All"></div> 
-                <div class="form-group"> 
-                    <label asp-for="Name">Your name:</label> 
-                    <input class="form-control" asp-for="Name" /> 
-                </div> 
-                <div class="form-group"> 
-                    <label asp-for="Email">Your email:</label> 
-                    <input class="form-control" asp-for="Email" /> 
-                </div> 
-                <div class="form-group"> 
-                    <label asp-for="Phone">Your phone:</label> 
-                    <input class="form-control" asp-for="Phone" /> 
-                </div> 
-                <div class="form-group"> 
-                    <label>Will you attend?</label> 
-                    <select class="form-control" asp-for="WillAttend"> 
-                        <option value="">Choose an option</option> 
-                        <option value="true">Yes, I'll be there</option> 
-                        <option value="false">No, I can't come</option> 
-                    </select> 
-                </div> 
-                <div class="text-center"> 
-                    <button class="btn btn-primary" type="submit"> 
-                        Submit RSVP 
-                    </button> 
-                </div> 
-            </form> 
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>RsvpForm</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+    </head>
+    <body>
+        <div class="panel panel-success"> 
+            <div class="panel-heading text-center"><h4>RSVP</h4></div> 
+            <div class="panel-body"> 
+                <form class="p-a-1" asp-action="RsvpForm" method="post"> 
+                    <div asp-validation-summary="All"></div> 
+                    <div class="form-group"> 
+                        <label asp-for="Name">Your name:</label> 
+                        <input class="form-control" asp-for="Name" /> 
+                    </div> 
+                    <div class="form-group"> 
+                        <label asp-for="Email">Your email:</label> 
+                        <input class="form-control" asp-for="Email" /> 
+                    </div> 
+                    <div class="form-group"> 
+                        <label asp-for="Phone">Your phone:</label> 
+                        <input class="form-control" asp-for="Phone" /> 
+                    </div> 
+                    <div class="form-group"> 
+                        <label>Will you attend?</label> 
+                        <select class="form-control" asp-for="WillAttend"> 
+                            <option value="">Choose an option</option> 
+                            <option value="true">Yes, I'll be there</option> 
+                            <option value="false">No, I can't come</option> 
+                        </select> 
+                    </div> 
+                    <div class="text-center"> 
+                        <button class="btn btn-primary" type="submit"> 
+                            Submit RSVP 
+                        </button> 
+                    </div> 
+                </form> 
+            </div> 
         </div> 
-    </div> 
-</body>
-</html>
+    </body>
+    </html>
     ```
 
  3. Style the `Thanks.cstml` file as follows
   
     ```HTML
     @model PartyInvites.Models.GuestResponse
-@{
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Thanks</title>
-    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
-</head>
-<body class="text-center"> 
-    <p>
-        <h1>Thank you, @Model.Name!</h1>
-        @if (Model.WillAttend == true) {
-            @:It's great that you're coming. The drinks are already in the fridge!
-        } else {
-@:Sorry to hear that you can't make it, but thanks for letting us know.
-        }
-    </p>
-    Click <a class="nav-link" asp-action="ListResponses">here</a> 
-    to see who is coming. 
-</body>
-</html>
+    @{
+        Layout = null;
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Thanks</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+    </head>
+    <body class="text-center"> 
+        <p>
+            <h1>Thank you, @Model.Name!</h1>
+            @if (Model.WillAttend == true) {
+                @:It's great that you're coming. The drinks are already in the fridge!
+            } else {
+    @:Sorry to hear that you can't make it, but thanks for letting us know.
+            }
+        </p>
+        Click <a class="nav-link" asp-action="ListResponses">here</a> 
+        to see who is coming. 
+    </body>
+    </html>
     ```
  4. Style the `ListResponses.cstml` file as follows
 
     ```HTML
     @model IEnumerable<PartyInvites.Models.GuestResponse>
-@{
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
-    <title>Responses</title>
-</head>
-<body>
-    <div class="panel-body"> 
-        <h2>Here is the list of people attending the party</h2>
-        <table class="table table-sm table-striped table-bordered"> 
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (PartyInvites.Models.GuestResponse r in Model) {
+    @{
+        Layout = null;
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+        <title>Responses</title>
+    </head>
+    <body>
+        <div class="panel-body"> 
+            <h2>Here is the list of people attending the party</h2>
+            <table class="table table-sm table-striped table-bordered"> 
+                <thead>
                     <tr>
-                        <td>@r.Name</td>
-                        <td>@r.Email</td>
-                        <td>@r.Phone</td>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+                </thead>
+                <tbody>
+                    @foreach (PartyInvites.Models.GuestResponse r in Model) {
+                        <tr>
+                            <td>@r.Name</td>
+                            <td>@r.Email</td>
+                            <td>@r.Phone</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
     ```
