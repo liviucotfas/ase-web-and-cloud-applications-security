@@ -41,6 +41,10 @@ configuration is all I need.
 
 8. Remove all the files in the `Views/Home` folder.
 
+    > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
+
+    > Visual Studio creates the Home and Shared folders automatically when the  Web Application template is used and puts in some placeholder views to get the project started.
+
 9. Change the `HomeController` as follows:
 
     ```c#
