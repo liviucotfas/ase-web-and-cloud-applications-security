@@ -1,15 +1,91 @@
 # Simple Data-Entry Application
 
-> Imagine that we want to implement a simple application that allows people to electronically RSVP. We would like to have the following features: 
- - a home page that shows information about the event;
- - a form that can be used to RSVP
- - validation for the RSVP form, which will display a thank-you page
- - a summary page that shows who is coming to the event
+<!-- vscode-markdown-toc -->
+* 1. [Adding the **Model**](#AddingtheModel)
+* 2. [Receiving Form Data](#ReceivingFormData)
 
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+Imagine that we want to implement an application that allows people to electronically RSVP. We would like to have the following features: 
+ - a home page that shows information about the event;
+ - a form that can be used to RSVP;
+ - validation for the RSVP form, which will display a thank-you page;
+ - a summary page that shows who is coming to the event.
+
+##  1. <a name='AddingtheModel'></a>Adding a **Model**
+
+1. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
+
+    >The **model** is the representation of the real-world objects, processes, and rules that define the subject, known as the domain , of the application. The model, often referred to as a domain model , contains the C# objects (known as domain objects ) that make up the universe of the application and the methods that manipulate them. The views and controllers expose the domain to the clients in a consistent manner, and a well-designed MVC application starts with a well-designed model, which is then the focal point as controllers and views are added.
+
+
+2. Right click on the `Models` folder, select `Add > Class` and create a new class file called `GuestResponse.cs`.
+
+    >MVC supports declarative validation rules defined with attributes from the System.ComponentModel.DataAnnotations namespace, meaning that validation constraints are expressed using the standard C# attribute features.
+
+    ``` c#
+    namespace FirstCoreApplication.Models {
+        public class GuestResponse {
+            [Required(ErrorMessage = "Please enter your name")]
+            public string Name { get; set; }
+            
+            [Required(ErrorMessage = "Please enter your email address")]
+            [RegularExpression(".+\\@.+\\..+",
+            ErrorMessage = "Please enter a valid email address")]
+            public string Email { get; set; }
+            
+            [Required(ErrorMessage = "Please enter your phone number")]
+            public string Phone { get; set; }
+            
+            [Required(ErrorMessage = "Please specify whether you'll attend")]
+            public bool? WillAttend { get; set; }
+        }
+    }
+    ```
+## Creating a Second Action and a Strongly Typed View
+
+>A single controller class can define multiple action methods, and the convention is to group related actions together in the same controller.
+
+1. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed bellow to the `HomeController`.
+
+    ```C#
+    public ViewResult RsvpForm() { 
+        return View(); 
+    }
+    ```
+
+2. Let's add the corresponding view.
+
+    ```HTML
+    @model FirstCoreApplication.Models.GuestResponse
+    @{
+        Layout = null;
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>RsvpForm</title>
+    </head>
+    <body>
+        <div>
+            This is the RsvpForm.cshtml View
+        </div>
+    </body>
+    </html>
+    ```
+
+## Linking Action Methods
+
+1. We want to be able to create a link from the `Index` view so that guests can see the RsvpForm view without having to know the URL that targets a specific action method. Let's update de `Index` view as follows.
 
     > The **asp-action** attribute is an example of a tag helper attribute, which is an instruction for Razor that will be performed when the view is rendered. The asp-action attribute is an instruction to add a href attribute to the a element that contains a URL for an action method.
 
-    ```
+    ```HTML
     @{
         Layout = null;
     }
@@ -18,13 +94,13 @@
     <head>
         <meta name="viewport" content="width=device-width" />
         <title>Index</title>
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
     </head>
     <body>
-        <div class="text-center">
-            <h3>We're going to have an ASP.NET Core 2 Course!</h3>
-            <h4>And you are invited</h4>
-            <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
+        <div>
+            @ViewBag.Greeting World (from the view)
+        <p>We're going to have an ASP.NET Core 2 Course!<br />
+        </p>
+            <a asp-action="RsvpForm">RSVP Now</a> 
         </div>
     </body>
     </html>
@@ -238,36 +314,7 @@ and puts in some placeholder views to get the project started.
     > We have defined a `label` and `input` element for each property of the `GuestResponse` model class. The `asp-for` attribute on the `label` element sets the `value` of the for attribute. The `asp-for` attribute on the `input` element sets the `id` and `name` elements.
 
 
-## Adding the **Model**
 
-3. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
-
-    >The **model** is the representation of the real-world objects, processes, and rules that define the subject, known as the domain , of the application. The model, often referred to as a domain model , contains the C# objects (known as domain objects ) that make up the universe of the application and the methods that manipulate them. The views and controllers expose the domain to the clients in a consistent manner, and a well-designed MVC application starts with a well-designed model, which is then the focal point as controllers and views are added.
-
-
-4. Right click on the `Models` folder, select `Add > Class` and create a new class file called `GuestResponse.cs`.
-
-    >MVC supports declarative validation rules defined with attributes from the System.ComponentModel.DataAnnotations namespace, meaning that validation constraints are expressed using the standard C# attribute features.
-
-    ``` c#
-    namespace FirstCoreApplication.Models {
-        public class GuestResponse {
-            [Required(ErrorMessage = "Please enter your name")]
-            public string Name { get; set; }
-            
-            [Required(ErrorMessage = "Please enter your email address")]
-            [RegularExpression(".+\\@.+\\..+",
-            ErrorMessage = "Please enter a valid email address")]
-            public string Email { get; set; }
-            
-            [Required(ErrorMessage = "Please enter your phone number")]
-            public string Phone { get; set; }
-            
-            [Required(ErrorMessage = "Please specify whether you'll attend")]
-            public bool? WillAttend { get; set; }
-        }
-    }
-    ```
 
 4. This project includes a simple in-memory repository to store the responses from users.
 Add a new class file called `Repository.cs` in the `Models`.
@@ -294,7 +341,7 @@ Add a new class file called `Repository.cs` in the `Models`.
 
 
 
-## Receiving Form Data
+##  2. <a name='ReceivingFormData'></a>Receiving Form Data
 
 16. Add the following action to the `HomeController`
 
