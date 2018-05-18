@@ -20,6 +20,21 @@
      ```
 7. Run the project and check the result.
 
+## Routes
+
+MVC applications use the ASP.NET routing system, which decides how URLs map to controllers and actions. A route is a rule that is used to decide how a request is handled. 
+
+You can request any of the following URLs, and they will be directed to the Index action on the HomeController:
+    
+    * /
+    * /Home
+    * /Home/Index
+
+> This is a good example of benefiting from following conventions implemented by ASP.NET Core MVC. In this case, the convention is that I will have a controller called HomeController and that it will be
+the starting point for the MVC application. The default configuration that Visual Studio creates for a new project assumes that I will follow this convention. And since I did follow the convention, I automatically
+got support for the URLs in the preceding list. If I had not followed the convention, I would need to modify the configuration to point to whatever controller I had created instead. For this simple example, the default
+configuration is all I need.
+
 ## Adding the **Model**
 
 3. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
@@ -74,20 +89,6 @@ Add a new class file called `Repository.cs` in the `Models`.
 
 
 
-## Routes
-
-MVC applications use the ASP.NET routing system, which decides how URLs map to controllers and actions. A route is a rule that is used to decide how a request is handled. 
-
-You can request any of the following URLs, and they will be directed to the Index action on the HomeController:
-    
-    * /
-    * /Home
-    * /Home/Index
-
-> This is a good example of benefiting from following conventions implemented by ASP.NET Core MVC. In this case, the convention is that I will have a controller called HomeController and that it will be
-the starting point for the MVC application. The default configuration that Visual Studio creates for a new project assumes that I will follow this convention. And since I did follow the convention, I automatically
-got support for the URLs in the preceding list. If I had not followed the convention, I would need to modify the configuration to point to whatever controller I had created instead. For this simple example, the default
-configuration is all I need.
 
 ## Rendering Web Pages
 
