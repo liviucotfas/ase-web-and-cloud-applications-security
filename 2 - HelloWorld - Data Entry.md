@@ -289,9 +289,9 @@ Imagine that we want to implement an application that allows people to electroni
 
 ##  9. <a name='AddingValidation'></a>Adding Validation
 
-    >Without validation, users could enter nonsense data or even submit an empty form. In an MVC application, you typically apply validation to the domain model rather than in the user interface. This means that you define validation in one place, but it takes effect anywhere in the application that the model class is used. 
-
 1. Update the GuestResponse model class as follows.
+
+    > Without validation, users could enter nonsense data or even submit an empty form. In an MVC application, you typically apply validation to the domain model rather than in the user interface. This means that you define validation in one place, but it takes effect anywhere in the application that the model class is used. 
 
     ```C#
     public class GuestResponse {
