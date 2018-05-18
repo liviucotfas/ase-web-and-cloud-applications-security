@@ -1,11 +1,24 @@
 # First ASP.NET Core **MVC** Application
 
-> The example follows 
-
 ## Creating the project
-1. Create the ASP.NET Core Project
+1. Create the ASP.NET Core Project.
     To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the ASP.NET Core Web Application (.NET Core) item, and enter `FirstCoreApplication` into the Name field.
 2. Run the project
+
+## Adding the **Controller**
+
+6. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
+
+    ``` c#
+    public class HomeController : Controller
+    {
+        public string Index()
+        {
+            return "Hello World!";
+        }
+    }
+     ```
+7. Run the project and check the result.
 
 ## Adding the **Model**
 
@@ -59,20 +72,7 @@ Add a new class file called `Repository.cs` in the `Models`.
 	}
      ```
 
-## Adding the **Controller**
 
-6. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
-
-    ``` c#
-    public class HomeController : Controller
-    {
-        public string Index()
-        {
-            return "Hello World!";
-        }
-    }
-     ```
-7. Run the project and check the result.
 
 ## Routes
 
