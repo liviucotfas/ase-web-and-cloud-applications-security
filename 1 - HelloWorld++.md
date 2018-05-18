@@ -39,7 +39,7 @@ configuration is all I need.
  
   > The output from the current application is just the string Hello World. In order to return an HTML response to a browser request, we need a **View**.
 
-8. Remove the views in the `Views/Home` folder.
+8. Remove all the files in the `Views/Home` folder.
 
 9. Change the `HomeController` as follows:
 
@@ -57,8 +57,7 @@ configuration is all I need.
 
     > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
 
-    > Visual Studio creates the Home and Shared folders automatically when the Web Application template is used
-and puts in some placeholder views to get the project started.
+    > Visual Studio creates the Home and Shared folders automatically when the Web Application template is used and puts in some placeholder views to get the project started.
 
 11. Change the `HomeController` as follows:
 
@@ -91,7 +90,7 @@ and puts in some placeholder views to get the project started.
     </head>
     <body>
         <div class="text-center">
-            <h3>We're going to have an ASP.NET Core Course!</h3>
+            <h3>We're going to have an ASP.NET Core 2 Course!</h3>
             <h4>And you are invited</h4>
             <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
         </div>
