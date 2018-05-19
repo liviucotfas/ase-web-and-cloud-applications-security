@@ -133,7 +133,7 @@
     {
         "Data": {
             "Database": {
-                "ConnectionString": "\"Server=(localdb)\\\\MSSQLLocalDB;Database=SportsStore;Trusted_Connection=True;MultipleActiveResultSets=true\""
+                "ConnectionString": "\"Server=(localdb)\\\\MSSQLLocalDB;Database=MVCStore;Trusted_Connection=True;MultipleActiveResultSets=true\""
             }
         }
     }
