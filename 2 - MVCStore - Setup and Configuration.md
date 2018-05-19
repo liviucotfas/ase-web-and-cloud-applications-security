@@ -3,17 +3,8 @@
 ## Create the project
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. 
 2. Select the ASP.NET Core Web Application (.NET Core) item, and enter `MVCStore` into the Name field.
+3. Choose the `Empty` template.
 3. Run the project
-
-## Adding the NuGet Packages 
-
-4. Add the following NuGet packages
-
-    |Name|Description |
-    | ------------- |-------------|
-    Microsoft.AspNetCore.Mvc | This package contains ASP.NET Core MVC and provides access to essential features such as controllers and Razor views.|
-    Microsoft.AspNetCore.StaticFiles | This package provides support for serving static files, such as images, JavaScript, and CSS, from the wwwroot folder. |
-    Microsoft.VisualStudio.Web.BrowserLink| This package provides support for automatically reloading the browser when files in the project change, which can be a useful feature|
 
 ## Creating the Folder Structure
 

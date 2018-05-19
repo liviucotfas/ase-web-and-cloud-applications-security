@@ -2,11 +2,12 @@
 
 ## Preparing the Database
 
-1. Install Entity Framework Core by adding the following NuGet packages
+1. Install Entity Framework Core by adding the following NuGet packages:
     - Microsoft.EntityFrameworkCore
+    - Microsoft.EntityFrameworkCore.SqlServer
+
     - Microsoft.EntityFrameworkCore.Tools
     - Microsoft.EntityFrameworkCore.Design
-    - Microsoft.EntityFrameworkCore.SqlServer
 
 ## Creating the Database Classes
 
@@ -133,7 +134,7 @@
     {
         "Data": {
             "Database": {
-                "ConnectionString": "\"Server=(localdb)\\\\MSSQLLocalDB;Database=MVCStore;Trusted_Connection=True;MultipleActiveResultSets=true\""
+                "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=MVCStore;Trusted_Connection=True;MultipleActiveResultSets=true"
             }
         }
     }
