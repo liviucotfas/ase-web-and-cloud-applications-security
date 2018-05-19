@@ -5,10 +5,8 @@
 	<link rel="stylesheet" asp-href-include="lib/bootstrap/dist/css/*.min.css" />
 	<title>@ViewBag.Title</title>
 </head>
-<body class="panel panel-default">
-	<div class="panel-heading"><h4>@ViewBag.Title</h4></div>
-	<div class="panel-body">
-		@RenderBody()
-	</div>
+<body class="m-1 p-1">
+	<div class="bg-info p-2"><h4>@ViewBag.Title</h4></div>
+	@RenderBody()
 </body>
 </html>

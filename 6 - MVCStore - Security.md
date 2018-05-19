@@ -1,4 +1,4 @@
-# CRUD ASP.NET MVC Core Application
+# MVCStore - Security
 
 ## Adding the Identity Package to the Project
 

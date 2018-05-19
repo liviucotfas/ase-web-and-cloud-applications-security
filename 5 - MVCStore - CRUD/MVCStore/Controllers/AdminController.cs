@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MVCStore.Data;
 using MVCStore.Models;
 
 namespace MVCStore.Controllers
@@ -35,9 +36,22 @@ namespace MVCStore.Controllers
 			}
 			else
 			{
-				// there is something wrong with the data values
+				// there is something wrong with the data values 
 				return View(product);
 			}
+		}
+
+		public ViewResult Create() => View("Edit", new Product());
+
+		[HttpPost]
+		public IActionResult Delete(int productId)
+		{
+			Product deletedProduct = repository.DeleteProduct(productId);
+			if (deletedProduct != null)
+			{
+				TempData["message"] = $"{deletedProduct.Name} was deleted";
+			}
+			return RedirectToAction("Index");
 		}
 	}
 }

@@ -25,87 +25,6 @@
 
     The DbContext base class provides access to the Entity Framework Core’s underlying functionality, and the Products property will provide access to the Product objects in the database.
 
-3. To populate the database and provide some sample data, let's add a class file called SeedData.cs to the Models folder and defined the class shown bellow.
-
-    ```C#
-    public static class SeedData
-	{
-		public static void EnsurePopulated(IApplicationBuilder app)
-		{
-			ApplicationDbContext context = app.ApplicationServices
-			.GetRequiredService<ApplicationDbContext>();
-			if (!context.Products.Any())
-			{
-				context.Products.AddRange(
-				new Product
-				{
-					Name = "Kayak",
-					Description = "A boat for one person",
-					Category = "Watersports",
-					Price = 275
-				},
-				new Product
-				{
-					Name = "Lifejacket",
-					Description = "Protective and fashionable",
-					Category = "Watersports",
-					Price = 48.95m
-				},
-				new Product
-				{
-					Name = "Soccer Ball",
-					Description = "FIFA-approved size and weight",
-					Category = "Soccer",
-					Price = 19.50m
-				},
-				new Product
-				{
-					Name = "Corner Flags",
-					Description = "Give your playing field a professional touch",
-					Category = "Soccer",
-					Price = 34.95m
-				},
-				new Product
-				{
-					Name = "Stadium",
-					Description = "Flat-packed 35,000-seat stadium",
-					Category = "Soccer",
-					Price = 79500
-				},
-				new Product
-				{
-					Name = "Thinking Cap",
-					Description = "Improve brain efficiency by 75%",
-					Category = "Chess",
-					Price = 16
-				},
-				new Product
-				{
-					Name = "Unsteady Chair",
-					Description = "Secretly give your opponent a disadvantage",
-					Category = "Chess",
-					Price = 29.95m
-				},
-				new Product
-				{
-					Name = "Human Chess Board",
-					Description = "A fun game for the family",
-					Category = "Chess",
-					Price = 75
-				},
-				new Product
-				{
-					Name = "Bling-Bling King",
-					Description = "Gold-plated, diamond-studded King",
-					Category = "Chess",
-					Price = 1200
-				});
-				context.SaveChanges();
-			}
-		}
-	}
-    ```
-
 ## Creating the Repository Class
 
 4. The next step is to create a class that implements the IProductRepository interface and gets its data using Entity Framework Core.
@@ -175,7 +94,108 @@
     using Microsoft.EntityFrameworkCore;
     ```
 
-10. In the `Configure` method of the `Stratup` class also call `SeedData.EnsurePopulated(app);`
+## Creating and Applying the Database Migration
+
+11. Run the following command to generate the initial migration.
+
+    ```
+    Add-Migration Initial
+    ```
+
+12. Run the following command to update the database.
+
+    ```
+    Update-Database
+    ```
+
+## Creating the Seed Data
+
+3. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
+
+    ```C#
+    public static class SeedData
+	{
+		public static void EnsurePopulated(IApplicationBuilder app)
+		{
+			var context = app.ApplicationServices
+				.GetRequiredService<ApplicationDbContext>();
+
+			context.Database.Migrate();
+
+			if (!context.Products.Any())
+			{
+				context.Products.AddRange(
+					new Product
+					{
+						Name = "Kayak",
+						Description = "A boat for one person",
+						Category = "Watersports",
+						Price = 275
+					},
+					new Product
+					{
+						Name = "Lifejacket",
+						Description = "Protective and fashionable",
+						Category = "Watersports",
+						Price = 48.95m
+					},
+					new Product
+					{
+						Name = "Soccer Ball",
+						Description = "FIFA-approved size and weight",
+						Category = "Soccer",
+						Price = 19.50m
+					},
+					new Product
+					{
+						Name = "Corner Flags",
+						Description = "Give your playing field a professional touch",
+						Category = "Soccer",
+						Price = 34.95m
+					},
+					new Product
+					{
+						Name = "Stadium",
+						Description = "Flat-packed 35,000-seat stadium",
+						Category = "Soccer",
+						Price = 79500
+					},
+					new Product
+					{
+						Name = "Thinking Cap",
+						Description = "Improve brain efficiency by 75%",
+						Category = "Chess",
+						Price = 16
+					},
+					new Product
+					{
+						Name = "Unsteady Chair",
+						Description = "Secretly give your opponent a disadvantage",
+						Category = "Chess",
+						Price = 29.95m
+					},
+					new Product
+					{
+						Name = "Human Chess Board",
+						Description = "A fun game for the family",
+						Category = "Chess",
+						Price = 75
+					},
+					new Product
+					{
+						Name = "Bling-Bling King",
+						Description = "Gold-plated, diamond-studded King",
+						Category = "Chess",
+						Price = 1200
+					}
+				);
+				context.SaveChanges();
+			}
+		}
+	}
+    ```
+
+4. In the `Configure` method of the `Stratup` class also call `SeedData.EnsurePopulated(app);`
 
     ```C#
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -201,22 +221,17 @@
     }
     ```
 
-## Creating and Applying the Database Migration
 
-11. Run the following command
-
-    ```
-    Add-Migration Initial
-    ```
-
-12. Run the following command
+12. Run the following command to update the database.
     ```
     Update-Database
     ```
 
-13. Whenever you want to delete the database, use the following query
+# Deleting the database
 
-    ```
+13. Whenever you want to delete the content of the database, you can use the following query.
+
+    ```SQL
     /* Azure friendly */
     /* Drop all Foreign Key constraints */
     DECLARE @name VARCHAR(128)
