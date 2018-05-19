@@ -88,32 +88,42 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 8. Add the following action to the `ProductController`
 
     ```C#
-    public ViewResult List()
-	{
-		return View(repository.Products);
-	}
+    public ViewResult List() => View(repository.Products); 
     ```
 
-9. Add a shared layout called `Layout.cshtml` to the `Views/Shared` folder.
+9. Add a shared layout called `Layout.cshtml` to the `Views/Shared` folder as follows.
 
-9. Add the corresponding view
+    ```HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>SportsStore</title> 
+    </head>
+    <body>
+        <div>
+            @RenderBody()
+        </div>
+    </body>
+    </html>
+    ```
+10. We need to configure the application so that the _Layout.cshtml file is applied by default. This is done by adding an MVC View Start Page file called _ViewStart.cshtml to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
+
+    ```HTML
+    @{
+        Layout = "_Layout";
+    }
+    ```
+11. Add the view that will be used for displaying the products
 
     ```
-    @model IEnumerable<MVCStore.Model.Product>
-
-	@{
-    ViewData["Title"] = "Product";
-	}
-
-	<h2>Product</h2>
-
-	@foreach (var p in Model) {
-
-		<div>
-			<h3>@p.Name</h3>
-			@p.Description
-			<h4>@p.Price.ToString("c")</h4>
-		</div>
+    @model IEnumerable<Product>
+    @foreach (var p in Model) {
+        <div>
+            <h3>@p.Name</h3>
+            @p.Description
+            <h4>@p.Price.ToString("c")</h4>
+        </div>
     }
     ```
 
@@ -144,3 +154,4 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
         // }!!!!
     }
     ```
+11. Run the application

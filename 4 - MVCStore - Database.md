@@ -1,6 +1,6 @@
 # CRUD ASP.NET MVC Core Application
 
-## Preparing a Database
+## Preparing the Database
 
 1. Install Entity Framework Core by adding the following NuGet packages
     - Microsoft.EntityFrameworkCore
@@ -113,11 +113,13 @@
     public class EFProductRepository : IProductRepository
 	{
 		private ApplicationDbContext context;
-		public EFProductRepository(ApplicationDbContext ctx)
+		
+        public EFProductRepository(ApplicationDbContext ctx)
 		{
 			context = ctx;
 		}
-		public IEnumerable<Product> Products => context.Products;
+
+		public IQueryable<Product> Products => context.Products;
 	}
     ```
 
