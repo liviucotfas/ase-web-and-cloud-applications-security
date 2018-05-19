@@ -27,7 +27,7 @@
 
 ## Configuring the Application
 
-6. Modify the `Startup` class as follows
+6. Modify the `Startup` class as follows in order to enable the MVC framework and some related features that are useful for development.
 
     ``` c#
     public class Startup
@@ -79,7 +79,13 @@
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
-## Add the Unit Test Project
-8. Right-click on the solution item in the Solution Explorer and select Add > New Project from the popup menu. Select xUnit Test Project (.NET Core) from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project.
+The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The @addTagHelper statement enables the built-in tag helpers.
 
-9. Run the application
+8. Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
+
+## Add the Unit Test Project
+9. Right-click on the solution item in the Solution Explorer and select Add > New Project from the popup menu. Select xUnit Test Project (.NET Core) from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project.
+
+10. Add a reference towards the `MVCStore` project.
+
+11. Install the Moq NuGet package.

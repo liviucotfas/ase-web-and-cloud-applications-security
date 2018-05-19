@@ -16,29 +16,38 @@
 
 ## Creating a Repository
 
-2. Added a new C# interface file called IProductRepository.cs to the Models folder and used it to define the following interface
+2. In the `Models` folder define the IProductRepository.cs interface as follows.
 
     ```C#
     public interface IProductRepository
 	{
-		IEnumerable<Product> Products { get; }
+		IQueryable<Product> Products { get; }
 	}
     ```
+    > This interface uses IQueryable<T> to allow a caller to obtain a sequence of Product objects. The IQueryable<T> interface is derived from the more familiar IEnumerable<T> interface and represents a collection of objects that can be queried, such as those managed by a database.
+
+    > A class that depends on the IProductRepository interface can obtain Product objects without needing to know the details of how they are stored or how the implementation class will deliver them.
+
+    > **Understanding Ienumerable<T> and Iqueryable<T> Interfaces**
+The IQueryable<T> interface is useful because it allows a collection of objects to be queried efficiently. Later in this chapter, we add support for retrieving a subset of Product objects from a database, and using the IQueryable<T> interface allows us to ask the database for just the objects that we require using standard LINQ statements and without needing to know what database server stores the data or how it processes the query. Without the IQueryable<T> interface, we would have to retrieve all of the Product objects from the database and then discard the ones we don’t want, which becomes an expensive operation as the amount of data used by an application increases. It is for this reason that the IQueryable<T> interface is typically used instead of IEnumerable<T> in database repository interfaces and classes.
+However, care must be taken with the IQueryable<T> interface because each time the collection of objects is enumerated, the query will be evaluated again, which means that a new query will be sent to the database. This can undermine the efficiency gains of using IQueryable<T>. In such situations, you can convert IQueryable<T> to a more predictable form using the ToList or ToArray extension method.
 
 ## Creating a Fake Repository
 
-3. Create the fake repository called FakeProductRepository.cs to the Models folder
+3. Create the fake repository called FakeProductRepository.cs to the `Models` folder.
 
      ```C#
     public class FakeProductRepository : IProductRepository
 	{
-		public IEnumerable<Product> Products => new List<Product> {
-			new Product { Name = "Football", Price = 25 },
-			new Product { Name = "Surf board", Price = 179 },
-			new Product { Name = "Running shoes", Price = 95 }
-		};
+		public IQueryable<Product> Products => new List<Product> {
+            new Product { Name = "Football", Price = 25 },
+            new Product { Name = "Surf board", Price = 179 },
+            new Product { Name = "Running shoes", Price = 95 }
+        }.AsQueryable<Product>();
 	}
-    ```     
+    ``` 
+
+    > The FakeProductRepository class implements the IProductRepository interface by returning a fixed collection of Product objects as the value of the Products property. The AsQueryable method is used to convert the fixed collection of objects to an IQueryable<Product>, which is required to implement the IProductRepository interface and allows me to create a compatible fake repository without having to deal with real queries.    
 
 ## Registering the Repository Service
 
@@ -60,17 +69,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 
 ## Adding a Controller
 
-5. Try to add a controler called `ProductController` to the Controllers folder
-
-6. Add Scaffolding CLI tool to the project:
-    
-    ```
-    <ItemGroup>
-        <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
-    </ItemGroup>
-    ```
-
-7. Add a controler called `ProductController` to the Controllers folder
+7. Add a controler called `ProductController` to the `Controllers` folder
 
     ```C#
 	public class ProductController : Controller
@@ -84,7 +83,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     ```
     When MVC needs to create a new instance of the ProductController class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the IProductRepository interface. To determine what implementation class should be used, MVC consults the configuration in the Startup class, which tells it that FakeRepository should be used and that a new instance should be created every time. MVC creates a new FakeRepository object and uses it to invoke the ProductController constructor in order to create the controller object that will process the HTTP request.
 
-    This is known as dependency injection, and its approach allows the ProductController to access the application’s repository through the IProductRepository interface without having any need to know which implementation class has been configured. Later, we’ll replace the fake repository with the real one, and dependency injection means that the controller will continue to work without changes.
+    This is known as **dependency injection**, and its approach allows the ProductController to access the application’s repository through the IProductRepository interface without having any need to know which implementation class has been configured. Later, we’ll replace the fake repository with the real one, and dependency injection means that the controller will continue to work without changes.
 
 8. Add the following action to the `ProductController`
 
@@ -94,6 +93,8 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 		return View(repository.Products);
 	}
     ```
+
+9. Add a shared layout called `Layout.cshtml` to the `Views/Shared` folder.
 
 9. Add the corresponding view
 
