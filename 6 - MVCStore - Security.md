@@ -70,10 +70,13 @@
         private const string adminUser = "Admin";
         private const string adminPassword = "Secret123$";
         public static async void EnsurePopulated(IApplicationBuilder app) {
-            UserManager<IdentityUser> userManager = app.ApplicationServices
+            
+			var userManager = app.ApplicationServices
                 .GetRequiredService<UserManager<IdentityUser>>();
-            IdentityUser user = await userManager.FindByIdAsync(adminUser);
-            if (user == null) {
+            
+			IdentityUser user = await userManager.FindByIdAsync(adminUser);
+            
+			if (user == null) {
                 user = new IdentityUser("Admin");
                 await userManager.CreateAsync(user, adminPassword);
             }
@@ -228,4 +231,60 @@
 		@RenderBody()
 	</body>
 	</html>
+	```
+
+# Roles
+
+1. Update the `EnsurePopulated` method in the `IdentitySeedData` class as follows.
+
+	```C#
+	public static class IdentitySeedData
+	{
+		private const string adminUser = "Admin";
+		private const string adminPassword = "Secret123$";
+
+		public static async void EnsurePopulated(IApplicationBuilder app)
+		{
+			var roleManager = app.ApplicationServices
+				.GetRequiredService<RoleManager<IdentityRole>>();
+
+			if (!await roleManager.RoleExistsAsync("ProductManagement"))
+				await roleManager.CreateAsync(new IdentityRole("ProductManagement"));
+
+			var userManager = app.ApplicationServices
+				.GetRequiredService<UserManager<IdentityUser>>();
+
+			IdentityUser user = await userManager.FindByIdAsync(adminUser);
+			if (user == null)
+			{
+				user = new IdentityUser("Admin");
+				await userManager.CreateAsync(user, adminPassword);
+			}
+
+			IdentityUser adminProducts = await userManager.FindByIdAsync("AdminProductManagament");
+			if (adminProducts == null)
+			{
+				adminProducts = new IdentityUser("AdminProductManagament");
+				await userManager.CreateAsync(adminProducts, adminPassword);
+				await userManager.AddToRoleAsync(adminProducts, "ProductManagement");
+			}
+		}
+	}
+	```
+
+2. Update the last few lines in the `Index.cshtml` corresponding to the `AdminController` as follows.
+
+	```HTML
+	<a asp-action="Create" class="btn btn-primary
+	   @if(!User.IsInRole("ProductManagement")){
+		@: disabled
+	   }
+	   "
+	   >Add Product</a>
+	```
+
+3. You can decorate the actions that will only be available to users that have the `ProductManagement` role as follows.
+
+	```C#
+	[Authorize(Roles = "ProductManagement")]
 	```

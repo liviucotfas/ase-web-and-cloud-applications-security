@@ -16,7 +16,7 @@ namespace MVCStore.Controllers
             repository = repo;
         }
 
-        public ViewResult List()
+		public ViewResult List()
         {
             return View(repository.Products);
         }

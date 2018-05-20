@@ -23,7 +23,10 @@
 						Edit
 					</a>
 					<input type="hidden" name="ProductID" value="@item.ProductID" />
-					<button type="submit" class="btn btn-danger btn-sm">
+					<button type="submit" class="btn btn-danger btn-sm 
+							@if(!User.IsInRole("ProductManagement")){
+								@: disabled
+						}">
 						Delete
 					</button>
 				</form>
@@ -32,5 +35,6 @@
 	}
 </table>
 <div class="text-center">
+	
 	<a asp-action="Create" class="btn btn-primary">Add Product</a>
 </div>

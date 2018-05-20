@@ -12,15 +12,31 @@ namespace MVCStore.Data
 	{
 		private const string adminUser = "Admin";
 		private const string adminPassword = "Secret123$";
+
 		public static async void EnsurePopulated(IApplicationBuilder app)
 		{
-			UserManager<IdentityUser> userManager = app.ApplicationServices
+			var roleManager = app.ApplicationServices
+				.GetRequiredService<RoleManager<IdentityRole>>();
+
+			if (!await roleManager.RoleExistsAsync("ProductManagement"))
+				await roleManager.CreateAsync(new IdentityRole("ProductManagement"));
+
+			var userManager = app.ApplicationServices
 				.GetRequiredService<UserManager<IdentityUser>>();
+
 			IdentityUser user = await userManager.FindByIdAsync(adminUser);
 			if (user == null)
 			{
 				user = new IdentityUser("Admin");
 				await userManager.CreateAsync(user, adminPassword);
+			}
+
+			IdentityUser adminProducts = await userManager.FindByIdAsync("AdminProductManagament");
+			if (adminProducts == null)
+			{
+				adminProducts = new IdentityUser("AdminProductManagament");
+				await userManager.CreateAsync(adminProducts, adminPassword);
+				await userManager.AddToRoleAsync(adminProducts, "ProductManagement");
 			}
 		}
 	}

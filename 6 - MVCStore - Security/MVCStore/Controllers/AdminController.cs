@@ -43,9 +43,11 @@ namespace MVCStore.Controllers
 			}
 		}
 
+		[Authorize(Roles = "ProductManagement")]
 		public ViewResult Create() => View("Edit", new Product());
 
 		[HttpPost]
+		[Authorize(Roles = "ProductManagement")]
 		public IActionResult Delete(int productId)
 		{
 			Product deletedProduct = repository.DeleteProduct(productId);
