@@ -9,8 +9,11 @@
 ## Recommended Links
 - [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture)
 
-## Software
+## Required Software
 - [Visual Studio 2017](https://www.visualstudio.com/downloads/)
+
+## Microsoft Azure for Students
+- Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://e5.onthehub.com/WebStore/OfferingDetails.aspx?o=495230a6-7649-e811-8103-000d3af41938&ws=2b87aebb-ee6e-e611-9420-b8ca3a5db7a1&vsro=8&utm_source=microsoft-imagine-azure-newForAll-header&utm_medium=WebStoreAds&utm_campaign=microsoft)
 
 ## FAQ
 
