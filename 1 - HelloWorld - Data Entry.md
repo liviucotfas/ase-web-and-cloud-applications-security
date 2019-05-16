@@ -23,6 +23,7 @@
 - adding a `Model`
 - having multiple `Actions` defined in a `Controller`
 - communicating between the `Controller` and the `View` using a `Model`
+- adding a link towards an `Action` inside a `View`
 
 ##  2. <a name='AddingaModel'></a>Adding a **Model**
 
@@ -53,7 +54,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 >A single controller class can define multiple action methods, and the convention is to group related actions together in the same controller.
 
-1. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed bellow to the `HomeController`.
+3. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed bellow to the `HomeController`.
 
     ```C#
     public ViewResult RsvpForm() { 
@@ -61,7 +62,7 @@ Imagine that we want to implement an application that allows people to electroni
     }
     ```
 
-2. Let's add the corresponding view.
+4. Let's add the corresponding view.
 
     > The **@model** Razor expression is used to create
     a strongly typed view.
