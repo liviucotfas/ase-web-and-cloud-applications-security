@@ -366,7 +366,8 @@ Imagine that we want to implement an application that allows people to electroni
     ```
 
 ### Assignment
-1. 
+1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
+    Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
 
 ##  12. <a name='StylingtheContent'></a>Styling the Content
 
