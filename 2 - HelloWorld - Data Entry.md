@@ -59,8 +59,9 @@ Imagine that we want to implement an application that allows people to electroni
 1. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed bellow to the `HomeController`.
 
     ```C#
-    public ViewResult RsvpForm() { 
-        return View(); 
+    public IActionResult RsvpForm()
+    {
+        return View();
     }
     ```
 
@@ -126,6 +127,9 @@ Imagine that we want to implement an application that allows people to electroni
 
     ```HTML
     @model FirstCoreApplication.Models.GuestResponse
+    @{
+        Layout = null;
+    }
     <!DOCTYPE html>
     <html>
     <head>
@@ -133,28 +137,29 @@ Imagine that we want to implement an application that allows people to electroni
         <title>RsvpForm</title>
     </head>
     <body>
-        <form asp-action="RsvpForm" method="post"> 
-            <p> 
-                <label asp-for="Name">Your name:</label> 
-                <input asp-for="Name" /> 
-            </p> 
-            <p> 
-        <label asp-for="Email">Your email:</label> 
-                <input asp-for="Email" /> 
-            </p> 
-            <p> 
-                <label asp-for="Phone">Your phone:</label> 
-                <input asp-for="Phone" /></p> 
-            <p> 
-                <label>Will you attend?</label> 
-                <select asp-for="WillAttend"> 
-                    <option value="">Choose an option</option> 
-                    <option value="true">Yes, I'll be there</option> 
-                    <option value="false">No, I can't come</option> 
-                </select> 
-            </p> 
-            <button type="submit">Submit RSVP</button> 
-        </form> 
+        <form asp-action="RsvpForm" method="post">
+            <p>
+                <label asp-for="Name">Your name:</label>
+                <input asp-for="Name" />
+            </p>
+            <p>
+                <label asp-for="Email">Your email:</label>
+                <input asp-for="Email" />
+            </p>
+            <p>
+                <label asp-for="Phone">Your phone:</label>
+                <input asp-for="Phone" />
+            </p>
+            <p>
+                <label>Will you attend?</label>
+                <select asp-for="WillAttend">
+                    <option value="">Choose an option</option>
+                    <option value="true">Yes, I'll be there</option>
+                    <option value="false">No, I can't come</option>
+                </select>
+            </p>
+            <button type="submit">Submit RSVP</button>
+        </form>
     </body>
     </html> 
     ```
@@ -171,17 +176,17 @@ Imagine that we want to implement an application that allows people to electroni
 
     ```C#
     public class HomeController : Controller {
-        public ViewResult Index() {
+        public IActionResult Index() {
             int hour = DateTime.Now.Hour;
             ViewBag.Greeting = hour < 12 ? "Good Morning" : "Good Afternoon";
             return View("MyView");
         }
         [HttpGet] 
-        public ViewResult RsvpForm() {
+        public IActionResult RsvpForm() {
             return View();
         }
         [HttpPost] 
-        public ViewResult RsvpForm(GuestResponse guestResponse) { 
+        public IActionResult RsvpForm(GuestResponse guestResponse) { 
             // TODO: store response from guest 
             return View(); 
         } 
@@ -217,7 +222,7 @@ Imagine that we want to implement an application that allows people to electroni
 
     ```C#
     [HttpPost]
-    public ViewResult RsvpForm(GuestResponse guestResponse) {
+    public IActionResult RsvpForm(GuestResponse guestResponse) {
         Repository.AddResponse(guestResponse); 
         return View("Thanks", guestResponse); 
     }
@@ -255,7 +260,7 @@ Imagine that we want to implement an application that allows people to electroni
 1. Let's add the `ListResponses` action on the `HomeController`
 
     ```C#
-    public ViewResult ListResponses() { 
+    public IActionResult ListResponses() { 
         return View(Repository.Responses.Where(r => r.WillAttend == true)); 
     } 
     ```
@@ -324,7 +329,7 @@ Imagine that we want to implement an application that allows people to electroni
 
     ```C#
     [HttpPost]
-    public ViewResult RsvpForm(GuestResponse guestResponse) {
+    public IActionResult RsvpForm(GuestResponse guestResponse) {
         if (ModelState.IsValid) { 
             Repository.AddResponse(guestResponse);
              return View("Thanks", guestResponse);
@@ -359,6 +364,9 @@ Imagine that we want to implement an application that allows people to electroni
     ```HTML
     <link rel="stylesheet" href="/css/styles.css" /> 
     ```
+
+### Assignment
+1. 
 
 ##  12. <a name='StylingtheContent'></a>Styling the Content
 
