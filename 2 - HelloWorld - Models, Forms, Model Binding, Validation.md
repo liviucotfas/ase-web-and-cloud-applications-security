@@ -1,4 +1,4 @@
-# HelloWorld - Data Entry
+# HelloWorld - Models, Forms, Model Binding, Validation
 <!-- vscode-markdown-toc -->
 * 1. [Learning Objectives](#LearningObjectives)
 * 2. [RSVP Application](#RSVPApplication)
