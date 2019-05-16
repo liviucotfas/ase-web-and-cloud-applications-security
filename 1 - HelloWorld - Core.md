@@ -2,12 +2,12 @@
 
 ## Creating the project
 1. Create the ASP.NET Core Project.
-    To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the ASP.NET Core Web Application (.NET Core) item, and enter `FirstCoreApplication` into the Name field.
+    To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the ASP.NET Core Web Application (Model-View-Controller) item, and enter `FirstCoreApplication` into the Name field.
 2. Run the project
 
 ## Controller
 
-6. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
+3. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
 
     ``` c#
     public class HomeController : Controller
@@ -18,7 +18,7 @@
         }
     }
      ```
-7. Run the project and check the result.
+4. Run the project and check the result.
 
 ## Routes
 
@@ -37,15 +37,15 @@ configuration is all I need.
 
 ## Rendering Web Pages
  
-  > The output from the current application is just the string Hello World. In order to return an HTML response to a browser request, we need a **View**.
+The output from the current application is just the string Hello World. In order to return an HTML response to a browser request, we need a **View**.
 
-8. Remove all the files in the `Views/Home` folder.
+5. Remove all the files in the `Views/Home` folder.
 
     > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
 
     > Visual Studio creates the Home and Shared folders automatically when the  Web Application template is used and puts in some placeholder views to get the project started.
 
-9. Change the `HomeController` as follows:
+6. Change the `HomeController` as follows:
 
     ```c#
 	public class HomeController : Controller
@@ -57,13 +57,13 @@ configuration is all I need.
 	}
     ```
 
-10. Run the application and notice the error.
+7. Run the application and notice the error.
 
     > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
 
     > Visual Studio creates the Home and Shared folders automatically when the Web Application template is used and puts in some placeholder views to get the project started.
 
-11. Change the `HomeController` as follows:
+8. Change the `HomeController` as follows:
 
     ```c#
 	public class HomeController : Controller
@@ -74,10 +74,10 @@ configuration is all I need.
 		}
 	}
     ``` 
-12. Add the `Index` view
-    >Razor view files have the cshtml file extension because they are a mix of C# code and HTML elements.
+9. Add the `Index` view
+    >Razor view files have the `.cshtml` file extension because they are a mix of `C#` code and `HTML` elements.
 
-13. Modify the `Index` view as follows
+10. Modify the `Index` view as follows
 
     ```HTML
     @{
