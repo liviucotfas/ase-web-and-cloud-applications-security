@@ -1,3 +1,4 @@
+# HelloWorld - Data Entry
 <!-- vscode-markdown-toc -->
 * 1. [Learning Objectives](#LearningObjectives)
 * 2. [RSVP Application](#RSVPApplication)
@@ -22,7 +23,10 @@
 - adding a **Model**
 - having multiple **Actions** defined in a **Controller**
 - communicating between the **Controller** and the **View** using a **Model**
-- adding a link towards an **Action** inside a **View**
+- generating a link towards an **Action** inside a **View**
+- configure `<form>` to submit data to controller actions.
+- receiving data from forms using **model binding**
+- validating form content
 
 ##  2. <a name='RSVPApplication'></a>RSVP Application
 Imagine that we want to implement an application that allows people to electronically RSVP (acronym for "Répondez s'il vous plaît"). We would like to have the following features: 
@@ -396,7 +400,7 @@ Imagine that we want to implement an application that allows people to electroni
 2. Style the `RsvpForm.cstml` file as follows
 
     ```HTML
-    @model PartyInvites.Models.GuestResponse
+    @model FirstCoreApplication.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -449,7 +453,7 @@ Imagine that we want to implement an application that allows people to electroni
  3. Style the `Thanks.cstml` file as follows
   
     ```HTML
-    @model PartyInvites.Models.GuestResponse
+    @model FirstCoreApplication.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -477,7 +481,7 @@ Imagine that we want to implement an application that allows people to electroni
  4. Style the `ListResponses.cstml` file as follows
 
     ```HTML
-    @model IEnumerable<PartyInvites.Models.GuestResponse>
+    @model IEnumerable<FirstCoreApplication.Models.GuestResponse>
     @{
         Layout = null;
     }
@@ -485,13 +489,13 @@ Imagine that we want to implement an application that allows people to electroni
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
         <title>Responses</title>
     </head>
     <body>
-        <div class="panel-body"> 
+        <div class="panel-body">
             <h2>Here is the list of people attending the party</h2>
-            <table class="table table-sm table-striped table-bordered"> 
+            <table class="table table-sm table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -500,7 +504,8 @@ Imagine that we want to implement an application that allows people to electroni
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (PartyInvites.Models.GuestResponse r in Model) {
+                    @foreach (GuestResponse r in Model)
+                    {
                         <tr>
                             <td>@r.Name</td>
                             <td>@r.Email</td>

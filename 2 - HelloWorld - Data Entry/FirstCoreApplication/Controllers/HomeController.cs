@@ -21,20 +21,13 @@ namespace FirstCoreApplication.Controllers
             return View();
         }
 
-        public IActionResult Thanks(GuestResponse guestResponse)
-        {
-            return View(TempData["GuestResponse"]);
-        }
-
         [HttpPost]
         public IActionResult RsvpForm(GuestResponse guestResponse)
         {
             if (ModelState.IsValid)
             {
                 Repository.AddResponse(guestResponse);
-
-                TempData["GuestResponse"] = guestResponse;
-                return RedirectToAction("Thanks");
+                return View("Thanks", guestResponse);
             }
             else
             {
