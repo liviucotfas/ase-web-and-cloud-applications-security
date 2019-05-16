@@ -1,11 +1,24 @@
 # First ASP.NET Core **MVC** Application
 
-## Creating the project
+<!-- vscode-markdown-toc -->
+* 1. [Creating the project](#Creatingtheproject)
+* 2. [Controller](#Controller)
+* 3. [Routes](#Routes)
+* 4. [Rendering Web Pages](#RenderingWebPages)
+* 5. [Adding Dynamic Output](#AddingDynamicOutput)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+##  1. <a name='Creatingtheproject'></a>Creating the project
 1. Create the ASP.NET Core Project.
     To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the `ASP.NET Core Web Application (Model-View-Controller)` item, and enter `FirstCoreApplication` into the Name field.
 2. Run the project
 
-## Controller
+##  2. <a name='Controller'></a>Controller
 
 3. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
 
@@ -20,7 +33,7 @@
      ```
 4. Run the project and check the result.
 
-## Routes
+##  3. <a name='Routes'></a>Routes
 
 MVC applications use the ASP.NET routing system, which decides how URLs map to controllers and actions. A route is a rule that is used to decide how a request is handled. 
 
@@ -35,7 +48,7 @@ the starting point for the MVC application. The default configuration that Visua
 got support for the URLs in the preceding list. If I had not followed the convention, I would need to modify the configuration to point to whatever controller I had created instead. For this simple example, the default
 configuration is all I need.
 
-## Rendering Web Pages
+##  4. <a name='RenderingWebPages'></a>Views - Rendering Web Pages
  
 The output from the current application is just the string Hello World. In order to return an HTML response to a browser request, we need a **View**.
 
@@ -98,7 +111,7 @@ The output from the current application is just the string Hello World. In order
     ```
 11. Run the application. The view should be displayed.
 
-## Adding Dynamic Output
+##  5. <a name='AddingDynamicOutput'></a>Views - Adding Dynamic Output
 
 > One way to pass data from the controller to the view is by using the ViewBag object, which is a member of the Controller base class. ViewBag is a dynamic object to which you can assign arbitrary properties, making those values available in whatever view is subsequently rendered. 
 
