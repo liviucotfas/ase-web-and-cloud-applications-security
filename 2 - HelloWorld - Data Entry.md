@@ -1,7 +1,5 @@
-# Simple Data-Entry Application
-
 <!-- vscode-markdown-toc -->
-* 1. [Objectives](#Objectives)
+* 1. [Learning Objectives](#LearningObjectives)
 * 2. [RSVP Application](#RSVPApplication)
 * 3. [Adding a **Model**](#AddingaModel)
 * 4. [Adding additional actions to the **Controller**](#AddingadditionalactionstotheController)
@@ -20,7 +18,7 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='Objectives'></a>Learning Objectives
+##  1. <a name='LearningObjectives'></a>Learning Objectives
 - adding a **Model**
 - having multiple **Actions** defined in a **Controller**
 - communicating between the **Controller** and the **View** using a **Model**
@@ -365,7 +363,7 @@ Imagine that we want to implement an application that allows people to electroni
     <link rel="stylesheet" href="/css/styles.css" /> 
     ```
 
-### Assignment
+###  11.1. <a name='Assignmentforyoutosolve'></a>Assignment (for you to solve)
 1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
     Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
 
