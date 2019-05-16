@@ -1,7 +1,7 @@
 # Simple Data-Entry Application
 
 <!-- vscode-markdown-toc -->
-* 1. [Objectives](#Objectives)
+* 1. [Learning Objectives](#LearningObjectives)
 * 2. [RSVP Application](#RSVPApplication)
 * 3. [Adding a **Model**](#AddingaModel)
 * 4. [Adding additional actions to the **Controller**](#AddingadditionalactionstotheController)
@@ -20,7 +20,7 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='Objectives'></a>Objectives
+##  1. <a name='LearningObjectives'></a>Learning Objectives
 - adding a **Model**
 - having multiple **Actions** defined in a **Controller**
 - communicating between the **Controller** and the **View** using a **Model**

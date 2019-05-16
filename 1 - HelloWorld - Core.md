@@ -1,7 +1,7 @@
 # First ASP.NET Core **MVC** Application
 
 <!-- vscode-markdown-toc -->
-* 1. [Objectives](#Objectives)
+* 1. [Learning Objectives](#LearningObjectives)
 * 2. [Creating the project](#Creatingtheproject)
 * 3. [Controller](#Controller)
 * 4. [Routes](#Routes)
@@ -14,7 +14,7 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='Objectives'></a>Objectives
+##  1. <a name='LearningObjectives'></a>Learning Objectives
 - creating ASP.NET Core MVC project
 - adding controllers
 - working with actions that return a string
