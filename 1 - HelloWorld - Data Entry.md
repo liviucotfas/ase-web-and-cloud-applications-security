@@ -2,16 +2,17 @@
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
-* 2. [Adding a **Model**](#AddingaModel)
-* 3. [Creating a Second Action and a Strongly Typed View](#CreatingaSecondActionandaStronglyTypedView)
-* 4. [Linking Action Methods](#LinkingActionMethods)
-* 5. [Building the Form](#BuildingtheForm)
-* 6. [Receiving Form Data](#ReceivingFormData)
-* 7. [Using Model Binding](#UsingModelBinding)
-* 8. [Storing Responses](#StoringResponses)
-* 9. [Displaying the Responses](#DisplayingtheResponses)
-* 10. [Adding Validation](#AddingValidation)
-* 11. [Styling the Content](#StylingtheContent)
+* 2. [RSVP Application](#RSVPApplication)
+* 3. [Adding a **Model**](#AddingaModel)
+* 4. [Adding additional actions to the **Controller**](#AddingadditionalactionstotheController)
+* 5. [Linking Action Methods](#LinkingActionMethods)
+* 6. [Building the Form](#BuildingtheForm)
+* 7. [Receiving Form Data](#ReceivingFormData)
+* 8. [Using Model Binding](#UsingModelBinding)
+* 9. [Storing Responses](#StoringResponses)
+* 10. [Displaying the Responses](#DisplayingtheResponses)
+* 11. [Adding Validation](#AddingValidation)
+* 12. [Styling the Content](#StylingtheContent)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -25,13 +26,14 @@
 - communicating between the **Controller** and the **View** using a **Model**
 - adding a link towards an **Action** inside a **View**
 
-##  2. <a name='AddingaModel'></a>Adding a **Model**
-
+##  2. <a name='RSVPApplication'></a>RSVP Application
 Imagine that we want to implement an application that allows people to electronically RSVP. We would like to have the following features: 
  - a home page that shows information about the event;
  - a form that can be used to RSVP;
  - validation for the RSVP form, which will display a thank-you page;
  - a summary page that shows who is coming to the event.
+
+##  3. <a name='AddingaModel'></a>Adding a **Model**
 
 1. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
 
@@ -50,7 +52,7 @@ Imagine that we want to implement an application that allows people to electroni
         public bool? WillAttend { get; set;}
     }
     ```
-##  3. <a name='CreatingaSecondActionandaStronglyTypedView'></a>Adding additional actions to the `Controller`
+##  4. <a name='AddingadditionalactionstotheController'></a>Adding additional actions to the **Controller**
 
 >A single controller class can define multiple action methods, and the convention is to group related actions together in the same controller.
 
@@ -86,7 +88,7 @@ Imagine that we want to implement an application that allows people to electroni
     </html>
     ```
 
-##  4. <a name='LinkingActionMethods'></a>Linking Action Methods
+##  5. <a name='LinkingActionMethods'></a>Linking Action Methods
 
 1. We want to be able to create a link from the `Index` view so that guests can see the RsvpForm view without having to know the URL that targets a specific action method. Let's update de `Index` view as follows.
 
@@ -116,7 +118,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 2. Run the project
 
-##  5. <a name='BuildingtheForm'></a>Building the Form
+##  6. <a name='BuildingtheForm'></a>Building the Form
 
 1. Change the contents of the `RsvpForm.cshtml` file as follows
 
@@ -161,7 +163,7 @@ Imagine that we want to implement an application that allows people to electroni
 
     > We have defined a `label` and `input` element for each property of the `GuestResponse` model class. The `asp-for` attribute on the `label` element sets the `value` of the for attribute. The `asp-for` attribute on the `input` element sets the `id` and `name` elements.
 
-##  6. <a name='ReceivingFormData'></a>Receiving Form Data
+##  7. <a name='ReceivingFormData'></a>Receiving Form Data
 
 1. Update the HomeController as follows.
 
@@ -186,11 +188,11 @@ Imagine that we want to implement an application that allows people to electroni
     }
     ```
 
-##  7. <a name='UsingModelBinding'></a>Using Model Binding
+##  8. <a name='UsingModelBinding'></a>Using Model Binding
 
 **Model binding** is a useful MVC feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The GuestResponse object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
 
-##  8. <a name='StoringResponses'></a>Storing Responses
+##  9. <a name='StoringResponses'></a>Storing Responses
 1. The project will include a simple in-memory repository to store the responses from users. Add a new class file called `Repository.cs` in the `Models`.
 
     ``` c#
@@ -248,7 +250,7 @@ Imagine that we want to implement an application that allows people to electroni
     </html>
     ```
 
-##  9. <a name='DisplayingtheResponses'></a>Displaying the Responses
+##  10. <a name='DisplayingtheResponses'></a>Displaying the Responses
 
 1. Let's add the `ListResponses` action on the `HomeController`
 
@@ -294,7 +296,7 @@ Imagine that we want to implement an application that allows people to electroni
     </html>
     ```
 
-##  10. <a name='AddingValidation'></a>Adding Validation
+##  11. <a name='AddingValidation'></a>Adding Validation
 
 1. Update the GuestResponse model class as follows.
 
@@ -356,7 +358,7 @@ Imagine that we want to implement an application that allows people to electroni
     <link rel="stylesheet" href="/css/styles.css" /> 
     ```
 
-##  11. <a name='StylingtheContent'></a>Styling the Content
+##  12. <a name='StylingtheContent'></a>Styling the Content
 
 > Bootstrap is already included in the project. If you are not familiar with it check [http://getbootstrap.com/](http://getbootstrap.com/)
 
