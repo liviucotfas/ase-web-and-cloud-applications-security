@@ -4,8 +4,8 @@
 * 1. [Creating the project](#Creatingtheproject)
 * 2. [Controller](#Controller)
 * 3. [Routes](#Routes)
-* 4. [Rendering Web Pages](#RenderingWebPages)
-* 5. [Adding Dynamic Output](#AddingDynamicOutput)
+* 4. [Views - Rendering Web Pages](#Views-RenderingWebPages)
+* 5. [Views - Adding Dynamic Output](#Views-AddingDynamicOutput)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -48,7 +48,7 @@ the starting point for the MVC application. The default configuration that Visua
 got support for the URLs in the preceding list. If I had not followed the convention, I would need to modify the configuration to point to whatever controller I had created instead. For this simple example, the default
 configuration is all I need.
 
-##  4. <a name='RenderingWebPages'></a>Views - Rendering Web Pages
+##  4. <a name='Views-RenderingWebPages'></a>Views - Rendering Web Pages
  
 The output from the current application is just the string Hello World. In order to return an HTML response to a browser request, we need a **View**.
 
@@ -111,7 +111,7 @@ The output from the current application is just the string Hello World. In order
     ```
 11. Run the application. The view should be displayed.
 
-##  5. <a name='AddingDynamicOutput'></a>Views - Adding Dynamic Output
+##  5. <a name='Views-AddingDynamicOutput'></a>Views - Adding Dynamic Output
 
 > One way to pass data from the controller to the view is by using the ViewBag object, which is a member of the Controller base class. ViewBag is a dynamic object to which you can assign arbitrary properties, making those values available in whatever view is subsequently rendered. 
 
