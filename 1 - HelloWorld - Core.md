@@ -2,7 +2,7 @@
 
 ## Creating the project
 1. Create the ASP.NET Core Project.
-    To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the ASP.NET Core Web Application (Model-View-Controller) item, and enter `FirstCoreApplication` into the Name field.
+    To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the `ASP.NET Core Web Application (Model-View-Controller)` item, and enter `FirstCoreApplication` into the Name field.
 2. Run the project
 
 ## Controller
