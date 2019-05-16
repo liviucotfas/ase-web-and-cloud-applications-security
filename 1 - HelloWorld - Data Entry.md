@@ -20,10 +20,10 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
-- adding a `Model`
-- having multiple `Actions` defined in a `Controller`
-- communicating between the `Controller` and the `View` using a `Model`
-- adding a link towards an `Action` inside a `View`
+- adding a **Model**
+- having multiple **Actions** defined in a **Controller**
+- communicating between the **Controller** and the **View** using a **Model**
+- adding a link towards an **Action** inside a **View**
 
 ##  2. <a name='AddingaModel'></a>Adding a **Model**
 
