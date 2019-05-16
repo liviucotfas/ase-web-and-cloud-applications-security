@@ -363,7 +363,7 @@ Imagine that we want to implement an application that allows people to electroni
     <link rel="stylesheet" href="/css/styles.css" /> 
     ```
 
-###  11.1. <a name='Assignmentforyoutosolve'></a>Assignment (for you to solve)
+**Assignment (for you to solve)**
 1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
     Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
 
