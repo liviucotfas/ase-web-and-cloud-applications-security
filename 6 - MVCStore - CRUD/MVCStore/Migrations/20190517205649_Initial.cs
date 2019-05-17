@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace MVCStore.Migrations
 {
@@ -15,10 +13,10 @@ namespace MVCStore.Migrations
                 {
                     ProductID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Category = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    Price = table.Column<decimal>(nullable: false)
+                    Description = table.Column<string>(nullable: true),
+                    Price = table.Column<decimal>(nullable: false),
+                    Category = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

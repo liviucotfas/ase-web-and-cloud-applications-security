@@ -19,7 +19,7 @@
     </html>
     ```
 
-1. Add a new controller to the `Controllers` folder called `AdminController`
+2. Add a new controller to the `Controllers` folder called `AdminController`
 
     ```C#
     public class AdminController : Controller
@@ -29,7 +29,7 @@
 		{
 			repository = repo;
 		}
-		public ViewResult Index()
+		public IActionResult Index()
 		{
 			return View(repository.Products);
 		}
@@ -69,7 +69,7 @@
 ## Implementing the List View
 
 7. In the Views/Admin folder add a Razor file called Index.cshtml
-    ```HTML
+    ```CSHTML
     @model IEnumerable<Product>
     @{
         ViewBag.Title = "All Products";
@@ -112,7 +112,7 @@
 1. Add an `Edit` action on the `AdminController` 
 
     ```C#
-    public ViewResult Edit(int productId)
+    public IActionResult Edit(int productId)
     {
         return View(repository.Products.FirstOrDefault(p => p.ProductID == productId));
     }
@@ -286,7 +286,9 @@
 1. Add a `Create` action to the `AdminController` class.
 
     ```C#
-    public ViewResult Create() => View("Edit", new Product()); 
+    public IActionResult Create(){
+        return View("Edit", new Product());
+    }  
     ```
 
 ## Deleting Products
