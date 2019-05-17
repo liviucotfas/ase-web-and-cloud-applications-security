@@ -29,7 +29,7 @@
     > A class that depends on the IProductRepository interface can obtain Product objects without needing to know the details of how they are stored or how the implementation class will deliver them.
 
     > **Understanding Ienumerable<T> and Iqueryable<T> Interfaces**
-The IQueryable<T> interface is useful because it allows a collection of objects to be queried efficiently. Later in this chapter, we add support for retrieving a subset of Product objects from a database, and using the IQueryable<T> interface allows us to ask the database for just the objects that we require using standard LINQ statements and without needing to know what database server stores the data or how it processes the query. Without the IQueryable<T> interface, we would have to retrieve all of the Product objects from the database and then discard the ones we don’t want, which becomes an expensive operation as the amount of data used by an application increases. It is for this reason that the IQueryable<T> interface is typically used instead of IEnumerable<T> in database repository interfaces and classes.
+The IQueryable<T> interface is useful because it allows a collection of objects to be queried efficiently. Later, when we add support for retrieving a subset of Product objects from a database, using the IQueryable<T> interface allows us to ask the database for just the objects that we require using standard LINQ statements and without needing to know what database server stores the data or how it processes the query. Without the IQueryable<T> interface, we would have to retrieve all of the Product objects from the database and then discard the ones we don’t want, which becomes an expensive operation as the amount of data used by an application increases. It is for this reason that the IQueryable<T> interface is typically used instead of IEnumerable<T> in database repository interfaces and classes.
 However, care must be taken with the IQueryable<T> interface because each time the collection of objects is enumerated, the query will be evaluated again, which means that a new query will be sent to the database. This can undermine the efficiency gains of using IQueryable<T>. In such situations, you can convert IQueryable<T> to a more predictable form using the ToList or ToArray extension method.
 
 ## Creating a Fake Repository
@@ -88,17 +88,19 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 8. Add the following action to the `ProductController`
 
     ```C#
-    public ViewResult List() => View(repository.Products); 
+    public IActionResult List(){
+        return View(repository.Products); 
+    } 
     ```
 
-9. Add a shared layout called `Layout.cshtml` to the `Views/Shared` folder as follows.
+9. Add a shared layout called `_Layout.cshtml` to the `Views/Shared` folder. It should be generated as follows.
 
     ```HTML
-    <!DOCTYPE html>
+   <!DOCTYPE html>
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <title>SportsStore</title> 
+        <title>@ViewBag.Title</title>
     </head>
     <body>
         <div>
@@ -107,7 +109,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     </body>
     </html>
     ```
-10. We need to configure the application so that the _Layout.cshtml file is applied by default. This is done by adding an MVC View Start Page file called _ViewStart.cshtml to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
+10. We need to configure the application so that the _Layout.cshtml file is applied by default. This is done by adding an MVC View Start Page file called `_ViewStart.cshtml` to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
 
     ```HTML
     @{
@@ -116,7 +118,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     ```
 11. Add the view that will be used for displaying the products
 
-    ```
+    ```CSHTML
     @model IEnumerable<Product>
     @foreach (var p in Model) {
         <div>

@@ -3,7 +3,11 @@
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
 * 2. [Documentation](#Documentation)
-* 3. [Bibliography](#Bibliography)
+* 3. [Step 1 - Create an application with individual user accounts](#Step1-Createanapplicationwithindividualuseraccounts)
+* 4. [Step 2 - Add the CSRF vulnerable webpage](#Step2-AddtheCSRFvulnerablewebpage)
+* 5. [Malicious or infected web site](#Maliciousorinfectedwebsite)
+* 6. [Attacks](#Attacks)
+* 7. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -20,7 +24,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 # Vulnerable website - IronBank Web'Banking
 
-## Step 1 - Create an application with individual user accounts
+##  3. <a name='Step1-Createanapplicationwithindividualuseraccounts'></a>Step 1 - Create an application with individual user accounts
 
 1. Create a new ASP.NET Core Web Application project. 
 
@@ -36,7 +40,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 6. Choose the "Register" link and create a new account.
 
-## Step 2 - Add the CSRF vulnerable webpage
+##  4. <a name='Step2-AddtheCSRFvulnerablewebpage'></a>Step 2 - Add the CSRF vulnerable webpage
 
 1. Add a new controller, called `BankAccountController`.
 2. Decorate the controller using the `[Authorize]` annotation in order to prevent any unauthenticated requests towards the actions on this controller.
@@ -99,7 +103,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     }
     ```
 
-# Malicious or infected web site
+##  5. <a name='Maliciousorinfectedwebsite'></a>Malicious or infected web site
 
 > :octocat: Full source code available, check the `8 - Vulnerabilities - CSRF (Cross-Site Request Forgery)` folder.
 
@@ -130,6 +134,19 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 2. You will need to replace "http://good-banking-site.com/api/account" with the actual address of the vulnerable form (ex: https://localhost:5001/BankAcount/Transfer).
 
-##  3. <a name='Bibliography'></a>Bibliography
+##  6. <a name='Attacks'></a>Attacks
+
+1. //TODO Method using GET
+
+2. //TODO Method using POST. Check the cookie policy in Google Chome. Change the same site policy to none
+
+    ```C#
+    services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+    });
+    ```
+
+##  7. <a name='Bibliography'></a>Bibliography
 - Prevent Cross-Site Request Forgery (XSRF/CSRF) attacks in ASP.NET Core: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?
 - OWASP CSRF: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)

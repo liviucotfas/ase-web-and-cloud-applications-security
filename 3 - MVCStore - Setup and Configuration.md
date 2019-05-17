@@ -4,7 +4,7 @@
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. 
 2. Select the ASP.NET Core Web Application (.NET Core) item, and enter `MVCStore` into the Name field.
 3. Choose the `Empty` template.
-3. Run the project
+3. Run the project. Why do you think that we are seeing the "Hello World!" text?
 
 ## Creating the Folder Structure
 
@@ -18,46 +18,52 @@
 
 ## Configuring the Application
 
-6. Modify the `Startup` class as follows in order to enable the MVC framework and some related features that are useful for development.
+6. Modify the `ConfigureServices` method in the `Startup` class as follows in order to enable the MVC framework and some related features that are useful for development.
 
     ``` c#
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-         public void ConfigureServices(IServiceCollection services)
+        // !!!! add this line{ 
+        services.AddMvc();
+        // }!!!!
+    }
+    ```
+
+7. Modify the `Configure` method in the `Startup` class as follows in order to enable the MVC framework and some related features that are useful for development.
+
+    ``` c#
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
-			// !!!! add this line{ 
-			services.AddMvc();
-			// }!!!!
-		}
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-			// !!!! add these lines{ 
-			app.UseStatusCodePages();
-			app.UseStaticFiles();
-			app.UseMvcWithDefaultRoute();
-			// }!!!!
-
-			app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
         }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        app.UseMvc(routes =>
+        {
+            routes.MapRoute(
+                name: "default",
+                template: "{controller=Home}/{action=Index}/{id?}");
+        });
     }
     ```
 
     |Name|Description |
     | ------------- |-------------|
     UseDeveloperExceptionPage() | This extension method displays details of exceptions that occur in the application, which is useful during the development process. It should not be enabled in deployed applications.
-    UseStatusCodePages() |This extension method adds a simple message to HTTP responses that would not otherwise have a body, such as 404 - Not Found responses.
+    UseDatabaseErrorPage() | Captures synchronous and asynchronous database related exceptions from the pipeline that may be resolved using Entity Framework migrations. When these exceptions occur an HTML response with details of possible actions to resolve the issue is generated.
+    UseHsts() | Adds middleware for using HSTS, which adds the Strict-Transport-Security header.
+    UseHttpsRedirection() | Adds middleware for redirecting HTTP Requests to HTTPS.
     UseStaticFiles() |This extension method enables support for serving static content from the wwwroot folder.
     UseMvcWithDefaultRoute() | This extension method enables ASP.NET Core MVC with a default configuration.
 
@@ -66,7 +72,6 @@
     Right-click the Views folder, select Add > New Item from the pop-up menu, and select the MVC View Imports Page item from the ASP.NET Core > Web > ASP.NET category
     
     ``` c#
-    @using MVCStore.Models
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
