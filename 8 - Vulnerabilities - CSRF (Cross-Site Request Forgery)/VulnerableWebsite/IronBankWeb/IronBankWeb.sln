@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulnerableWebsite", "VulnerableWebsite\VulnerableWebsite.csproj", "{690EDC41-8DD5-4EC9-BAC5-F336905E1215}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronBankWeb", "IronBankWeb\IronBankWeb.csproj", "{C7961B79-0A65-4759-9DD2-321D7D6EE787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{690EDC41-8DD5-4EC9-BAC5-F336905E1215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{690EDC41-8DD5-4EC9-BAC5-F336905E1215}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{690EDC41-8DD5-4EC9-BAC5-F336905E1215}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{690EDC41-8DD5-4EC9-BAC5-F336905E1215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7961B79-0A65-4759-9DD2-321D7D6EE787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7961B79-0A65-4759-9DD2-321D7D6EE787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7961B79-0A65-4759-9DD2-321D7D6EE787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7961B79-0A65-4759-9DD2-321D7D6EE787}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A55F426A-39AA-4350-A5A9-FCB3D73DBB24}
+		SolutionGuid = {EBF794BE-309D-495B-88FB-1028D5ED68E7}
 	EndGlobalSection
 EndGlobal

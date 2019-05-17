@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace VulnerableWebsite.Data
+namespace IronBankWeb.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

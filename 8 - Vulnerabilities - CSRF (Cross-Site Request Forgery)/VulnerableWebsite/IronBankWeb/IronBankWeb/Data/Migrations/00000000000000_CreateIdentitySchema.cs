@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace VulnerableWebsite.Data.Migrations
+namespace IronBankWeb.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

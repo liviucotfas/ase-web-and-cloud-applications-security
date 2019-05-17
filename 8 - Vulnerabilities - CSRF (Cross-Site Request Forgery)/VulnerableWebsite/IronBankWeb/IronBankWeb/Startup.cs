@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VulnerableWebsite.Data;
+using IronBankWeb.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace VulnerableWebsite
+namespace IronBankWeb
 {
     public class Startup
     {
@@ -39,6 +40,20 @@ namespace VulnerableWebsite
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                //options.Cookie.Name = "YourAppCookieName";
+                //options.Cookie.HttpOnly = false;
+                //options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                //options.LoginPath = "/Identity/Account/Login";
+                //// ReturnUrlParameter requires 
+                ////using Microsoft.AspNetCore.Authentication.Cookies;
+                //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                //options.SlidingExpiration = true;
+                options.Cookie.SameSite = SameSiteMode.None;
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
