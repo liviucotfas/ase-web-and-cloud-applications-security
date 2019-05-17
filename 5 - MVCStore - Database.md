@@ -1,19 +1,10 @@
 # CRUD ASP.NET MVC Core Application
 
-## Preparing the Database
-
-1. Install Entity Framework Core by adding the following NuGet packages:
-    - Microsoft.EntityFrameworkCore
-    - Microsoft.EntityFrameworkCore.SqlServer
-
-    - Microsoft.EntityFrameworkCore.Tools
-    - Microsoft.EntityFrameworkCore.Design
-
 ## Creating the Database Classes
 
 > The database context class is the bridge between the application and the EF Core and provides access to the application’s data using model objects.
 
-2. Add a class file called ApplicationDbContext.cs to the Models folder and defined the class shown bellow.
+1. Add a class file called `ApplicationDbContext.cs` to the Data folder and defined the class shown bellow.
 
     ```C#
     public class ApplicationDbContext : DbContext
@@ -39,70 +30,66 @@
 			context = ctx;
 		}
 
-		public IQueryable<Product> Products => context.Products;
+		public IQueryable<Product> Products()
+        {
+            return context.Products;
+        }
 	}
     ```
 
 ## Defining the Connection String
 
-5. Add an appsettings.json file using the ASP.NET Configuration File item template in the ASP.NET section of the Add New Item window.
+1. Add an `appsettings.json` file using the ASP.NET Configuration File item template in the ASP.NET section of the Add New Item window.
 
     > A connection string specifies the location and name of the database and provides configuration settings for how the application should connect to the database server.
 
     ```
     {
-        "Data": {
-            "Database": {
-                "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=MVCStore;Trusted_Connection=True;MultipleActiveResultSets=true"
-            }
+         "ConnectionStrings": {
+            "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=_CHANGE_ME;Trusted_Connection=True;MultipleActiveResultSets=true"
         }
     }
     ```
+2. Create an empty database
+
+3. Update the connection string in `appsettings.json`
+
 
 ## Configuring the Application
 
-6. Add the `Microsoft.Extensions.Configuration.Json` package
-
-7. Add the following code to the `Startup` class
+1. Add the following code to the `Startup` class
 
     ```C#
-    IConfigurationRoot Configuration;
-    public Startup(IHostingEnvironment env)
+    IConfiguration Configuration;
+    public Startup(IConfiguration configuration)
     {
-        Configuration = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json").Build();
+        Configuration = configuration;
     }
     ```
-8. Update the `ConfigureServices` method in the `Startup` class
+2. Update the `ConfigureServices` method in the `Startup` class as follows.
 
     ```C#
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(
-        Configuration["Data:Database:ConnectionString"]));
+            options.UseSqlServer(
+                Configuration.GetConnectionString("DefaultConnection")));
+
         services.AddTransient<IProductRepository, EFProductRepository>();
 
-        services.AddMvc();
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
     }
-    ```
-
-9. Add the following using
-
-    ```C#
-    using Microsoft.EntityFrameworkCore;
     ```
 
 ## Creating and Applying the Database Migration
 
-11. Run the following command to generate the initial migration.
+1. Run the following command to generate the initial migration.
 
     ```
     Add-Migration Initial
     ```
 
-12. Run the following command to update the database.
+2. Run the following command to update the database.
 
     ```
     Update-Database
@@ -112,124 +99,132 @@
 
 3. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
 
+> Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql?view=aspnetcore-2.2
+
     ```C#
     public static class SeedData
 	{
-		public static void EnsurePopulated(IApplicationBuilder app)
+		public static void Initialize(IServiceProvider serviceProvider)
 		{
-			var context = app.ApplicationServices
-				.GetRequiredService<ApplicationDbContext>();
+            using (var context = new ApplicationDbContext(
+                serviceProvider.GetRequiredService<
+                    DbContextOptions<ApplicationDbContext>>()))
+            {
+                // Look for any products.
+                if (context.Products.Any())
+                {
+                    return;   // DB has been seeded
+                }
 
-			context.Database.Migrate();
+                context.Products.AddRange(
+                    new Product
+                    {
+                        Name = "Kayak",
+                        Description = "A boat for one person",
+                        Category = "Watersports",
+                        Price = 275
+                    },
+                    new Product
+                    {
+                        Name = "Lifejacket",
+                        Description = "Protective and fashionable",
+                        Category = "Watersports",
+                        Price = 48.95m
+                    },
+                    new Product
+                    {
+                        Name = "Soccer Ball",
+                        Description = "FIFA-approved size and weight",
+                        Category = "Soccer",
+                        Price = 19.50m
+                    },
+                    new Product
+                    {
+                        Name = "Corner Flags",
+                        Description = "Give your playing field a professional touch",
+                        Category = "Soccer",
+                        Price = 34.95m
+                    },
+                    new Product
+                    {
+                        Name = "Stadium",
+                        Description = "Flat-packed 35,000-seat stadium",
+                        Category = "Soccer",
+                        Price = 79500
+                    },
+                    new Product
+                    {
+                        Name = "Thinking Cap",
+                        Description = "Improve brain efficiency by 75%",
+                        Category = "Chess",
+                        Price = 16
+                    },
+                    new Product
+                    {
+                        Name = "Unsteady Chair",
+                        Description = "Secretly give your opponent a disadvantage",
+                        Category = "Chess",
+                        Price = 29.95m
+                    },
+                    new Product
+                    {
+                        Name = "Human Chess Board",
+                        Description = "A fun game for the family",
+                        Category = "Chess",
+                        Price = 75
+                    },
+                    new Product
+                    {
+                        Name = "Bling-Bling King",
+                        Description = "Gold-plated, diamond-studded King",
+                        Category = "Chess",
+                        Price = 1200
+                    }
+                );
 
-			if (!context.Products.Any())
-			{
-				context.Products.AddRange(
-					new Product
-					{
-						Name = "Kayak",
-						Description = "A boat for one person",
-						Category = "Watersports",
-						Price = 275
-					},
-					new Product
-					{
-						Name = "Lifejacket",
-						Description = "Protective and fashionable",
-						Category = "Watersports",
-						Price = 48.95m
-					},
-					new Product
-					{
-						Name = "Soccer Ball",
-						Description = "FIFA-approved size and weight",
-						Category = "Soccer",
-						Price = 19.50m
-					},
-					new Product
-					{
-						Name = "Corner Flags",
-						Description = "Give your playing field a professional touch",
-						Category = "Soccer",
-						Price = 34.95m
-					},
-					new Product
-					{
-						Name = "Stadium",
-						Description = "Flat-packed 35,000-seat stadium",
-						Category = "Soccer",
-						Price = 79500
-					},
-					new Product
-					{
-						Name = "Thinking Cap",
-						Description = "Improve brain efficiency by 75%",
-						Category = "Chess",
-						Price = 16
-					},
-					new Product
-					{
-						Name = "Unsteady Chair",
-						Description = "Secretly give your opponent a disadvantage",
-						Category = "Chess",
-						Price = 29.95m
-					},
-					new Product
-					{
-						Name = "Human Chess Board",
-						Description = "A fun game for the family",
-						Category = "Chess",
-						Price = 75
-					},
-					new Product
-					{
-						Name = "Bling-Bling King",
-						Description = "Gold-plated, diamond-studded King",
-						Category = "Chess",
-						Price = 1200
-					}
-				);
-				context.SaveChanges();
-			}
+                context.SaveChanges();
+            }
 		}
 	}
     ```
 
-4. In the `Configure` method of the `Stratup` class also call `SeedData.EnsurePopulated(app);`
+4. Let's update the `Main` method of the `Program` class as follows.
 
     ```C#
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public static void Main(string[] args)
     {
-        loggerFactory.AddConsole();
+        var host  = CreateWebHostBuilder(args).Build();
 
-        if (env.IsDevelopment())
+        using (var scope = host.Services.CreateScope())
         {
-            app.UseDeveloperExceptionPage();
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var context = services.
+                    GetRequiredService<ApplicationDbContext>();
+                context.Database.Migrate();
+                SeedData.Initialize(services);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred seeding the DB.");
+            }
         }
 
-        app.UseStatusCodePages();
-        app.UseStaticFiles();
-        app.UseMvc(routes => {
-            routes.MapRoute(
-            name: "default",
-            template: "{controller=Product}/{action=List}/{id?}");
-        });
-        
-        // !!!! add these lines{ 
-        SeedData.EnsurePopulated(app);
-        // }!!!!
+        host.Run();
     }
     ```
+3. Update the `ConfigureServices` method in the `Startup` class to use `EFProductRepository` instead of `FakeProductRepository`
 
-
-12. Run the following command to update the database.
-    ```
-    Update-Database
+    ```C#
+    services.AddTransient<IProductRepository, EFProductRepository>();
     ```
 
 # Deleting the database
 
-13. Whenever you want to delete the content of the database, you can use the following query.
+1. Whenever you want to delete the content of the database, you can use the following query.
 
     ```SQL
     /* Azure friendly */

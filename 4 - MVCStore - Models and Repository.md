@@ -6,7 +6,7 @@
     ```C#
     public class Product
 	{
-		public int ProductID { get; set; }
+	    public int ProductID { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public decimal Price { get; set; }
@@ -111,7 +111,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     ```
 10. We need to configure the application so that the _Layout.cshtml file is applied by default. This is done by adding an MVC View Start Page file called `_ViewStart.cshtml` to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
 
-    ```HTML
+    ```CSHTML
     @{
         Layout = "_Layout";
     }
@@ -131,29 +131,21 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 
     The view doesn’t know where the Product objects came from, how they were obtained, or whether or not they represent all of the products known to the application. Instead, the view deals only with how details of each Product is displayed using HTML elements
 
+12. Notice that the `Product` class is not recognized. Add the following line to the `_ViewImports.cshtml` file.
+
+    ```CSHTML
+    @using MVCStore.Models
+    ```
+
 ## Setting the Default Route
 
-10. Update the `Configure` method in the `Startup` class to match the code bellow
+10. Update the default route in the `Configure` method of the `Startup` class to match the code bellow
 
     ```C#
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-    {
-        loggerFactory.AddConsole();
-
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
-        // !!!! add these lines{ 
-        app.UseStatusCodePages();
-        app.UseStaticFiles();
-        app.UseMvc(routes => {
-            routes.MapRoute(
-            name: "default",
-            template: "{controller=Product}/{action=List}/{id?}");
-        });
-        // }!!!!
-    }
+    app.UseMvc(routes => {
+    routes.MapRoute(
+    name: "default",
+    template: "{controller=Product}/{action=List}/{id?}");
+    });
     ```
 11. Run the application

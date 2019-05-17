@@ -1,16 +1,15 @@
-@model IEnumerable<MVCStore.Model.Product>
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "List";
+}
 
-	@{
-    ViewData["Title"] = "Product";
-	}
+<h2>List</h2>
 
-	<h2>Product</h2>
-
-	@foreach (var p in Model) {
-
-		<div>
-			<h3>@p.Name</h3>
-			@p.Description
-			<h4>@p.Price.ToString("c")</h4>
-		</div>
+@foreach (var p in Model)
+{
+    <div>
+        <h3>@p.Name</h3>
+        @p.Description
+        <h4>@p.Price.ToString("c")</h4>
+    </div>
 }
