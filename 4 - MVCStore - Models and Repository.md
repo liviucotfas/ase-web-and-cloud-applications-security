@@ -106,6 +106,8 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
         <div>
             @RenderBody()
         </div>
+
+         @RenderSection("Scripts", required: false)
     </body>
     </html>
     ```

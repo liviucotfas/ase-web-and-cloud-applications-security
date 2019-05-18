@@ -6,10 +6,11 @@
 
 	```C#
 	public class ApplicationDbContext : IdentityDbContext<IdentityUser>
-		{
-			public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
-			public DbSet<Product> Products { get; set; }
-		}
+	{
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
+		
+		public DbSet<Product> Products { get; set; }
+	}
 	```
 
 	> The AppIdentityDbContext class is derived from IdentityDbContext, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the IdentityUser class, which is the built-in class used to represent users. 
@@ -28,9 +29,8 @@
             Configuration["ConnectionStrings:DefaultConnection"]));
 		
 		//new lines{
-		services.AddIdentity<IdentityUser, IdentityRole>()
-		.AddEntityFrameworkStores<ApplicationDbContext>()
-		.AddDefaultTokenProviders(); 
+		services.AddDefaultIdentity<IdentityUser>()
+              .AddEntityFrameworkStores<ApplicationDbContext>();
 		//}new lines
 
 		services.AddTransient
@@ -45,11 +45,12 @@
 
 	```C#
 	//......
-	app.UseStatusCodePages();
+ 	app.UseHttpsRedirection();
 	app.UseStaticFiles();
-	app.UseSession();
+
+	//new{
 	app.UseAuthentication(); 
-	app.UseMvc(routes => {
+	//}	
 	//....
 	```
 
@@ -66,40 +67,78 @@
 1. Add a new class called `IdentitySeedData` to the `Data` folder
 
 	```C#
-	public static class IdentitySeedData {
+	 public static class IdentitySeedData
+    {
         private const string adminUser = "Admin";
         private const string adminPassword = "Secret123$";
-        public static async void EnsurePopulated(IApplicationBuilder app) {
-            
-			var userManager = app.ApplicationServices
-                .GetRequiredService<UserManager<IdentityUser>>();
-            
-			IdentityUser user = await userManager.FindByIdAsync(adminUser);
-            
-			if (user == null) {
-                user = new IdentityUser("Admin");
-                await userManager.CreateAsync(user, adminPassword);
+        public static async Task Initialize(IServiceProvider serviceProvider)
+        {
+            using (var userManager = serviceProvider
+                .GetRequiredService<UserManager<IdentityUser>>())
+            {
+                IdentityUser user = await userManager.FindByIdAsync(adminUser);
+
+                if (user == null)
+                {
+                    user = new IdentityUser("Admin");
+                    await userManager.CreateAsync(user, adminPassword);
+                }
             }
         }
     }
 	```
 
-2. Call the `EnsurePopulated` method in the `Configure` method of the `Startup` class. 
+2. Call the `EnsurePopulated` method in the `Main` method of the `Program` class. 
 
 	```C#
-	IdentitySeedData.EnsurePopulated(app); 
+	Task.Run(async () =>
+		{
+			await IdentitySeedData.Initialize(services);
+		}).Wait(); 
 	```
 
 ## Applying a Basic Authorization Policy
 
 1. The `[Authorize]` attribute is used to restrict access to action methods or controllers. Decorate the `AdminController` with this attribute.
 
+2. Run the application and try to access any action on the `AdminController`
+
+3. Create a partial view called `_LoginPartial.cshtml` in the `Views/Shared` folder.
+
+	```CSHTML
+	@using Microsoft.AspNetCore.Identity
+
+	@inject SignInManager<IdentityUser> SignInManager
+	@inject UserManager<IdentityUser> UserManager
+
+	@if (SignInManager.IsSignedIn(User))
+	{
+		<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" id="logoutForm" class="navbar-right">
+			<ul class="nav navbar-nav navbar-right">
+				<li>
+					<a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+				</li>
+				<li>
+					<button type="submit" class="btn btn-link navbar-btn navbar-link">Logout</button>
+				</li>
+			</ul>
+		</form>
+	}
+	else
+	{
+		<ul class="nav navbar-nav navbar-right">
+			<li><a asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+			<li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+		</ul>
+	}
+	```
+
 ## Creating the Account Controller and Views
 
 1. Add a folder called `ViewModels` to your project
 2. Add a view model to represent the user’s credentials to the `ViewModels` folder
 	```C#
-	public class LoginModel {
+	public class LoginViewModel {
 		[Required]
 		public string Name { get; set; }
 		[Required]
@@ -112,52 +151,52 @@
 
 	```C#
 	[Authorize]
-	public class AccountController : Controller
-	{
-		private UserManager<IdentityUser> userManager;
-		private SignInManager<IdentityUser> signInManager;
-		public AccountController(UserManager<IdentityUser> userMgr,
-		SignInManager<IdentityUser> signInMgr)
-		{
-			userManager = userMgr;
-			signInManager = signInMgr;
-		}
-		[AllowAnonymous]
-		public ViewResult Login(string returnUrl)
-		{
-			return View(new LoginModel
-			{
-				ReturnUrl = returnUrl
-			});
-		}
-		[HttpPost]
-		[AllowAnonymous]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Login(LoginModel loginModel)
-		{
-			if (ModelState.IsValid)
-			{
-				IdentityUser user =
-				await userManager.FindByNameAsync(loginModel.Name);
-				if (user != null)
-				{
-					await signInManager.SignOutAsync();
-					if ((await signInManager.PasswordSignInAsync(user,
-					loginModel.Password, false, false)).Succeeded)
-					{
-						return Redirect(loginModel?.ReturnUrl ?? "/Admin/Index");
-					}
-				}
-			}
-			ModelState.AddModelError("", "Invalid name or password");
-			return View(loginModel);
-		}
-		public async Task<RedirectResult> Logout(string returnUrl = "/")
-		{
-			await signInManager.SignOutAsync();
-			return Redirect(returnUrl);
-		}
-	}
+    public class AccountController : Controller
+    {
+        private UserManager<IdentityUser> userManager;
+        private SignInManager<IdentityUser> signInManager;
+        public AccountController(UserManager<IdentityUser> userMgr,
+        SignInManager<IdentityUser> signInMgr)
+        {
+            userManager = userMgr;
+            signInManager = signInMgr;
+        }
+        [AllowAnonymous]
+        public ViewResult Login(string returnUrl)
+        {
+            return View(new LoginViewModel
+            {
+                ReturnUrl = returnUrl
+            });
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel loginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                IdentityUser user =
+                await userManager.FindByNameAsync(loginModel.Name);
+                if (user != null)
+                {
+                    await signInManager.SignOutAsync();
+                    if ((await signInManager.PasswordSignInAsync(user,
+                    loginModel.Password, false, false)).Succeeded)
+                    {
+                        return Redirect(loginModel?.ReturnUrl ?? "/Admin/Index");
+                    }
+                }
+            }
+            ModelState.AddModelError("", "Invalid name or password");
+            return View(loginModel);
+        }
+        public async Task<RedirectResult> Logout(string returnUrl = "/")
+        {
+            await signInManager.SignOutAsync();
+            return Redirect(returnUrl);
+        }
+    }
 	```
 
 4. Update the `_ViewImports.cshtml` file to also include the `MVCStore.ViewModels` namespace.
@@ -172,7 +211,7 @@
 4. Add a view for the `Login` action
 
 	```HTML
-	@model LoginModel
+	@model LoginViewModel
 	@{
 		ViewBag.Title = "Log In";
 		Layout = "_AdminLayout";
