@@ -2,6 +2,8 @@
 
 <!-- vscode-markdown-toc -->
 * 1. [Documentation](#Documentation)
+* 2. [Introduction](#Introduction)
+* 3. [Roles](#Roles)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -12,12 +14,12 @@
 ##  1. <a name='Documentation'></a>Documentation
 - Authorization Overview: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-2.1
 
-## Introduction
+##  2. <a name='Introduction'></a>Introduction
 Authorization refers to the process that determines what a user is able to do. For example, an administrative user is allowed to create a document library, add documents, edit documents, and delete them. A non-administrative user working with the library is only authorized to read the documents.
 
 Authorization is orthogonal and independent from authentication. However, authorization requires an authentication mechanism. Authentication is the process of ascertaining who a user is. Authentication may create one or more identities for the current user.
 
-## Roles
+##  3. <a name='Roles'></a>Roles
 
 1. Update the `EnsurePopulated` method in the `IdentitySeedData` class as follows.
 
