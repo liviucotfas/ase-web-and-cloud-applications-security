@@ -8,15 +8,76 @@
     <!DOCTYPE html>
     <html>
     <head>
-        <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" asp-href-include="lib/bootstrap/dist/css/*.min.css" />
-        <title>@ViewBag.Title</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - IronBankWeb</title>
+
+        <environment include="Development">
+            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+            <link rel="stylesheet" href="~/css/site.css" />
+        </environment>
+        <environment exclude="Development">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+                asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+                asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+            <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        </environment>
     </head>
-    <body class="m-1 p-1">
-        <div class="bg-info p-2"><h4>@ViewBag.Title</h4></div>
-        @RenderBody()
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">MVC Store</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    </ul>
+                     @*<partial name="_LoginPartial" />*@
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; 2019 - Web &amp; Cloud Security </p>
+            </footer>
+        </div>
+
+        <environment include="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+        </environment>
+        <environment exclude="Development">
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery"
+                    crossorigin="anonymous"
+                    integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+            </script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                    crossorigin="anonymous"
+                    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
+            </script>
+            <script src="~/js/site.min.js" asp-append-version="true"></script>
+        </environment>
+
+        @RenderSection("Scripts", required: false)
     </body>
     </html>
+
     ```
 
 2. Add a new controller to the `Controllers` folder called `AdminController`
@@ -75,6 +136,9 @@
         ViewBag.Title = "All Products";
         Layout = "_AdminLayout";
     }
+
+    <h1>Products</h1>
+
     <table class="table table-striped table-bordered table-sm">
         <tr>
             <th class="text-right">ID</th>
@@ -126,6 +190,9 @@
         ViewBag.Title = "Edit Product";
         Layout = "_AdminLayout";
     }
+
+    <h1>Edit product</h1>
+
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="ProductID" />
         <div class="form-group">
@@ -206,22 +273,11 @@
 
 2. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
 
-    ```HTML
-    <!DOCTYPE html> 
-    <html> 
-    <head> 
-        <meta name="viewport" content="width=device-width" /> 
-        <link rel="stylesheet" asp-href-include="lib/bootstrap/dist/css/*.min.css" /> 
-        <title>@ViewBag.Title</title> 
-    </head> 
-    <body class="m-1 p-1"> 
-        <div class="bg-info p-2"><h4>@ViewBag.Title</h4></div> 
-        @if (TempData["message"] != null) { 
-            <div class="alert alert-success">@TempData["message"]</div> 
-        } 
-        @RenderBody() 
-    </body> 
-    </html>
+    ```CSHTML
+     @if (TempData["message"] != null)
+    {
+        <div class="alert alert-success">@TempData["message"]</div>
+    }
     ```
 
 ## Adding model validation
