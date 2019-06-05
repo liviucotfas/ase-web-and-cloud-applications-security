@@ -17,7 +17,7 @@ namespace IronBankWeb.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Transfer(TransferViewModel transfer)
         {
             // User.Identity
