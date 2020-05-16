@@ -40,10 +40,10 @@ However, care must be taken with the IQueryable<T> interface because each time t
     public class FakeProductRepository : IProductRepository
 	{
 		public IQueryable<Product> Products => new List<Product> {
-            new Product { Name = "Windows 10", Price = 25 },
-            new Product { Name = "Visual Studio", Price = 179 },
-            new Product { Name = "Office 365", Price = 95 }
-        }.AsQueryable<Product>();
+            new Product { Name = "Windows 10", Price = 10 },
+            new Product { Name = "Visual Studio", Price = 10 },
+            new Product { Name = "Office 365", Price = 10 }
+        }.AsQueryable();
 	}
     ``` 
 
