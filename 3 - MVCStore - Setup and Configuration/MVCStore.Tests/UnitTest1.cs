@@ -1,14 +1,18 @@
-using System;
-using Xunit;
+using NUnit.Framework;
 
 namespace MVCStore.Tests
 {
-    public class UnitTest1
+    public class Tests
     {
-        [Fact]
+        [SetUp]
+        public void Setup()
+        {
+        }
+
+        [Test]
         public void Test1()
         {
-
+            Assert.Pass();
         }
     }
 }
