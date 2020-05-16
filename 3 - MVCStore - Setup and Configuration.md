@@ -33,12 +33,11 @@
 
     ``` c#
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseDatabaseErrorPage();
         }
         else
         {
@@ -49,12 +48,14 @@
         app.UseHttpsRedirection();
         app.UseStaticFiles();
 
-        app.UseMvc(routes =>
-        {
-            routes.MapRoute(
-                name: "default",
-                template: "{controller=Home}/{action=Index}/{id?}");
-        });
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
     }
     ```
 
@@ -75,7 +76,7 @@
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
-The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The @addTagHelper statement enables the built-in tag helpers.
+    The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The @addTagHelper statement enables the built-in tag helpers.
 
 8. Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
 
