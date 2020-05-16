@@ -16,7 +16,7 @@
 
 ## Creating a Repository
 
-2. In the `Models` folder define the IProductRepository.cs interface as follows.
+2. Add a `Data` folder and define the `IProductRepository` interface as follows.
 
     ```C#
     public interface IProductRepository
@@ -34,20 +34,20 @@ However, care must be taken with the IQueryable<T> interface because each time t
 
 ## Creating a Fake Repository
 
-3. Create the fake repository called FakeProductRepository.cs to the `Models` folder.
+3. Create the fake repository called `FakeProductRepository` in the `Data` folder.
 
      ```C#
     public class FakeProductRepository : IProductRepository
 	{
 		public IQueryable<Product> Products => new List<Product> {
-            new Product { Name = "Football", Price = 25 },
-            new Product { Name = "Surf board", Price = 179 },
-            new Product { Name = "Running shoes", Price = 95 }
+            new Product { Name = "Windows 10", Price = 25 },
+            new Product { Name = "Visual Studio", Price = 179 },
+            new Product { Name = "Office 365", Price = 95 }
         }.AsQueryable<Product>();
 	}
     ``` 
 
-    > The FakeProductRepository class implements the IProductRepository interface by returning a fixed collection of Product objects as the value of the Products property. The AsQueryable method is used to convert the fixed collection of objects to an IQueryable<Product>, which is required to implement the IProductRepository interface and allows me to create a compatible fake repository without having to deal with real queries.    
+    > The `FakeProductRepository` class implements the `IProductRepository` interface by returning a fixed collection of `Product` objects as the value of the Products property. The `AsQueryable` method is used to convert the fixed collection of objects to an `IQueryable<Product>`, which is required to implement the `IProductRepository` interface and allows us to create a compatible fake repository without having to deal with real queries.    
 
 ## Registering the Repository Service
 
@@ -81,9 +81,9 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 		}
 	}
     ```
-    When MVC needs to create a new instance of the ProductController class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the IProductRepository interface. To determine what implementation class should be used, MVC consults the configuration in the Startup class, which tells it that FakeRepository should be used and that a new instance should be created every time. MVC creates a new FakeRepository object and uses it to invoke the ProductController constructor in order to create the controller object that will process the HTTP request.
+    When MVC needs to create a new instance of the ProductController class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the `IProductRepository` interface. To determine what implementation class should be used, MVC consults the configuration in the `Startup` class, which tells it that `FakeRepository` should be used and that a new instance should be created every time. MVC creates a new `FakeRepository` object and uses it to invoke the `ProductController` constructor in order to create the controller object that will process the HTTP request.
 
-    This is known as **dependency injection**, and its approach allows the ProductController to access the application’s repository through the IProductRepository interface without having any need to know which implementation class has been configured. Later, we’ll replace the fake repository with the real one, and dependency injection means that the controller will continue to work without changes.
+    This is known as **dependency injection**, and its approach allows the `ProductController` to access the application’s repository through the `IProductRepository` interface without having any need to know which implementation class has been configured. Later, we’ll replace the fake repository with the real one, and dependency injection means that the controller will continue to work without changes.
 
 8. Add the following action to the `ProductController`
 
@@ -93,7 +93,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     } 
     ```
 
-9. Add a shared layout called `_Layout.cshtml` to the `Views/Shared` folder. It should be generated as follows.
+9. Add a shared layout called `_Layout.cshtml` to the `Views/Shared` folder, by choosing the "Rayzor Layout" type of file in the "Add > New Item". It should be generated as follows.
 
     ```HTML
    <!DOCTYPE html>
@@ -111,7 +111,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     </body>
     </html>
     ```
-10. We need to configure the application so that the _Layout.cshtml file is applied by default. This is done by adding an MVC View Start Page file called `_ViewStart.cshtml` to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
+10. We need to configure the application so that the `_Layout.cshtml` file is applied by default. This is done by adding an "Razor View Start" file called `_ViewStart.cshtml` to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
 
     ```CSHTML
     @{
@@ -131,7 +131,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     }
     ```
 
-    The view doesn’t know where the Product objects came from, how they were obtained, or whether or not they represent all of the products known to the application. Instead, the view deals only with how details of each Product is displayed using HTML elements
+    The view doesn’t know where the `Product` objects came from, how they were obtained, or whether or not they represent all of the products known to the application. Instead, the view deals only with how details of each `Product` is displayed using HTML elements
 
 12. Notice that the `Product` class is not recognized. Add the following line to the `_ViewImports.cshtml` file.
 
@@ -144,10 +144,11 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
 10. Update the default route in the `Configure` method of the `Startup` class to match the code bellow
 
     ```C#
-    app.UseMvc(routes => {
-    routes.MapRoute(
-    name: "default",
-    template: "{controller=Product}/{action=List}/{id?}");
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Product}/{action=List}/{id?}");
     });
     ```
 11. Run the application
