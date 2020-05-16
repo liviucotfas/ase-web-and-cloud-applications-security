@@ -4,7 +4,7 @@
 
 > The database context class is the bridge between the application and the EF Core and provides access to the application’s data using model objects.
 
-1. Add a class file called `ApplicationDbContext.cs` to the Data folder and defined the class shown bellow.
+1. Add a class file called `ApplicationDbContext.cs` to the `Data` folder and defined the class shown bellow.
 
     ```C#
     public class ApplicationDbContext : DbContext
@@ -14,7 +14,7 @@
 	}
     ```
 
-    The DbContext base class provides access to the Entity Framework Core’s underlying functionality, and the Products property will provide access to the Product objects in the database.
+    The `DbContext` base class provides access to the Entity Framework Core’s underlying functionality, and the `Products` property will provide access to the `Product` objects in the database.
 
 ## Creating the Repository Class
 
@@ -30,37 +30,39 @@
 			context = ctx;
 		}
 
-		public IQueryable<Product> Products()
-        {
-            return context.Products;
-        }
+        public IQueryable<Product> Products
+		{
+			get
+			{
+				return context.Products;
+			}
+		}
 	}
     ```
 
 ## Defining the Connection String
 
-1. Add an `appsettings.json` file using the ASP.NET Configuration File item template in the ASP.NET section of the Add New Item window.
+1. Create an empty database using the SQL Server Explorer panel.
+
+2. Add an `appsettings.json` file using the ASP.NET Configuration File item template in the ASP.NET section of the Add New Item window.
 
     > A connection string specifies the location and name of the database and provides configuration settings for how the application should connect to the database server.
 
     ```
     {
          "ConnectionStrings": {
-            "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=_CHANGE_ME;Trusted_Connection=True;MultipleActiveResultSets=true"
+            "DefaultConnection": "...."
         }
     }
     ```
-2. Create an empty database
-
 3. Update the connection string in `appsettings.json`
-
 
 ## Configuring the Application
 
 1. Add the following code to the `Startup` class
 
     ```C#
-    IConfiguration Configuration;
+    private IConfiguration Configuration;
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -71,23 +73,28 @@
     ```C#
     public void ConfigureServices(IServiceCollection services)
     {
+        //services.AddTransient<IProductRepository, FakeProductRepository>();
+
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddTransient<IProductRepository, EFProductRepository>();
 
-        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        services.AddMvc();
     }
     ```
 
+    > Hint: If `UseSqlServer` is not recognized, install the package `Microsoft.EntityFrameworkCore.SqlServer`
+
 ## Creating and Applying the Database Migration
 
-1. Run the following command to generate the initial migration.
+1. Run the following command to generate the initial migration using the `Package Manager Console` panel.
 
     ```
     Add-Migration Initial
     ```
+    > If the command is not recognized, install the package `Microsoft.EntityFrameworkCore.Tools` 
 
 2. Run the following command to update the database.
 
@@ -102,113 +109,106 @@
 > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql?view=aspnetcore-2.2
 
     ```C#
-    public static class SeedData
-	{
-		public static void Initialize(IServiceProvider serviceProvider)
-		{
-            using (var context = new ApplicationDbContext(
-                serviceProvider.GetRequiredService<
-                    DbContextOptions<ApplicationDbContext>>()))
+    public class SeedData
+    {
+        public static async Task SeedAsync(ApplicationDbContext context)
+        {
+            // Look for any products.
+            if (context.Products.Any())
             {
-                // Look for any products.
-                if (context.Products.Any())
-                {
-                    return;   // DB has been seeded
-                }
-
-                context.Products.AddRange(
-                    new Product
-                    {
-                        Name = "Kayak",
-                        Description = "A boat for one person",
-                        Category = "Watersports",
-                        Price = 275
-                    },
-                    new Product
-                    {
-                        Name = "Lifejacket",
-                        Description = "Protective and fashionable",
-                        Category = "Watersports",
-                        Price = 48.95m
-                    },
-                    new Product
-                    {
-                        Name = "Soccer Ball",
-                        Description = "FIFA-approved size and weight",
-                        Category = "Soccer",
-                        Price = 19.50m
-                    },
-                    new Product
-                    {
-                        Name = "Corner Flags",
-                        Description = "Give your playing field a professional touch",
-                        Category = "Soccer",
-                        Price = 34.95m
-                    },
-                    new Product
-                    {
-                        Name = "Stadium",
-                        Description = "Flat-packed 35,000-seat stadium",
-                        Category = "Soccer",
-                        Price = 79500
-                    },
-                    new Product
-                    {
-                        Name = "Thinking Cap",
-                        Description = "Improve brain efficiency by 75%",
-                        Category = "Chess",
-                        Price = 16
-                    },
-                    new Product
-                    {
-                        Name = "Unsteady Chair",
-                        Description = "Secretly give your opponent a disadvantage",
-                        Category = "Chess",
-                        Price = 29.95m
-                    },
-                    new Product
-                    {
-                        Name = "Human Chess Board",
-                        Description = "A fun game for the family",
-                        Category = "Chess",
-                        Price = 75
-                    },
-                    new Product
-                    {
-                        Name = "Bling-Bling King",
-                        Description = "Gold-plated, diamond-studded King",
-                        Category = "Chess",
-                        Price = 1200
-                    }
-                );
-
-                context.SaveChanges();
+                return;   // DB has been seeded
             }
-		}
-	}
+
+            context.Products.AddRange(
+                new Product
+                {
+                    Name = "Kayak",
+                    Description = "A boat for one person",
+                    Category = "Watersports",
+                    Price = 275
+                },
+                new Product
+                {
+                    Name = "Lifejacket",
+                    Description = "Protective and fashionable",
+                    Category = "Watersports",
+                    Price = 48.95m
+                },
+                new Product
+                {
+                    Name = "Soccer Ball",
+                    Description = "FIFA-approved size and weight",
+                    Category = "Soccer",
+                    Price = 19.50m
+                },
+                new Product
+                {
+                    Name = "Corner Flags",
+                    Description = "Give your playing field a professional touch",
+                    Category = "Soccer",
+                    Price = 34.95m
+                },
+                new Product
+                {
+                    Name = "Stadium",
+                    Description = "Flat-packed 35,000-seat stadium",
+                    Category = "Soccer",
+                    Price = 79500
+                },
+                new Product
+                {
+                    Name = "Thinking Cap",
+                    Description = "Improve brain efficiency by 75%",
+                    Category = "Chess",
+                    Price = 16
+                },
+                new Product
+                {
+                    Name = "Unsteady Chair",
+                    Description = "Secretly give your opponent a disadvantage",
+                    Category = "Chess",
+                    Price = 29.95m
+                },
+                new Product
+                {
+                    Name = "Human Chess Board",
+                    Description = "A fun game for the family",
+                    Category = "Chess",
+                    Price = 75
+                },
+                new Product
+                {
+                    Name = "Bling-Bling King",
+                    Description = "Gold-plated, diamond-studded King",
+                    Category = "Chess",
+                    Price = 1200
+                }
+            );
+
+            await context.SaveChangesAsync();
+        }
+    }
     ```
 
 4. Let's update the `Main` method of the `Program` class as follows.
 
     ```C#
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        var host  = CreateWebHostBuilder(args).Build();
+        var host = CreateHostBuilder(args).Build();
 
         using (var scope = host.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
-
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
             try
             {
-                var context = services.
-                    GetRequiredService<ApplicationDbContext>();
-                context.Database.Migrate();
-                SeedData.Initialize(services);
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                await SeedData.SeedAsync(context);
             }
             catch (Exception ex)
             {
-                var logger = services.GetRequiredService<ILogger<Program>>();
+                var logger = loggerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "An error occurred seeding the DB.");
             }
         }
