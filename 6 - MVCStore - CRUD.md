@@ -130,6 +130,7 @@
 ## Implementing the List View
 
 7. In the Views/Admin folder add a Razor file called Index.cshtml
+
     ```CSHTML
     @model IEnumerable<Product>
     @{
@@ -224,27 +225,32 @@
 	{
 		IEnumerable<Product> Products { get; }
 
-		void SaveProduct(Product product);
+		Task SaveProductAsync(Product product);
 	}
     ```
 
 4. Implement the `SaveProduct` method as follows.
     ```C#
-    public void SaveProduct(Product product) { 
-        if (product.ProductID == 0) { 
-            context.Products.Add(product); 
-        } else { 
-            Product dbEntry = context.Products 
-                .FirstOrDefault(p => p.ProductID == product.ProductID); 
-            if (dbEntry != null) { 
-                dbEntry.Name = product.Name; 
-                dbEntry.Description = product.Description; 
-                dbEntry.Price = product.Price; 
-                dbEntry.Category = product.Category; 
-            } 
-        } 
-        context.SaveChanges(); 
-    } 
+    public async Task SaveProductAsync(Product product)
+    {
+        if (product.ProductID == 0)
+        {
+            context.Products.Add(product);
+        }
+        else
+        {
+            Product dbEntry = context.Products
+                .FirstOrDefault(p => p.ProductID == product.ProductID);
+            if (dbEntry != null)
+            {
+                dbEntry.Name = product.Name;
+                dbEntry.Description = product.Description;
+                dbEntry.Price = product.Price;
+                dbEntry.Category = product.Category;
+            }
+        }
+        await context.SaveChangesAsync();
+    }
     ```
 
 ## Handling Edit POST Requests
@@ -253,11 +259,11 @@
 
     ```C#
     [HttpPost]
-    public IActionResult Edit(Product product)
+    public async Task<IActionResult> Edit(Product product)
     {
         if (ModelState.IsValid)
         {
-            repository.SaveProduct(product);
+            await repository.SaveProductAsync(product);
             TempData["message"] = $"{product.Name} has been saved";
             return RedirectToAction("Index");
         }
@@ -274,7 +280,7 @@
 2. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
 
     ```CSHTML
-     @if (TempData["message"] != null)
+    @if (TempData["message"] != null)
     {
         <div class="alert alert-success">@TempData["message"]</div>
     }
@@ -352,19 +358,19 @@
 1. Add a `DeleteProduct` method to the `IProductRepository` interface.
 
     ```C#
-    Product DeleteProduct(int productID);
+    Task<Product> DeleteProductAsync(int productID);
     ```
 
 2. Implement the method in the `EFProductRepository` class.
 
     ```C#
-    public Product DeleteProduct(int productID) { 
+    public async Task<Product> DeleteProductAsync(int productID) { 
         Product dbEntry = context.Products 
                 .FirstOrDefault(p => p.ProductID == productID); 
     
         if (dbEntry != null) { 
             context.Products.Remove(dbEntry); 
-            context.SaveChanges(); 
+            await context.SaveChangesAsync(); 
         } 
     
         return dbEntry; 
@@ -374,8 +380,8 @@
 
     ```C#
     [HttpPost] 
-    public IActionResult Delete(int productId) { 
-        Product deletedProduct = repository.DeleteProduct(productId); 
+    public async Task<IActionResult> Delete(int productId) { 
+        Product deletedProduct = repository.DeleteProductAsync(productId); 
         if (deletedProduct != null) { 
             TempData["message"] = $"{deletedProduct.Name} was deleted"; 
         } 
@@ -403,6 +409,6 @@
         target.Delete(prod.ProductID);
         // Assert - ensure that the repository delete method was
         // called with the correct Product
-        mock.Verify(m => m.DeleteProduct(prod.ProductID));
+        mock.Verify(m => m.DeleteProductAsync(prod.ProductID));
     }
     ```
