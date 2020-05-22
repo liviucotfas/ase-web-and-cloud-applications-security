@@ -106,7 +106,7 @@
 
 3. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
 
-> Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql?view=aspnetcore-2.2
+    > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
 
     ```C#
     public class SeedData
@@ -147,41 +147,6 @@
                     Description = "Give your playing field a professional touch",
                     Category = "Soccer",
                     Price = 34.95m
-                },
-                new Product
-                {
-                    Name = "Stadium",
-                    Description = "Flat-packed 35,000-seat stadium",
-                    Category = "Soccer",
-                    Price = 79500
-                },
-                new Product
-                {
-                    Name = "Thinking Cap",
-                    Description = "Improve brain efficiency by 75%",
-                    Category = "Chess",
-                    Price = 16
-                },
-                new Product
-                {
-                    Name = "Unsteady Chair",
-                    Description = "Secretly give your opponent a disadvantage",
-                    Category = "Chess",
-                    Price = 29.95m
-                },
-                new Product
-                {
-                    Name = "Human Chess Board",
-                    Description = "A fun game for the family",
-                    Category = "Chess",
-                    Price = 75
-                },
-                new Product
-                {
-                    Name = "Bling-Bling King",
-                    Description = "Gold-plated, diamond-studded King",
-                    Category = "Chess",
-                    Price = 1200
                 }
             );
 
