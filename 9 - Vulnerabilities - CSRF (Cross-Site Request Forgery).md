@@ -20,7 +20,7 @@
 ##  2. <a name='Documentation'></a>Documentation
 Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is an attack against web-hosted apps whereby a malicious web app can influence the interaction between a client browser and a web app that trusts that browser. These attacks are possible because web browsers send some types of authentication tokens automatically with every request to a website. This form of exploit is also known as a one-click attack or session riding because the attack takes advantage of the user's previously authenticated session.
 
-> Recommended further reading: OWASP (description of the vulnerability in general): https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF); CSRF in ASP.NET: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-2.2 
+> Recommended further reading: OWASP (description of the vulnerability in general): https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF); CSRF in ASP.NET: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery
 
 # Vulnerable website - IronBank Web'Banking
 
@@ -136,7 +136,10 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 ##  6. <a name='Attacks'></a>Attacks
 
-1. //TODO Method using GET
+1. 
+//asp-antiforgery="false"
+//TODO Method using GET
+// [ValidateAntiForgeryToken]
 
 2. //TODO Method using POST. Check the cookie policy in Google Chome. Change the same site policy to none
 

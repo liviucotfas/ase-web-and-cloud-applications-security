@@ -26,8 +26,10 @@ Authorization is orthogonal and independent from authentication. However, author
 	```C#
 	var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-	if (!await roleManager.RoleExistsAsync("ProductManagement"))
-		await roleManager.CreateAsync(new IdentityRole("ProductManagement"));
+	var roleName = "ProductManagement";
+
+	if (!await roleManager.RoleExistsAsync(roleName))
+		await roleManager.CreateAsync(new IdentityRole(roleName));
 	```
 
 2. Add a user with the "ProductManagement" role

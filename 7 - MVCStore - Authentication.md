@@ -15,7 +15,7 @@
 
 	> The AppIdentityDbContext class is derived from IdentityDbContext, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the IdentityUser class, which is the built-in class used to represent users. 
 
-2. In the `Startup` class make the following changes in the `ConfigureServices` method.
+2. Install the package "Microsoft.AspNetCore.Identity.UI". In the `Startup` class make the following changes in the `ConfigureServices` method.
 
 	```C#
 	public void ConfigureServices(IServiceCollection services)
@@ -37,8 +37,11 @@
 		services.AddTransient
                 <IProductRepository, 
                 EFProductRepository>();
-            
-        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+		//new lines{
+        services.AddControllersWithViews();
+        services.AddRazorPages();
+		//}new lines
     }
 	```
 
@@ -49,10 +52,24 @@
  	app.UseHttpsRedirection();
 	app.UseStaticFiles();
 
-	//new{
-	app.UseAuthentication(); 
+	app.UseRouting();
+
+	//new lines{
+	app.UseAuthentication();
+	app.UseAuthorization();
 	//}	
-	//....
+
+	app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapControllerRoute(
+				name: "default",
+				pattern: "{controller=Home}/{action=Index}/{id?}"
+				);
+			
+			//new lines{
+			endpoints.MapRazorPages();
+			//}	
+		});
 	```
 
 ## Creating and Applying the Database Migration
@@ -100,8 +117,7 @@
 
 ***Question**
 - What changes should be made to the application in order to store additional details for a User?
-	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/add-user-data?view=aspnetcore-2.1
-
+	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/add-user-data
 
 ## Applying a Basic Authorization Policy
 
@@ -109,39 +125,9 @@
 
 2. Run the application and try to access any action on the `AdminController`
 
-3. Create a partial view called `_LoginPartial.cshtml` in the `Views/Shared` folder.
-
-	```CSHTML
-	@using Microsoft.AspNetCore.Identity
-
-	@inject SignInManager<IdentityUser> SignInManager
-	@inject UserManager<IdentityUser> UserManager
-
-	@if (SignInManager.IsSignedIn(User))
-	{
-		<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" id="logoutForm" class="navbar-right">
-			<ul class="nav navbar-nav navbar-right">
-				<li>
-					<a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-				</li>
-				<li>
-					<button type="submit" class="btn btn-link navbar-btn navbar-link">Logout</button>
-				</li>
-			</ul>
-		</form>
-	}
-	else
-	{
-		<ul class="nav navbar-nav navbar-right">
-			<li><a asp-area="Identity" asp-page="/Account/Register">Register</a></li>
-			<li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
-		</ul>
-	}
-	```
-
 4. Scaffold Register, Login, and LogOut
 
-	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1
+	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity
 
 	Make sure to have the following code in the selected layout view
 
@@ -149,3 +135,57 @@
 	@RenderSection("Scripts", required: false)
 	```
 5. Check the code in the Register, Login, and LogOut pages
+
+6. Create a partial view called `_LoginPartial.cshtml` in the `Views/Shared` folder.
+
+	```CSHTML
+	@using Microsoft.AspNetCore.Identity
+	@inject SignInManager<IdentityUser> SignInManager
+	@inject UserManager<IdentityUser> UserManager
+
+	<ul class="navbar-nav">
+	@if (SignInManager.IsSignedIn(User))
+	{
+		<li class="nav-item">
+			<a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+		</li>
+		<li class="nav-item">
+			<form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+				<button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+			</form>
+		</li>
+	}
+	else
+	{
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+		</li>
+	}
+	</ul>
+	```
+7. Include the LoginPartial in the _Layout file
+
+	```HTML
+ 	<header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVCStore</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+	```

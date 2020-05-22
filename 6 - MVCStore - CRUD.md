@@ -1,15 +1,32 @@
 # MVCStore - CRUD
 
-## Creating a CRUD Controller
+## Stryling the Content
+1. Add a new folder called 'wwwroot` to the project that will host the static files.
 
-1. Add a new layout file called "_AdminLayout"
+2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "unpkg" as a provider and search for "bootstrap". Choose only the following files:
+- "dist/css/bootstrap.css",
+- "dist/css/bootstrap.css.map",
+- "dist/css/bootstrap.min.css",
+- "dist/css/bootstrap.min.css.map",
+- "dist/js/bootstrap.js",
+- "dist/js/bootstrap.js.map",
+- "dist/js/bootstrap.min.js",
+- "dist/js/bootstrap.min.js.map"
+
+3. Add a new folder called "css" to the "wwwroot" folder. Add a new CSS file to this folder called "site.css" 
+
+4. Add a new folder called "js" to the "wwwroot" folder. Add a new JavaScript file to this folder called "site.js".
+
+5. Add the "jQuery" library using the "cdnjs" provider.
+
+6. Add a new folder called "Shared" to the "Views" folder. Add a new file of the type "Razor Layout" called "_Layout" to this folder.
 
     ```HTML
-    <!DOCTYPE html>
-    <html>
+    <!doctype html>
+    <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>@ViewData["Title"] - MVCStore</title>
 
         <environment include="Development">
@@ -17,59 +34,57 @@
             <link rel="stylesheet" href="~/css/site.css" />
         </environment>
         <environment exclude="Development">
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"
                 asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
                 asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
             <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         </environment>
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVCStore</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">MVC Store</a>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    </ul>
-                     @*<partial name="_LoginPartial" />*@
-                </div>
-            </div>
-        </nav>
+            </nav>
+        </header>
 
-
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; 2019 - Web &amp; Cloud Security </p>
-            </footer>
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
         </div>
 
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                <p>&copy; 2020 - Web &amp; Cloud Security </p>
+            </div>
+        </footer>
+
         <environment include="Development">
-            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/jquery/jquery.slim.js"></script>
             <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
             <script src="~/js/site.js" asp-append-version="true"></script>
         </environment>
         <environment exclude="Development">
-            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
-                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                    asp-fallback-test="window.jQuery"
-                    crossorigin="anonymous"
-                    integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+            <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.0.slim.min.js"
+                    asp-fallback-src="~/lib/jquery/jquery.slim.min.js"
+                    asp-fallback-test="window.jQuery">
             </script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"
                     asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                    crossorigin="anonymous"
-                    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
             </script>
             <script src="~/js/site.min.js" asp-append-version="true"></script>
         </environment>
@@ -77,8 +92,43 @@
         @RenderSection("Scripts", required: false)
     </body>
     </html>
-
     ```
+
+7. Add to the "Views" folder a new file of the type "Razor View Start", called "_ViewStart.cshtml".
+
+8. Also update the `Index.cshtml` to match the following code:
+
+    ```HTML
+    @model IEnumerable<Product>
+    @{
+        ViewData["Title"] = "Index";
+    }
+
+    <h1>Products</h1>
+
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-sm-4">
+                <div class="card mx-2 mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            @product.Name
+                        </h5>
+                        <p class="card-text">
+                            @product.Description
+                        </p>
+                        <p class="card-text">
+                            @(((decimal)product.Price).ToString("c"))
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    ```
+
+## Creating a CRUD Controller
 
 2. Add a new controller to the `Controllers` folder called `AdminController`
 
@@ -133,12 +183,14 @@
 
     ```CSHTML
     @model IEnumerable<Product>
+
     @{
         ViewBag.Title = "All Products";
-        Layout = "_AdminLayout";
     }
 
     <h1>Products</h1>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">Add Product</a>
 
     <table class="table table-striped table-bordered table-sm">
         <tr>
@@ -147,18 +199,19 @@
             <th class="text-right">Price</th>
             <th class="text-center">Actions</th>
         </tr>
-        @foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
-                <td class="text-right">@item.ProductID</td>
+                <td class="text-right">@item.ProductId</td>
                 <td>@item.Name</td>
-                <td class="text-right">@item.Price.ToString("c")</td>
+                <td class="text-right">@item.Price</td>
                 <td class="text-center">
+                    <a asp-action="Edit" class="btn btn-sm btn-warning"
+                        asp-route-productId="@item.ProductId">
+                        Edit
+                    </a>
                     <form asp-action="Delete" method="post">
-                        <a asp-action="Edit" class="btn btn-sm btn-warning"
-                        asp-route-productId="@item.ProductID">
-                            Edit
-                        </a>
-                        <input type="hidden" name="ProductID" value="@item.ProductID" />
+                        <input type="hidden" name="ProductId" value="@item.ProductId" />
                         <button type="submit" class="btn btn-danger btn-sm">
                             Delete
                         </button>
@@ -167,9 +220,6 @@
             </tr>
         }
     </table>
-    <div class="text-center">
-        <a asp-action="Create" class="btn btn-primary">Add Product</a>
-    </div>
     ```
 
 ## Editing Products
@@ -179,42 +229,44 @@
     ```C#
     public IActionResult Edit(int productId)
     {
-        return View(repository.Products.FirstOrDefault(p => p.ProductID == productId));
+        var product = repository.Products.FirstOrDefault(p => p.ProductId == productId);
+        return View(product);
     }
     ```
 
-2. Add the corresponding view.
+2. Scaffold the corresponding view. Update the content of the view as follows:
 
     ```HTML
-    @model Product
+    @model MVCStore.Models.Product
+
     @{
-        ViewBag.Title = "Edit Product";
-        Layout = "_AdminLayout";
+        ViewData["Title"] = "Edit";
     }
 
     <h1>Edit product</h1>
+    <hr />
 
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="ProductID" />
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ProductId" />
         <div class="form-group">
-            <label asp-for="Name"></label>
+            <label asp-for="Name" class="control-label"></label>
             <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Description"></label>
-    <textarea asp-for="Description" class="form-control"></textarea>
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Category"></label>
-            <input asp-for="Category" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Price"></label>
+            <label asp-for="Price" class="control-label"></label>
             <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
         </div>
-        <div class="text-center">
-            <button class="btn btn-primary" type="submit">Save</button>
-            <a asp-action="Index" class="btn btn-default">Cancel</a>
+        <div class="form-group text-right">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
     ```
@@ -233,20 +285,19 @@
     ```C#
     public async Task SaveProductAsync(Product product)
     {
-        if (product.ProductID == 0)
+        if (product.ProductId == 0)
         {
             context.Products.Add(product);
         }
         else
         {
             Product dbEntry = context.Products
-                .FirstOrDefault(p => p.ProductID == product.ProductID);
+                .FirstOrDefault(p => p.ProductId == product.ProductId);
             if (dbEntry != null)
             {
                 dbEntry.Name = product.Name;
                 dbEntry.Description = product.Description;
                 dbEntry.Price = product.Price;
-                dbEntry.Category = product.Category;
             }
         }
         await context.SaveChangesAsync();
@@ -277,7 +328,7 @@
 
     > Notice the `TempData` object
 
-2. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
+2. Update the `Layout.cshtml` layout file in order to display the confirmation message.
 
     ```CSHTML
     @if (TempData["message"] != null)
@@ -301,46 +352,7 @@
         [Range(0.01, double.MaxValue, 
             ErrorMessage = "Please enter a positive price")] 
         public decimal Price { get; set; }
-        [Required(ErrorMessage = "Please specify a category")] 
-        public string Category { get; set; }
     }
-    ```
-
-2. Update the `Edit` view as follows
-
-    ```HTML
-    @model Product
-    @{
-        ViewBag.Title = "Edit Product";
-        Layout = "_AdminLayout";
-    }
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="ProductID" />
-        <div class="form-group">
-            <label asp-for="Name"></label>
-            <div><span asp-validation-for="Name" class="text-danger"></span></div> 
-            <input asp-for="Name" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Description"></label>
-            <div><span asp-validation-for="Description" class="text-danger"></span></div> 
-            <textarea asp-for="Description" class="form-control"></textarea>
-        </div>
-        <div class="form-group">
-            <label asp-for="Category"></label>
-            <div><span asp-validation-for="Category" class="text-danger"></span></div> 
-            <input asp-for="Category" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Price"></label>
-            <div><span asp-validation-for="Price" class="text-danger"></span></div> 
-            <input asp-for="Price" class="form-control" />
-        </div>
-        <div class="text-center">
-            <button class="btn btn-primary" type="submit">Save</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
     ```
 
 ## Creating New Products
