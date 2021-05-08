@@ -2,7 +2,7 @@
 
 ## Recommended Books
 - [Architecting Modern Web Applications with ASP.NET Core and Azure](https://blogs.msdn.microsoft.com/dotnet/2017/08/09/web-apps-aspnetcore-architecture-guidance/) (free)
-- [Pro ASP.NET Core MVC](http://www.apress.com/us/book/9781484203989)
+- [Pro ASP.NET Core](https://www.apress.com/us/book/9781484254394)
 - [ASP.NET Core Succinctly](https://www.syncfusion.com/resources/techportal/details/ebooks/ASP_NET_Core_Succinctly) (free)
 - [Application Security in .NET Succinctly](https://www.syncfusion.com/resources/techportal/details/ebooks/Application_Security_in_NET_Succinctly) (free)
 
