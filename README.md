@@ -1,5 +1,11 @@
 # Web and Cloud Applications Security
 
+## Required Software
+- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ).
+
+## Microsoft Azure for Students
+- Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
+
 ## Recommended Books
 - [Architecting Modern Web Applications with ASP.NET Core and Azure](https://blogs.msdn.microsoft.com/dotnet/2017/08/09/web-apps-aspnetcore-architecture-guidance/) (free)
 - [Pro ASP.NET Core](https://www.apress.com/us/book/9781484254394)
@@ -8,12 +14,6 @@
 
 ## Recommended Links
 - [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture)
-
-## Required Software
-- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ).
-
-## Microsoft Azure for Students
-- Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
 
 ## FAQ
 
