@@ -1,7 +1,7 @@
 # Web and Cloud Applications Security
 
 ## Required Software
-- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ).
+- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the ASP.NET and web development workload is installed.
 
 ## Microsoft Azure for Students
 - Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
