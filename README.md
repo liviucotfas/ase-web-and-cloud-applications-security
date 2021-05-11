@@ -1,6 +1,6 @@
 # Web and Cloud Applications Security
 
-## Required Software
+## Prerequisites
 - Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the ASP.NET and web development workload is installed.
 
 ## Microsoft Azure for Students
