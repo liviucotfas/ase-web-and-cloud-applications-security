@@ -23,4 +23,4 @@
 
 **Is it possible to convert the .md files to .pdf/.docx ?**
 
->A: you can use https://gitprint.com/ or https://pandoc.org/
+>A: you can use https://pandoc.org/
