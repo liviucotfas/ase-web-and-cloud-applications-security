@@ -39,7 +39,33 @@ Imagine that we want to implement an application that allows people to electroni
 
 ##  3. <a name='AddingaModel'></a>Adding a **Model**
 
-1. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
+1. Create a new project named `HelloWorld` using the "ASP.NET Core Web App (Model-View-Controller)" template.
+2. Modify the `HomeController` as follows.
+
+	```C#
+	public class HomeController : Controller
+	{
+		private readonly ILogger<HomeController> _logger;
+
+		public HomeController(ILogger<HomeController> logger)
+		{
+		    _logger = logger;
+		}
+
+		public IActionResult Index()
+		{
+		    return View();
+		}
+
+
+		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+		public IActionResult Error()
+		{
+		    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+		}
+	}
+	```
+4. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
 
     >The **model** is the representation of the real-world objects, processes, and rules that define the subject, known as the domain , of the application. The model, often referred to as a domain model , contains the C# objects (known as domain objects ) that make up the universe of the application and the methods that manipulate them. The views and controllers expose the domain to the clients in a consistent manner, and a well-designed MVC application starts with a well-designed model, which is then the focal point as controllers and views are added.
 
