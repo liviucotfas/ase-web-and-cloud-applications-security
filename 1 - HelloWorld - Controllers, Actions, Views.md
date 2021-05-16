@@ -135,12 +135,6 @@ The output from the current application is just the string Hello World. In order
             ViewBag.Greeting = hour < 12 ? "Good Morning" : "Good Afternoon";
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
     ```
 
