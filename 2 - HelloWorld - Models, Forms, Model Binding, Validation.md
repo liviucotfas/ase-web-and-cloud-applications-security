@@ -37,10 +37,9 @@ Imagine that we want to implement an application that allows people to electroni
 
  > Note: the application will not persisit the answers to any storage.
 
-##  3. <a name='AddingaModel'></a>Adding a **Model**
-
-1. Create a new project named `HelloWorld` using the "ASP.NET Core Web App (Model-View-Controller)" template.
-2. Modify the `HomeController` as follows.
+1. Create a new project named `CourseInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template.
+2. Let's start with a little cleanup. Remove from the `Views` folder the `Home` and `Shared` folders. Remove from the `Models` folder the `ErrorViewModel` class.
+3. Modify the `HomeController` as follows.
 
 	```C#
 	public class HomeController : Controller
@@ -56,18 +55,37 @@ Imagine that we want to implement an application that allows people to electroni
 		{
 		    return View();
 		}
-
-
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-		    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
 	}
 	```
+4. Add a view for the `Index` action with the following content.
+
+    > Razor view files have the **.cshtml** file extension because they are a mix of C# code and HTML elements.
+
+    ```C#
+    @{
+        Layout = null;
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>ASP.NET lecture!</title>
+    </head>
+    <body>
+        <div>
+            <div>
+                We're going to have a lecture on ASP.NET.<br />
+            </div>
+        </div>
+    </body>
+    </html>
+    ```
+
+##  3. <a name='AddingaModel'></a>Adding a **Model**
+
 4. Right-click on the project item in the Solution Explorer window and select `Add > New Folder` from the popup list and set the name of the folder to `Models`.
 
-    >The **model** is the representation of the real-world objects, processes, and rules that define the subject, known as the domain , of the application. The model, often referred to as a domain model , contains the C# objects (known as domain objects ) that make up the universe of the application and the methods that manipulate them. The views and controllers expose the domain to the clients in a consistent manner, and a well-designed MVC application starts with a well-designed model, which is then the focal point as controllers and views are added.
+    >The **model** is the representation of the real-world objects, processes, and rules that define the subject, known as the domain , of the application. The model, often referred to as a **domain model**, contains the C# objects (known as domain objects ) that make up the universe of the application and the methods that manipulate them. The views and controllers expose the domain to the clients in a consistent manner, and a well-designed MVC application starts with a well-designed model, which is then the focal point as controllers and views are added.
 
 
 2. Right click on the `Models` folder, select `Add > Class` and create a new class file called `GuestResponse.cs`.
@@ -99,7 +117,7 @@ Imagine that we want to implement an application that allows people to electroni
     a strongly typed view.
 
     ```HTML
-    @model FirstCoreApplication.Models.GuestResponse
+    @model CourseInvites.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -121,7 +139,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 1. We want to be able to create a link from the `Index` view so that guests can see the RsvpForm view without having to know the URL that targets a specific action method. Let's update de `Index` view as follows.
 
-    > The **asp-action** attribute is an example of a tag helper attribute, which is an instruction for Razor that will be performed when the view is rendered. The asp-action attribute is an instruction to add a href attribute to the a element that contains a URL for an action method.
+    > The **asp-action** attribute is an example of a **tag helper attribute**, which is an instruction for Razor that will be performed when the view is rendered. The asp-action attribute is an instruction to add a href attribute to the a element that contains a URL for an action method.
 
     ```HTML
     @{
@@ -131,30 +149,32 @@ Imagine that we want to implement an application that allows people to electroni
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <title>Index</title>
+        <title>ASP.NET lecture!</title>
     </head>
     <body>
         <div>
-            @ViewBag.Greeting World (from the view)
-        <p>We're going to have an ASP.NET Core 2 Course!<br />
-        </p>
-            <a asp-action="RsvpForm">RSVP Now</a> 
+            <div>
+                We're going to have a lecture on ASP.NET.<br />
+            </div>
+            <a asp-action="RsvpForm">RSVP Now</a>
         </div>
     </body>
     </html>
     ```
     > You should use the features provided by MVC to generate URLs, rather than hard-code them into your views. When the tag helper created the href attribute for the a element, it inspected the configuration of the application to figure out what the URL should be. This allows the configuration of the application to be changed to support different URL formats without needing to update any views.
 
-2. Run the project
+2. Run the project and check the `HTML` code that has been generated instead of `asp-action="RsvpForm"`.
 
 ##  6. <a name='BuildingtheForm'></a>Building the Form
 
 1. Change the contents of the `RsvpForm.cshtml` file as follows
 
-     > Notice the `asp-action` on the `form` element
+    > Notice the following tag helper attributes:
+    > - `asp-action` on the `form` element;
+    > - `asp-for` on the form inputs.
 
     ```HTML
-    @model FirstCoreApplication.Models.GuestResponse
+    @model CourseInvites.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -191,28 +211,38 @@ Imagine that we want to implement an application that allows people to electroni
     </body>
     </html> 
     ```
+    > The `@model` expression specifies that the view expects to receive a `GuestResponse` object as its view model.
 
-2. Run the project and check the generated `HTML` code
+2. Run the project and check the generated `HTML` code.
 
     > We have defined a `label` and `input` element for each property of the `GuestResponse` model class. The `asp-for` attribute on the `label` element sets the `value` of the for attribute. The `asp-for` attribute on the `input` element sets the `id` and `name` elements.
+
+    > The `asp-action` tag helper attribute applied to the form element, uses the application’s URL routing configuration to set the `action` attribute to a URL that will target a specific action method.
 
 ##  7. <a name='ReceivingFormData'></a>Receiving Form Data
 
 1. Update the HomeController as follows.
 
-    > Handing GET and POST requests in separate C# methods helps to keep the controller code tidy, since the two methods have different responsibilities. Both action methods are invoked by the same URL, but MVC makes sure that the appropriate method is called, based on whether we are dealing with a GET or POST request.
+    > Handing `GET` and `POST` requests in separate C# methods helps to keep the controller code tidy, since the two methods have different responsibilities. Both action methods are invoked by the same URL, but MVC makes sure that the appropriate method is called, based on whether we are dealing with a GET or POST request.
 
     ```C#
     public class HomeController : Controller {
-        public IActionResult Index() {
-            int hour = DateTime.Now.Hour;
-            ViewBag.Greeting = hour < 12 ? "Good Morning" : "Good Afternoon";
-            return View("MyView");
+        private readonly ILogger<HomeController> _logger;
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;
         }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [HttpGet] 
         public IActionResult RsvpForm() {
             return View();
         }
+
         [HttpPost] 
         public IActionResult RsvpForm(GuestResponse guestResponse) { 
             // TODO: store response from guest 
@@ -223,7 +253,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 ##  8. <a name='UsingModelBinding'></a>Using Model Binding
 
-**Model binding** is a useful MVC feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The GuestResponse object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
+**Model binding** is a useful MVC feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The `GuestResponse` object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
 
 ##  9. <a name='StoringResponses'></a>Storing Responses
 1. The project will include a simple in-memory repository to store the responses from users. Add a new class file called `Repository.cs` in the `Models`.
@@ -259,7 +289,7 @@ Imagine that we want to implement an application that allows people to electroni
 3. Let's add the `Thanks.cshtml` view
 
     ```HTML
-    @model FirstCoreApplication.Models.GuestResponse
+    @model CourseInvites.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -273,7 +303,7 @@ Imagine that we want to implement an application that allows people to electroni
     <p>
             <h1>Thank you, @Model.Name!</h1>
             @if (Model.WillAttend == true) {
-                @:It's great that you're coming. The drinks are already in the fridge!
+                @:It's great that you're coming!
             } else {
                 @:Sorry to hear that you can't make it, but thanks for letting us know.
             }
@@ -295,7 +325,7 @@ Imagine that we want to implement an application that allows people to electroni
 2. Add the corresponding view
 
     ```C#
-    @model IEnumerable<FirstCoreApplication.Models.GuestResponse>
+    @model IEnumerable<CourseInvites.Models.GuestResponse>
     @{
         Layout = null;
     }
@@ -306,7 +336,7 @@ Imagine that we want to implement an application that allows people to electroni
         <title>Responses</title>
     </head>
     <body>
-        <h2>Here is the list of people attending the party</h2>
+        <h2>Here is the list of people attending the course</h2>
         <table>
             <thead>
                 <tr>
@@ -316,7 +346,7 @@ Imagine that we want to implement an application that allows people to electroni
                 </tr>
             </thead>
             <tbody>
-                @foreach (FirstCoreApplication.Models.GuestResponse r in Model) {
+                @foreach (CourseInvites.Models.GuestResponse r in Model) {
                     <tr>
                         <td>@r.Name</td>
                         <td>@r.Email</td>
@@ -355,6 +385,8 @@ Imagine that we want to implement an application that allows people to electroni
 
 2. Update the `RsvpForm` action on the `HomeController` as follows. We check to see whether there has been a validation problem using the `ModelState.IsValid` property in the controller class.
 
+    > `ModelState` is a property of the `Controller` class that provides details of the outcome of the model binding process. If the `ModelState.IsValid` property returns true, then the model binder has not been able to satisfy the validation constraints specified through the attributes on the `GuestResponse` class.
+
     ```C#
     [HttpPost]
     public IActionResult RsvpForm(GuestResponse guestResponse) {
@@ -370,15 +402,21 @@ Imagine that we want to implement an application that allows people to electroni
 
 3. Add a validation summary to the `RsvpForm` view by including the following line.
 
+    > When it renders a view, Razor has access to the details of any validation errors associated with the request, and tag helpers can access the details to display validation errors to the user.
+
     ```HTML
-    <div asp-validation-summary="All"></div> 
+    <form asp-action="RsvpForm" method="post">
+        <div asp-validation-summary="All"></div> 
+        ....
     ```
 
 4. Check how the HTML code for the `<input>` fields changes when the fields contain errors.
 
-    > The CSS class `.input-validation-error` is added
+    > The CSS class `.input-validation-error` is added.
 
 5. Change the formatting of the fields that contain errors in the `/css/styles.css` file.
+
+    > Static content delivered to clients is placed into the `wwwroot` folder and organized by content type so that CSS stylesheets go into the wwwroot/css folder, JavaScript files go into the wwwroot/js folder.
 
     ```CSS
     .field-validation-error    {color: #f00;}
@@ -389,8 +427,10 @@ Imagine that we want to implement an application that allows people to electroni
     ```
 6. Reference the stylesheet
 
+    > Notice that the `wwwroot` folder is omitted from the URL. The default configuration for ASP.NET includes support for serving static content, such as images, CSS stylesheets, and JavaScript files, and it maps requests to the `wwwroot` folder automatically.
+
     ```HTML
-    <link rel="stylesheet" href="/css/styles.css" /> 
+    <link rel="stylesheet" href="~/css/site.css" />
     ```
 
 **Assignment (for you to solve)**
@@ -411,14 +451,14 @@ Imagine that we want to implement an application that allows people to electroni
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <title>Index</title>
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+        <title>ASP.NET lecture!</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
     </head>
-    <body>
-        <div class="text-center"> 
-        <h3>We're going to have an exciting party!</h3> 
-        <h4>And you are invited</h4> 
-        <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a> 
+    <body class="container">
+        <div class="text-center">
+                We're going to have a lecture on ASP.NET.<br />
+            <h4>And YOU are invited!</h4>
+            <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
         </div>
     </body>
     </html>
@@ -426,7 +466,7 @@ Imagine that we want to implement an application that allows people to electroni
 2. Style the `RsvpForm.cstml` file as follows
 
     ```HTML
-    @model FirstCoreApplication.Models.GuestResponse
+    @model CourseInvites.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -438,7 +478,7 @@ Imagine that we want to implement an application that allows people to electroni
         <link rel="stylesheet" href="/css/styles.css" />
         <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
     </head>
-    <body>
+    <body class="container">
         <div class="panel panel-success"> 
             <div class="panel-heading text-center"><h4>RSVP</h4></div> 
             <div class="panel-body"> 
@@ -479,7 +519,7 @@ Imagine that we want to implement an application that allows people to electroni
  3. Style the `Thanks.cstml` file as follows
   
     ```HTML
-    @model FirstCoreApplication.Models.GuestResponse
+    @model CourseInvites.Models.GuestResponse
     @{
         Layout = null;
     }
@@ -507,7 +547,7 @@ Imagine that we want to implement an application that allows people to electroni
  4. Style the `ListResponses.cstml` file as follows
 
     ```HTML
-    @model IEnumerable<FirstCoreApplication.Models.GuestResponse>
+    @model IEnumerable<CourseInvites.Models.GuestResponse>
     @{
         Layout = null;
     }
@@ -518,9 +558,9 @@ Imagine that we want to implement an application that allows people to electroni
         <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
         <title>Responses</title>
     </head>
-    <body>
+    <body class="container">
         <div class="panel-body">
-            <h2>Here is the list of people attending the party</h2>
+            <h2>Here is the list of people attending the course</h2>
             <table class="table table-sm table-striped table-bordered">
                 <thead>
                     <tr>
