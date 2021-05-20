@@ -7,15 +7,15 @@
 - Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
 
 ## Recommended Books
-- [Architecting Modern Web Applications with ASP.NET Core and Azure](https://dotnet.microsoft.com/learn/aspnet/architecture) (free)
+- [Architecting Modern Web Applications with ASP.NET Core and Azure](https://dotnet.microsoft.com/learn/aspnet/architecture) (free ebook)
 - [Pro ASP.NET Core](https://www.apress.com/us/book/9781484254394)
-- [ASP.NET Core Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/asp-net-core-3-1-succinctly) (free)
-- [Application Security in .NET Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/application-security-in-net-succinctly) (free)
+- [ASP.NET Core Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/asp-net-core-3-1-succinctly) (free ebook)
+- [Application Security in .NET Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/application-security-in-net-succinctly) (free ebook)
 
 ## Further Reading
-- [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture)
-- [.NET Microservices: Architecture for Containerized .NET Applications](https://dotnet.microsoft.com/learn/aspnet/microservices-architecture)
-- [Architecting Cloud-Native .NET Apps for Azure](https://dotnet.microsoft.com/learn/azure/architecture)
+- [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture) (free ebook)
+- [.NET Microservices: Architecture for Containerized .NET Applications](https://dotnet.microsoft.com/learn/aspnet/microservices-architecture) (free ebook)
+- [Architecting Cloud-Native .NET Apps for Azure](https://dotnet.microsoft.com/learn/azure/architecture) (free ebook)
 
 ## FAQ
 
