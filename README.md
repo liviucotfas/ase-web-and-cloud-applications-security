@@ -12,8 +12,10 @@
 - [ASP.NET Core Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/asp-net-core-3-1-succinctly) (free)
 - [Application Security in .NET Succinctly](https://www.syncfusion.com/succinctly-free-ebooks/application-security-in-net-succinctly) (free)
 
-## Recommended Links
+## Further Reading
 - [Microsoft .NET Application Architecture Guidance](https://www.microsoft.com/net/learn/architecture)
+- [.NET Microservices: Architecture for Containerized .NET Applications](https://dotnet.microsoft.com/learn/aspnet/microservices-architecture)
+- [Architecting Cloud-Native .NET Apps for Azure](https://dotnet.microsoft.com/learn/azure/architecture)
 
 ## FAQ
 
