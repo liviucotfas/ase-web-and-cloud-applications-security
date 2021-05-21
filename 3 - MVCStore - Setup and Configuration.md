@@ -17,6 +17,8 @@
 ##  1. <a name='Objectives'></a>Objectives
 - understand how to configure services;
 - understand how to configure middleware components;
+- importing types and the built-in tag helpers in the views;
+- configuring the default layout page;
 
 ##  2. <a name='CreatingtheProjects'></a>Creating the Projects
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and choose the `ASP.NET Core Empty`. 
@@ -94,9 +96,7 @@
 
 > The Razor view engine is responsible for processing view files, which have the **.cshtml** extension, to generate HTML responses.
 
-1.  Add the Razor View Imports. 
-    
-    Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Imports" item from the ASP.NET Core > Web > ASP.NET category.
+1.  Add the Razor View Imports. Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Imports" item from the ASP.NET Core > Web > ASP.NET category.
     
     ```c#
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -113,14 +113,14 @@
     ```
 
     > The view start file tells Razor to use a layout file in the HTML that it generates, reducing the amount of duplication in views.
-3.  Add the Razor Layout.
+3.  Add the Razor Layout. Add a Razor layout file named _Layout.cshtml to the Views/Shared folder, with the content show below.
 
     ```HTML
     <!DOCTYPE html>
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <title>SportsStore</title>
+        <title>@ViewBag.Title</title>
     </head>
     <body>
         <div>
@@ -129,8 +129,29 @@
     </body>
     </html>
     ```
+    >This file defines a simple HTML document into which the contents of other views will be inserted by the @RenderBody expression.
 
-4.  Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
+## Creating the Controller and View
+4. Add a class file named `HomeController.cs` in the `Controllers` folder and use it to define the class shown below. This is a minimal controller that contains just enough functionality to produce a response.
+
+    ```C#
+    public class HomeController: Controller {
+        public IActionResult Index(){
+            return View();
+        }
+    }
+    ```
+    >The `MapDefaultControllerRoute` method used in the `Startup` class tells ASP.NET Core how to match URLs to controller classes. The configuration applied by that method declares that the `Index` action method defined by the `Home` controller will be used to handle requests.
+
+    >The `Index` action method doesn’t do anything useful yet and just returns the result of calling the `View` method, which is inherited from the `Controller` base class. This result tells ASP.NET Core to render the default view associated with the action method. 
+    
+5. Create the view, by adding a Razor View file named Index.cshtml to the Views/Home folder with the content shown below.
+
+    ```CSHTML
+    <h4>Welcome to MVCStore</h4>
+    ```
+
+6.  Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
 
 ##  6. <a name='AddtheUnitTestProject'></a>Add the Unit Test Project
 9. Right-click on the solution item in the Solution Explorer and select Add > New Project from the popup menu. Select xUnit Test Project (.NET Core) from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project.
