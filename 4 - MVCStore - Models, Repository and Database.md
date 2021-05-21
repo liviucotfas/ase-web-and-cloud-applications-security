@@ -21,6 +21,9 @@
 ##  1. <a name='Objectives'></a>Objectives
 - configuring the types of the columns using attributes;
 - creating the Database Context class;
+- creating a repository;
+- using database migrations;
+- seeding data.
 
 ##  2. <a name='2.InstallingtheEntityFramework'></a> 2. Installing the Entity Framework
 
