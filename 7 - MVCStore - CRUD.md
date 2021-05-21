@@ -92,12 +92,12 @@
     ```C#
     public IActionResult Edit(int productId)
     {
-        var product = repository.Products.FirstOrDefault(p => p.ProductId == productId);
+        var product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
         return View(product);
     }
     ```
 
-4. Scaffold the corresponding view. Update the content of the view as follows:
+4. Add the corresponding view. Update the content of the view as follows:
 
     ```HTML
     @model MVCStore.Models.Product
@@ -111,7 +111,7 @@
 
     <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for="ProductId" />
+        <input type="hidden" asp-for="ProductID" />
         <div class="form-group">
             <label asp-for="Name" class="control-label"></label>
             <input asp-for="Name" class="form-control" />
@@ -148,14 +148,14 @@
     ```C#
     public async Task SaveProductAsync(Product product)
     {
-        if (product.ProductId == 0)
+        if (product.ProductID == 0)
         {
             context.Products.Add(product);
         }
         else
         {
             Product dbEntry = context.Products
-                .FirstOrDefault(p => p.ProductId == product.ProductId);
+                .FirstOrDefault(p => p.ProductID == product.ProductID);
             if (dbEntry != null)
             {
                 dbEntry.Name = product.Name;
@@ -203,14 +203,15 @@
     ```C#
     public class Product {
         public int ProductID { get; set; }
-        [Required(ErrorMessage = "Please enter a product name")] 
-        public string Name { get; set; }
-        [Required(ErrorMessage = "Please enter a description")] 
-        public string Description { get; set; }
-        [Required] 
-        [Range(0.01, double.MaxValue, 
-            ErrorMessage = "Please enter a positive price")] 
-        public decimal Price { get; set; }
+		[Required(ErrorMessage = "Please enter a product name")]
+		public string Name { get; set; }
+		[Required(ErrorMessage = "Please enter a description")]
+		public string Description { get; set; }
+		[Required]
+		[Range(0.01, double.MaxValue,ErrorMessage = "Please enter a positive price")]
+		[Column(TypeName = "decimal(8, 2)")]
+		public decimal Price { get; set; }
+		public string Category { get; set; }
     }
     ```
 
@@ -252,7 +253,7 @@
     ```C#
     [HttpPost] 
     public async Task<IActionResult> Delete(int productId) { 
-        Product deletedProduct = repository.DeleteProductAsync(productId); 
+        Product deletedProduct = await repository.DeleteProductAsync(productId); 
         if (deletedProduct != null) { 
             TempData["message"] = $"{deletedProduct.Name} was deleted"; 
         } 
