@@ -3,8 +3,8 @@
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
 * 2. [Applying Bootstrap Styles](#ApplyingBootstrapStyles)
-* 3. [Bibliography](#Bibliography)
-* 4. [Stryling the Content](#StrylingtheContent)
+* 3. [Partial Views](#PartialViews)
+* 4. [Bibliography](#Bibliography)
 * 5. [Creating a CRUD Controller](#CreatingaCRUDController)
 * 6. [Implementing the List View](#ImplementingtheListView)
 * 7. [Editing Products](#EditingProducts)
@@ -137,6 +137,8 @@ properties we added to the tag helper class, which are then used to style the a 
 
     > The values of the attributes are automatically used to set the tag helper property values, with the mapping between the HTML attribute name format  (page-class-normal) and the C# property name format (PageClassNormal) taken into account. This allows tag helpers to respond differently based on the attributes of an HTML element, creating a more flexible way to generate content in an ASP.NET Core application.
 
+##  3. <a name='PartialViews'></a>Partial Views
+
 6. Creating a Partial View. We would like to refactor the application to simplify the `Index.cshtml` view. We are going to create a partial view, which is a fragment of content that we can embed into another view, rather like a template. They help reduce duplication when you need the same content to appear in different places in an application. To create the partial view, we added a Razor View called `ProductSummary.cshtml` to the `Views/Shared` folder and added the markup shown below.
 
     ```CSHTML
@@ -171,7 +173,7 @@ properties we added to the tag helper class, which are then used to style the a 
 
     > We have taken the markup that was previously in the `@foreach` expression in the `Index.cshtml` view and moved it to the new partial view. I call the partial view using a partial element, using the name and model attributes to specify the name of the partial view and its view model. Using a partial view allows the same markup to be inserted into any view that needs to display a summary of a product.
 
-##  3. <a name='Bibliography'></a>Bibliography
+##  4. <a name='Bibliography'></a>Bibliography
 
 
 ##  5. <a name='CreatingaCRUDController'></a>Creating a CRUD Controller
