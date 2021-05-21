@@ -1,4 +1,4 @@
-# MVCStore - Models and Repository
+# MVCStore - Models, Repository and Database
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
