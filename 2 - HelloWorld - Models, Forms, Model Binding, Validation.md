@@ -102,7 +102,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 >A single controller class can define multiple action methods, and the convention is to group related actions together in the same controller.
 
-1. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed bellow to the `HomeController`.
+1. One of the goals of our app is to include an RSVP form. Let's define an action method that can receive requests for that form. Add the `RsvpForm` action listed below to the `HomeController`.
 
     ```C#
     public IActionResult RsvpForm()
