@@ -6,7 +6,8 @@
 * 3. [Creating the Folder Structure](#CreatingtheFolderStructure)
 * 4. [Configuring the Application](#ConfiguringtheApplication)
 * 5. [Configuring the Razor View Engine](#ConfiguringtheRazorViewEngine)
-* 6. [Add the Unit Test Project](#AddtheUnitTestProject)
+* 6. [Creating the Controller and View](#CreatingtheControllerandView)
+* 7. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -23,7 +24,9 @@
 ##  2. <a name='CreatingtheProjects'></a>Creating the Projects
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and choose the `ASP.NET Core Empty`. 
 2. Run the project. Why do you think that we are seeing the "Hello World!" text?
-3. Add a new unit testing project, called `MVC.Tests`, by choosing the `xUnit Test Project` template.
+3. Right-click on the solution item in the Solution Explorer and select **Add > New Project** from the popup menu. Select **xUnit Test Project** from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project. 
+4.  Add a reference towards the `MVCStore` project.
+5.  Install the Moq NuGet package.
 
 ##  3. <a name='CreatingtheFolderStructure'></a>Creating the Folder Structure
 
@@ -131,7 +134,7 @@
     ```
     >This file defines a simple HTML document into which the contents of other views will be inserted by the @RenderBody expression.
 
-## Creating the Controller and View
+##  6. <a name='CreatingtheControllerandView'></a>Creating the Controller and View
 4. Add a class file named `HomeController.cs` in the `Controllers` folder and use it to define the class shown below. This is a minimal controller that contains just enough functionality to produce a response.
 
     ```C#
@@ -151,11 +154,6 @@
     <h4>Welcome to MVCStore</h4>
     ```
 
-6.  Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
+6.  Run the application.
 
-##  6. <a name='AddtheUnitTestProject'></a>Add the Unit Test Project
-9. Right-click on the solution item in the Solution Explorer and select Add > New Project from the popup menu. Select xUnit Test Project (.NET Core) from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project.
-
-10. Add a reference towards the `MVCStore` project.
-
-11. Install the Moq NuGet package.
+##  7. <a name='Bibliography'></a>Bibliography
