@@ -1,191 +1,133 @@
 # CRUD ASP.NET MVC Core Application
 
-## Creating the Database Classes
+## Objectives
 
-> The database context class is the bridge between the application and the EF Core and provides access to the application’s data using model objects.
+## Bibliography
 
-1. Add a class file called `ApplicationDbContext.cs` to the `Data` folder and defined the class shown bellow.
+##  10. <a name='CreatingaFakeRepository'></a>Creating a Fake Repository
 
-    ```C#
-    public class ApplicationDbContext : DbContext
+3. Create the fake repository called `FakeProductRepository` in the `Data` folder.
+
+     ```C#
+    public class FakeProductRepository : IProductRepository
 	{
-		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
-		public DbSet<Product> Products { get; set; }
+		public IQueryable<Product> Products => new List<Product> {
+            new Product { Name = "Windows 10", Price = 10 },
+            new Product { Name = "Visual Studio", Price = 10 },
+            new Product { Name = "Office 365", Price = 10 }
+        }.AsQueryable();
 	}
-    ```
+    ``` 
 
-    The `DbContext` base class provides access to the Entity Framework Core’s underlying functionality, and the `Products` property will provide access to the `Product` objects in the database.
+    > The `FakeProductRepository` class implements the `IProductRepository` interface by returning a fixed collection of `Product` objects as the value of the Products property. The `AsQueryable` method is used to convert the fixed collection of objects to an `IQueryable<Product>`, which is required to implement the `IProductRepository` interface and allows us to create a compatible fake repository without having to deal with real queries.    
 
-## Creating the Repository Class
+##  11. <a name='RegisteringtheRepositoryService'></a>Registering the Repository Service
 
-4. The next step is to create a class that implements the IProductRepository interface and gets its data using Entity Framework Core.
+>MVC emphasizes the use of loosely coupled components, which means that you can make a change in one part of the application without having to make corresponding changes elsewhere. This approach categorizes parts of the application as services, which provide features that other parts of the application use. The class that provides a service can then be altered or replaced without requiring changes in the classes that use it.
 
-    ```C#
-    public class EFProductRepository : IProductRepository
-	{
-		private ApplicationDbContext context;
-		
-        public EFProductRepository(ApplicationDbContext ctx)
-		{
-			context = ctx;
-		}
-
-        public IQueryable<Product> Products
-		{
-			get
-			{
-				return context.Products;
-			}
-		}
-	}
-    ```
-
-## Defining the Connection String
-
-1. Create an empty database using the SQL Server Explorer panel.
-
-2. Add an `appsettings.json` file using the ASP.NET Configuration File item template in the ASP.NET section of the Add New Item window.
-
-    > A connection string specifies the location and name of the database and provides configuration settings for how the application should connect to the database server.
-
-    ```
-    {
-         "ConnectionStrings": {
-            "DefaultConnection": "...."
-        }
-    }
-    ```
-3. Update the connection string in `appsettings.json`
-
-## Configuring the Application
-
-1. Add the following code to the `Startup` class
-
-    ```C#
-    private IConfiguration Configuration;
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-    ```
-2. Update the `ConfigureServices` method in the `Startup` class as follows.
+4. Modify the `ConfigureServices` method in the `Startup` class as follows
 
     ```C#
     public void ConfigureServices(IServiceCollection services)
     {
-        //services.AddTransient<IProductRepository, FakeProductRepository>();
-
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                Configuration.GetConnectionString("DefaultConnection")));
-
-        services.AddTransient<IProductRepository, EFProductRepository>();
-
+        // !!!! add this line{ 
+        services.AddTransient<IProductRepository, FakeProductRepository>();
+        // }!!!!
         services.AddMvc();
     }
     ```
 
-    > Hint: If `UseSqlServer` is not recognized, install the package `Microsoft.EntityFrameworkCore.SqlServer`
+The statement added to the `ConfigureServices` method tells ASP.NET that when a component, such as a controller, needs an implementation of the `IProductRepository` interface, it should receive an instance of the `FakeProductRepository` class. The AddTransient method specifies that a new `FakeProductRepository` object should be created each time the `IProductRepository` interface is needed.
 
-## Creating and Applying the Database Migration
+##  12. <a name='AddingaController'></a>Adding a Controller
 
-1. Run the following command to generate the initial migration using the `Package Manager Console` panel.
-
-    ```
-    Add-Migration Initial
-    ```
-    > If the command is not recognized, install the package `Microsoft.EntityFrameworkCore.Tools` 
-
-2. Run the following command to update the database.
-
-    ```
-    Update-Database
-    ```
-
-## Creating the Seed Data
-
-3. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
-
-    > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
+7. Add a controler called `ProductController` to the `Controllers` folder
 
     ```C#
-    public class SeedData
-    {
-        public static async Task SeedAsync(ApplicationDbContext context)
-        {
-            // Look for any products.
-            if (context.Products.Any())
-            {
-                return;   // DB has been seeded
-            }
+	public class ProductController : Controller
+	{
+		private IProductRepository repository;
+		public ProductController(IProductRepository repo)
+		{
+			repository = repo;
+		}
+	}
+    ```
+    When MVC needs to create a new instance of the ProductController class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the `IProductRepository` interface. To determine what implementation class should be used, MVC consults the configuration in the `Startup` class, which tells it that `FakeRepository` should be used and that a new instance should be created every time. MVC creates a new `FakeRepository` object and uses it to invoke the `ProductController` constructor in order to create the controller object that will process the HTTP request.
 
-            context.Products.AddRange(
-                new Product
-                {
-                    Name = "Kayak",
-                    Description = "A boat for one person",
-                    Category = "Watersports",
-                    Price = 275
-                },
-                new Product
-                {
-                    Name = "Lifejacket",
-                    Description = "Protective and fashionable",
-                    Category = "Watersports",
-                    Price = 48.95m
-                },
-                new Product
-                {
-                    Name = "Soccer Ball",
-                    Description = "FIFA-approved size and weight",
-                    Category = "Soccer",
-                    Price = 19.50m
-                },
-                new Product
-                {
-                    Name = "Corner Flags",
-                    Description = "Give your playing field a professional touch",
-                    Category = "Soccer",
-                    Price = 34.95m
-                }
-            );
+    This is known as **dependency injection**, and its approach allows the `ProductController` to access the application’s repository through the `IProductRepository` interface without having any need to know which implementation class has been configured. Later, we’ll replace the fake repository with the real one, and dependency injection means that the controller will continue to work without changes.
 
-            await context.SaveChangesAsync();
-        }
+8. Add the following action to the `ProductController`
+
+    ```C#
+    public IActionResult List(){
+        return View(repository.Products); 
+    } 
+    ```
+
+9. Add a shared layout called `_Layout.cshtml` to the `Views/Shared` folder, by choosing the "Rayzor Layout" type of file in the "Add > New Item". It should be generated as follows.
+
+    ```HTML
+   <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title</title>
+    </head>
+    <body>
+        <div>
+            @RenderBody()
+        </div>
+
+         @RenderSection("Scripts", required: false)
+    </body>
+    </html>
+    ```
+10. We need to configure the application so that the `_Layout.cshtml` file is applied by default. This is done by adding an "Razor View Start" file called `_ViewStart.cshtml` to the Views folder. Make sure that the content of the `_ViewStart.cshtml` file is as follows.
+
+    ```CSHTML
+    @{
+        Layout = "_Layout";
+    }
+    ```
+11. Add the view that will be used for displaying the products
+
+    ```CSHTML
+    @model IEnumerable<Product>
+    @foreach (var p in Model) {
+        <div>
+            <h3>@p.Name</h3>
+            @p.Description
+            <h4>@p.Price.ToString("c")</h4>
+        </div>
     }
     ```
 
-4. Let's update the `Main` method of the `Program` class as follows.
+    The view doesn’t know where the `Product` objects came from, how they were obtained, or whether or not they represent all of the products known to the application. Instead, the view deals only with how details of each `Product` is displayed using HTML elements
+
+12. Notice that the `Product` class is not recognized. Add the following line to the `_ViewImports.cshtml` file.
+
+    ```CSHTML
+    @using MVCStore.Models
+    ```
+
+##  13. <a name='SettingtheDefaultRoute'></a>Setting the Default Route
+
+10. Update the default route in the `Configure` method of the `Startup` class to match the code bellow
 
     ```C#
-    public static async Task Main(string[] args)
+    app.UseEndpoints(endpoints =>
     {
-        var host = CreateHostBuilder(args).Build();
-
-        using (var scope = host.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-            try
-            {
-                var context = services.GetRequiredService<ApplicationDbContext>();
-                await SeedData.SeedAsync(context);
-            }
-            catch (Exception ex)
-            {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "An error occurred seeding the DB.");
-            }
-        }
-
-        host.Run();
-    }
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Product}/{action=List}/{id?}");
+    });
     ```
-3. Update the `ConfigureServices` method in the `Startup` class to use `EFProductRepository` instead of `FakeProductRepository`
+11. Run the application
 
-    ```C#
-    services.AddTransient<IProductRepository, EFProductRepository>();
-    ```
+
+
+
 
 # Deleting the database
 
