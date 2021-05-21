@@ -45,7 +45,7 @@
 2. In the Views/Admin folder add a Razor file called Index.cshtml
 
     ```CSHTML
-    @model IEnumerable<Product>
+   @model IEnumerable<Product>
 
     @{
         ViewBag.Title = "All Products";
@@ -65,16 +65,16 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td class="text-right">@item.ProductId</td>
+                <td class="text-right">@item.ProductID</td>
                 <td>@item.Name</td>
                 <td class="text-right">@item.Price</td>
                 <td class="text-center">
                     <a asp-action="Edit" class="btn btn-sm btn-warning"
-                        asp-route-productId="@item.ProductId">
+                    asp-route-productId="@item.ProductID">
                         Edit
                     </a>
                     <form asp-action="Delete" method="post">
-                        <input type="hidden" name="ProductId" value="@item.ProductId" />
+                        <input type="hidden" name="ProductId" value="@item.ProductID" />
                         <button type="submit" class="btn btn-danger btn-sm">
                             Delete
                         </button>
