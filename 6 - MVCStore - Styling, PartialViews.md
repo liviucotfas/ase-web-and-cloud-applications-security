@@ -24,7 +24,7 @@
 ##  2. <a name='ApplyingBootstrapStyles'></a>Applying Bootstrap Styles
 
 1. Add a new folder called `wwwroot` to the project.
-2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "cdnjs" as a provider and search for "twitter". 
+2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "cdnjs" as a provider and search for "twitter" in order to install version 4.3.1. 
 3. Razor layouts provide common content so that it doesn’t have to be repeated in multiple views. Update the `_Layout.cshtml` file in the `Views/Shared` folder to include the Bootstrap CSS stylesheet in the content sent to the browser and define a common header that will be used throughout the application
 
     ```CSHTML
