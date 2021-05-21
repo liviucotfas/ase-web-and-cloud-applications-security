@@ -6,10 +6,6 @@
 * 4. [Updating the View](#UpdatingtheView)
 * 5. [Displaying Page Links](#DisplayingPageLinks)
 * 6. [Bibliography](#Bibliography)
-* 7. [Creating a Fake Repository](#CreatingaFakeRepository)
-* 8. [Registering the Repository Service](#RegisteringtheRepositoryService)
-* 9. [Adding a Controller](#AddingaController)
-* 10. [Setting the Default Route](#SettingtheDefaultRoute)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
