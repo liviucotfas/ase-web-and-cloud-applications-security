@@ -1,4 +1,4 @@
-# CRUD ASP.NET MVC Core Application
+# MVCStore - Setup and Configuration
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
@@ -16,10 +16,11 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
-- understand how to configure services;
-- understand how to configure middleware components;
-- importing types and the built-in tag helpers in the views;
-- configuring the default layout page;
+- configuring the folder structure
+- configuring services;
+- configuring middleware components;
+- configuring the Razor View Engine (importing types, layout page);
+- creating the defualt controller, action and view.
 
 ##  2. <a name='CreatingtheProjects'></a>Creating the Projects
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and choose the `ASP.NET Core Empty`. 
