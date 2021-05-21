@@ -29,7 +29,7 @@
 
 ##  3. <a name='Controller'></a>Controller
 
-3. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown bellow.
+3. This project uses a single controller to select the views displayed to users and to receive form data. Edit the `HomeController.cs` file in the `Controllers` folder to replace the placeholder code provided by Visual Studio with the statements shown below.
 
     ``` c#
     public class HomeController : Controller
