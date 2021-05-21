@@ -9,11 +9,12 @@
 * 6. [Configuring Entity Framework Core](#ConfiguringEntityFrameworkCore)
 * 7. [Creating a Repository](#CreatingaRepository)
 * 8. [Creating the Database Migration](#CreatingtheDatabaseMigration)
-* 9. [Creating a Fake Repository](#CreatingaFakeRepository)
-* 10. [Registering the Repository Service](#RegisteringtheRepositoryService)
-* 11. [Adding a Controller](#AddingaController)
-* 12. [Setting the Default Route](#SettingtheDefaultRoute)
-* 13. [Bibliography](#Bibliography)
+* 9. [Creating Seed Data](#CreatingSeedData)
+* 10. [Creating a Fake Repository](#CreatingaFakeRepository)
+* 11. [Registering the Repository Service](#RegisteringtheRepositoryService)
+* 12. [Adding a Controller](#AddingaController)
+* 13. [Setting the Default Route](#SettingtheDefaultRoute)
+* 14. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -175,24 +176,107 @@ use it to define the class shown below.
 
 ##  8. <a name='CreatingtheDatabaseMigration'></a>Creating the Database Migration
 
-> Entity Framework Core is able to generate the schema for the database using the data model classes through a feature called migrations. When you prepare a migration, Entity Framework Core creates a C# class that contains the SQL commands required to prepare the database. If you need to modify your model classes, then you can create a new migration that contains the SQL commands required to reflect the changes. In this way, you don’t have to worry about manually writing and testing SQL commands and can just focus on the C# model classes in the application.
+> Entity Framework Core is able to generate the schema for the database using the data model classes through a feature called migrations. When you prepare a migration, Entity Framework Core creates a C# class that contains the SQL commands required to prepare the database. If you need to modify your model classes, then you can create a new migration that contains the SQL commands required to reflect the changes.
 
-1. Run the following command to generate the initial migration using the `Package Manager Console` panel.
+12.  Run the following command to generate the initial migration using the `Package Manager Console` panel.
 
     ```
     Add-Migration Initial
     ```
     > If the command is not recognized, install the package `Microsoft.EntityFrameworkCore.Tools` 
 
-2. Run the following command to update the database.
+13. Run the following command to update the database.
 
     ```
     Update-Database
     ```
 
+14. Check the tables that have been created in the database.
+
+##  9. <a name='CreatingSeedData'></a>Creating Seed Data
+
+14. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
+
+    > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
+
+    ```C#
+   public class SeedData
+    {
+        public static void EnsurePopulated(IApplicationBuilder app)
+        {
+            ApplicationDbContext context = app.ApplicationServices
+            .CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            if (context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
+            }
+            if (!context.Products.Any())
+            {
+                context.Products.AddRange(
+                new Product
+                {
+                    Name = "Kayak",
+                    Description = "A boat for one person",
+                    Category = "Watersports",
+                    Price = 275
+                },
+                new Product
+                {
+                    Name = "Lifejacket",
+                    Description = "Protective and fashionable",
+                    Category = "Watersports",
+                    Price = 48.95m
+                },
+                new Product
+                {
+                    Name = "Soccer Ball",
+                    Description = "FIFA-approved size and weight",
+                    Category = "Soccer",
+                    Price = 19.50m
+                });
+            }
+            context.SaveChanges();
+        }
+    }
+    ```
+
+    >The static `EnsurePopulated` method receives an `IApplicationBuilder `argument, which is the interface used in the `Configure` method of the `Startup` class to register middleware components to handle HTTP requests. 
+    
+    >`IApplicationBuilder` also provides access to the application’s services, including the Entity Framework Core database context service.
+
+    > The `EnsurePopulated` method obtains a `ApplicationDbContext` object through the `IApplicationBuilder` interface and calls the `Database.Migrate` method if there are any pending migrations, which means that the database will be created and prepared so that it can store `Product` objects. Next, the number of `Product` objects in the database is checked. If there are no objects in the database, then the database is populated using a collection of `Product` objects using the `AddRange` method and then written to the database using the `SaveChanges` method.
+
+15. Call the `EnsurePopulated` in the `Configure` method of the `Startup` class.
+
+    ```C#
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseStatusCodePages();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapDefaultControllerRoute();
+        });
+
+        // !!!! new/updated code {
+        SeedData.EnsurePopulated(app);
+        //}
+    }
+    ```
 
 
-##  9. <a name='CreatingaFakeRepository'></a>Creating a Fake Repository
+
+
+
+##  10. <a name='CreatingaFakeRepository'></a>Creating a Fake Repository
 
 3. Create the fake repository called `FakeProductRepository` in the `Data` folder.
 
@@ -209,7 +293,7 @@ use it to define the class shown below.
 
     > The `FakeProductRepository` class implements the `IProductRepository` interface by returning a fixed collection of `Product` objects as the value of the Products property. The `AsQueryable` method is used to convert the fixed collection of objects to an `IQueryable<Product>`, which is required to implement the `IProductRepository` interface and allows us to create a compatible fake repository without having to deal with real queries.    
 
-##  10. <a name='RegisteringtheRepositoryService'></a>Registering the Repository Service
+##  11. <a name='RegisteringtheRepositoryService'></a>Registering the Repository Service
 
 >MVC emphasizes the use of loosely coupled components, which means that you can make a change in one part of the application without having to make corresponding changes elsewhere. This approach categorizes parts of the application as services, which provide features that other parts of the application use. The class that provides a service can then be altered or replaced without requiring changes in the classes that use it.
 
@@ -227,7 +311,7 @@ use it to define the class shown below.
 
 The statement added to the `ConfigureServices` method tells ASP.NET that when a component, such as a controller, needs an implementation of the `IProductRepository` interface, it should receive an instance of the `FakeProductRepository` class. The AddTransient method specifies that a new `FakeProductRepository` object should be created each time the `IProductRepository` interface is needed.
 
-##  11. <a name='AddingaController'></a>Adding a Controller
+##  12. <a name='AddingaController'></a>Adding a Controller
 
 7. Add a controler called `ProductController` to the `Controllers` folder
 
@@ -299,7 +383,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     @using MVCStore.Models
     ```
 
-##  12. <a name='SettingtheDefaultRoute'></a>Setting the Default Route
+##  13. <a name='SettingtheDefaultRoute'></a>Setting the Default Route
 
 10. Update the default route in the `Configure` method of the `Startup` class to match the code bellow
 
@@ -313,4 +397,4 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     ```
 11. Run the application
 
-##  13. <a name='Bibliography'></a>Bibliography
+##  14. <a name='Bibliography'></a>Bibliography
