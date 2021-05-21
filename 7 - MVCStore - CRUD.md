@@ -28,8 +28,8 @@
     ```C#
     public class AdminController : Controller
 	{
-		private IProductRepository repository;
-		public AdminController(IProductRepository repo)
+		private IStoreRepository repository;
+		public AdminController(IStoreRepository repo)
 		{
 			repository = repo;
 		}
@@ -134,9 +134,9 @@
     </form>
     ```
 
-5. Add a `SaveProduct` method in the `IProductRepository` interface.
+5. Add a `SaveProduct` method in the `IStoreRepository` interface.
     ```C#
-    public interface IProductRepository
+    public interface IStoreRepository
 	{
 		IEnumerable<Product> Products { get; }
 
@@ -226,7 +226,7 @@
 
 ##  6. <a name='DeletingProducts'></a>Deleting Products
 
-11. Add a `DeleteProduct` method to the `IProductRepository` interface.
+11. Add a `DeleteProduct` method to the `IStoreRepository` interface.
 
     ```C#
     Task<Product> DeleteProductAsync(int productID);
@@ -268,7 +268,7 @@
         // Arrange - create a Product
         Product prod = new Product { ProductID = 2, Name = "Test" };
         // Arrange - create the mock repository
-        Mock<IProductRepository> mock = new Mock<IProductRepository>();
+        Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
         mock.Setup(m => m.Products).Returns(new Product[] {
             new Product {ProductID = 1, Name = "P1"},
             prod,
