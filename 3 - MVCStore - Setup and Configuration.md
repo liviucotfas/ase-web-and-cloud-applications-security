@@ -130,6 +130,7 @@
         <div>
         @RenderBody()
         </div>
+        @await RenderSectionAsync("Scripts", required: false)
     </body>
     </html>
     ```
