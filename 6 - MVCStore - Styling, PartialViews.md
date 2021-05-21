@@ -1,134 +1,180 @@
-# MVCStore - CRUD
+# Styling, PartialViews
 
-## Stryling the Content
-1. Add a new folder called 'wwwroot` to the project that will host the static files.
+<!-- vscode-markdown-toc -->
+* 1. [Objectives](#Objectives)
+* 2. [Applying Bootstrap Styles](#ApplyingBootstrapStyles)
+* 3. [Bibliography](#Bibliography)
+* 4. [Stryling the Content](#StrylingtheContent)
+* 5. [Creating a CRUD Controller](#CreatingaCRUDController)
+* 6. [Implementing the List View](#ImplementingtheListView)
+* 7. [Editing Products](#EditingProducts)
+* 8. [Handling Edit POST Requests](#HandlingEditPOSTRequests)
+* 9. [Adding model validation](#Addingmodelvalidation)
+* 10. [Creating New Products](#CreatingNewProducts)
+* 11. [Deleting Products](#DeletingProducts)
 
-2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "unpkg" as a provider and search for "bootstrap". Choose only the following files:
-- "dist/css/bootstrap.css",
-- "dist/css/bootstrap.css.map",
-- "dist/css/bootstrap.min.css",
-- "dist/css/bootstrap.min.css.map",
-- "dist/js/bootstrap.js",
-- "dist/js/bootstrap.js.map",
-- "dist/js/bootstrap.min.js",
-- "dist/js/bootstrap.min.js.map"
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
 
-3. Add a new folder called "css" to the "wwwroot" folder. Add a new CSS file to this folder called "site.css" 
+##  1. <a name='Objectives'></a>Objectives
 
-4. Add a new folder called "js" to the "wwwroot" folder. Add a new JavaScript file to this folder called "site.js".
+##  2. <a name='ApplyingBootstrapStyles'></a>Applying Bootstrap Styles
 
-5. Add the "jQuery" library using the "cdnjs" provider.
+1. Add a new folder called `wwwroot` to the project.
+2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "cdnjs" as a provider and search for "twitter". 
+3. Razor layouts provide common content so that it doesn’t have to be repeated in multiple views. Update the `_Layout.cshtml` file in the `Views/Shared` folder to include the Bootstrap CSS stylesheet in the content sent to the browser and define a common header that will be used throughout the application
 
-6. Add a new folder called "Shared" to the "Views" folder. Add a new file of the type "Razor Layout" called "_Layout" to this folder.
+    ```CSHTML
+    <!DOCTYPE html>
 
-    ```HTML
-    <!doctype html>
-    <html lang="en">
+    <html>
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>@ViewData["Title"] - MVCStore</title>
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title</title>
 
-        <environment include="Development">
-            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-            <link rel="stylesheet" href="~/css/site.css" />
-        </environment>
-        <environment exclude="Development">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"
-                asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-                asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-            <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        </environment>
+        <!-- !!!! new/updated code { -->
+        <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <!-- } -->
     </head>
     <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVCStore</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
+        <!-- !!!! new/updated code { -->
+        <div class="bg-dark text-white p-2">
+            <span class="navbar-brand ml-2">MVC STORE</span>
         </div>
-
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                <p>&copy; 2020 - Web &amp; Cloud Security </p>
+        <div class="row m-1 p-1">
+            <div id="categories" class="col-3">
+                Put something useful here later
             </div>
-        </footer>
-
-        <environment include="Development">
-            <script src="~/lib/jquery/jquery.slim.js"></script>
-            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-            <script src="~/js/site.js" asp-append-version="true"></script>
-        </environment>
-        <environment exclude="Development">
-            <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.0.slim.min.js"
-                    asp-fallback-src="~/lib/jquery/jquery.slim.min.js"
-                    asp-fallback-test="window.jQuery">
-            </script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"
-                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
-            </script>
-            <script src="~/js/site.min.js" asp-append-version="true"></script>
-        </environment>
-
-        @RenderSection("Scripts", required: false)
+            <div class="col-9">
+                @RenderBody()
+            </div>
+        </div>
+        <!-- } -->
     </body>
     </html>
     ```
+4. Also update the styling applied to the `Index.cshtml` file.
 
-7. Add to the "Views" folder a new file of the type "Razor View Start", called "_ViewStart.cshtml".
+    ```CSHTML
+    @model ProductsListViewModel
 
-8. Also update the `Index.cshtml` to match the following code:
-
-    ```HTML
-    @model IEnumerable<Product>
-    @{
-        ViewData["Title"] = "Index";
+    @foreach (var p in Model.Products)
+    {
+        <div class="card card-outline-primary m-1 p-1">
+            <div class="bg-faded p-1">
+                <h4>
+                    @p.Name
+                    <span class="badge badge-pill badge-primary" style="float:right">
+                        <small>@p.Price.ToString("c")</small>
+                    </span>
+                </h4>
+            </div>
+            <div class="card-text p-1">@p.Description</div>
+        </div>
     }
 
-    <h1>Products</h1>
+    <div page-model="@Model.PagingInfo" 
+        page-action="Index" 
+        page-classes-enabled="true"
+        page-class="btn" 
+        page-class-normal="btn-outline-dark"
+        page-class-selected="btn-primary" 
+        class="btn-group pull-right m-1">
+    </div>
+    ```
+5. We need to style the buttons generated by the `PageLinkTagHelper` class, but we don’t want to hardwire the Bootstrap classesinto the C# code because it makes it harder to reuse the tag helper elsewhere in the application or change the appearance of the buttons. Instead, we have defined custom attributes on the div element that specify the classes that we require, and these correspond to
+properties we added to the tag helper class, which are then used to style the a elements that are produced.
 
-    <div class="row">
-        @foreach (var product in Model)
+    ```C#
+    [HtmlTargetElement("div", Attributes = "page-model")]
+    public class PageLinkTagHelper : TagHelper
+    {
+        private IUrlHelperFactory urlHelperFactory;
+        public PageLinkTagHelper(IUrlHelperFactory helperFactory)
         {
-            <div class="col-sm-4">
-                <div class="card mx-2 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            @product.Name
-                        </h5>
-                        <p class="card-text">
-                            @product.Description
-                        </p>
-                        <p class="card-text">
-                            @(((decimal)product.Price).ToString("c"))
-                        </p>
-                    </div>
-                </div>
-            </div>
+            urlHelperFactory = helperFactory;
         }
+        [ViewContext]
+        [HtmlAttributeNotBound]
+        public ViewContext ViewContext { get; set; }
+        public PagingInfo PageModel { get; set; }
+        public string PageAction { get; set; }
+
+        // !!!! new/updated code {
+        public bool PageClassesEnabled { get; set; } = false;
+        public string PageClass { get; set; }
+        public string PageClassNormal { get; set; }
+        public string PageClassSelected { get; set; }
+        //}
+
+        public override void Process(TagHelperContext context, TagHelperOutput output)
+        {
+            IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+
+            TagBuilder result = new TagBuilder("div");
+            for (int i = 1; i <= PageModel.TotalPages; i++)
+            {
+                TagBuilder tag = new TagBuilder("a");
+                tag.Attributes["href"] = urlHelper.Action(PageAction, new {productPage = i});
+
+                // !!!! new/updated code {
+                if (PageClassesEnabled) {
+                    tag.AddCssClass(PageClass);
+                    tag.AddCssClass(i == PageModel.CurrentPage? PageClassSelected : PageClassNormal);
+                }
+                //}
+
+                tag.InnerHtml.Append(i.ToString());
+                result.InnerHtml.AppendHtml(tag);
+            }
+            output.Content.AppendHtml(result.InnerHtml);
+        }
+    }
+    ```
+
+    > The values of the attributes are automatically used to set the tag helper property values, with the mapping between the HTML attribute name format  (page-class-normal) and the C# property name format (PageClassNormal) taken into account. This allows tag helpers to respond differently based on the attributes of an HTML element, creating a more flexible way to generate content in an ASP.NET Core application.
+
+6. Creating a Partial View. We would like to refactor the application to simplify the `Index.cshtml` view. We are going to create a partial view, which is a fragment of content that we can embed into another view, rather like a template. They help reduce duplication when you need the same content to appear in different places in an application. To create the partial view, we added a Razor View called `ProductSummary.cshtml` to the `Views/Shared` folder and added the markup shown below.
+
+    ```CSHTML
+    @model Product
+    <div class="card card-outline-primary m-1 p-1">
+        <div class="bg-faded p-1">
+            <h4>
+                @Model.Name
+                <span class="badge badge-pill badge-primary" style="float:right">
+                    <small>@Model.Price.ToString("c")</small>
+                </span>
+            </h4>
+        </div>
+        <div class="card-text p-1">@Model.Description</div>
+    </div>
+    ```
+7. Update the `Index.cshtml` file in the `Views/Home` folder so that it uses the partial view.
+
+    ```CSHTML
+    @model ProductsListViewModel
+
+    @foreach (var p in Model.Products)
+    {
+        <partial name="ProductSummary" model="p" />
+    }
+
+    <div page-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true"
+        page-class="btn" page-class-normal="btn-outline-dark"
+        page-class-selected="btn-primary" class="btn-group pull-right m-1">
     </div>
     ```
 
-## Creating a CRUD Controller
+    > We have taken the markup that was previously in the `@foreach` expression in the `Index.cshtml` view and moved it to the new partial view. I call the partial view using a partial element, using the name and model attributes to specify the name of the partial view and its view model. Using a partial view allows the same markup to be inserted into any view that needs to display a summary of a product.
+
+##  3. <a name='Bibliography'></a>Bibliography
+
+
+##  5. <a name='CreatingaCRUDController'></a>Creating a CRUD Controller
 
 2. Add a new controller to the `Controllers` folder called `AdminController`
 
@@ -177,7 +223,7 @@
     ```
 6. Run the unit test
 
-## Implementing the List View
+##  6. <a name='ImplementingtheListView'></a>Implementing the List View
 
 7. In the Views/Admin folder add a Razor file called Index.cshtml
 
@@ -222,7 +268,7 @@
     </table>
     ```
 
-## Editing Products
+##  7. <a name='EditingProducts'></a>Editing Products
 
 1. Add an `Edit` action on the `AdminController` 
 
@@ -304,7 +350,7 @@
     }
     ```
 
-## Handling Edit POST Requests
+##  8. <a name='HandlingEditPOSTRequests'></a>Handling Edit POST Requests
 
 1. Add the `Edit` action that will handle POST requests on the `AdminController`
 
@@ -337,7 +383,7 @@
     }
     ```
 
-## Adding model validation
+##  9. <a name='Addingmodelvalidation'></a>Adding model validation
 
 1. Update the `Product` class as follows.
 
@@ -355,7 +401,7 @@
     }
     ```
 
-## Creating New Products
+##  10. <a name='CreatingNewProducts'></a>Creating New Products
 
 1. Add a `Create` action to the `AdminController` class.
 
@@ -365,7 +411,7 @@
     }  
     ```
 
-## Deleting Products
+##  11. <a name='DeletingProducts'></a>Deleting Products
 
 1. Add a `DeleteProduct` method to the `IProductRepository` interface.
 
