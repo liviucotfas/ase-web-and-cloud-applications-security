@@ -1,4 +1,4 @@
-# CRUD
+# CRUD - Create, Read, Update and Delete
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
@@ -16,10 +16,14 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
+- retrieving items from the database; 
+- adding new items to the database;
+- updating existing items in the database;
+- deleting existing item from the database;
 
 ##  2. <a name='CreatingaCRUDController'></a>Creating a CRUD Controller
 
-2. Add a new controller to the `Controllers` folder called `AdminController`
+1. Add a new controller to the `Controllers` folder called `AdminController`
 
     ```C#
     public class AdminController : Controller
@@ -38,7 +42,7 @@
 
 ##  3. <a name='DisplayingtheProducts'></a>Displaying the Products
 
-3. In the Views/Admin folder add a Razor file called Index.cshtml
+2. In the Views/Admin folder add a Razor file called Index.cshtml
 
     ```CSHTML
     @model IEnumerable<Product>
@@ -212,7 +216,7 @@
 
 ##  5. <a name='CreatingNewProducts'></a>Creating New Products
 
-1. Add a `Create` action to the `AdminController` class.
+10. Add a `Create` action to the `AdminController` class.
 
     ```C#
     public IActionResult Create(){
@@ -222,13 +226,13 @@
 
 ##  6. <a name='DeletingProducts'></a>Deleting Products
 
-1. Add a `DeleteProduct` method to the `IProductRepository` interface.
+11. Add a `DeleteProduct` method to the `IProductRepository` interface.
 
     ```C#
     Task<Product> DeleteProductAsync(int productID);
     ```
 
-2. Implement the method in the `EFProductRepository` class.
+12. Implement the method in the `EFProductRepository` class.
 
     ```C#
     public async Task<Product> DeleteProductAsync(int productID) { 
@@ -243,7 +247,7 @@
         return dbEntry; 
     } 
     ```
-3. Add the corresponding action to the `AdminController`
+13. Add the corresponding action to the `AdminController`
 
     ```C#
     [HttpPost] 
@@ -256,7 +260,7 @@
     } 
     ```
 
-4. Add a test method
+14. Add a test method
 
     ```C#
     [Fact]
