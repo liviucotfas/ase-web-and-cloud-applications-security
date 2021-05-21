@@ -10,7 +10,8 @@
 * 7. [Creating a Repository](#CreatingaRepository)
 * 8. [Creating the Database Migration](#CreatingtheDatabaseMigration)
 * 9. [Creating Seed Data](#CreatingSeedData)
-* 10. [Bibliography](#Bibliography)
+* 10. [Deleting the database](#Deletingthedatabase)
+* 11. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -271,9 +272,68 @@ use it to define the class shown below.
     }
     ```
 
+##  10. <a name='Deletingthedatabase'></a>Deleting the database
 
+Whenever you want to delete the content of the database, you can use the following query.
 
+    ```SQL
+    /* Azure friendly */
+    /* Drop all Foreign Key constraints */
+    DECLARE @name VARCHAR(128)
+    DECLARE @constraint VARCHAR(254)
+    DECLARE @SQL VARCHAR(254)
 
+    SELECT @name = (SELECT TOP 1 TABLE_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'FOREIGN KEY' ORDER BY TABLE_NAME)
 
+    WHILE @name is not null
+    BEGIN
+        SELECT @constraint = (SELECT TOP 1 CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'FOREIGN KEY' AND TABLE_NAME = @name ORDER BY CONSTRAINT_NAME)
+        WHILE @constraint IS NOT NULL
+        BEGIN
+            SELECT @SQL = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@constraint) +']'
+            EXEC (@SQL)
+            PRINT 'Dropped FK Constraint: ' + @constraint + ' on ' + @name
+            SELECT @constraint = (SELECT TOP 1 CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'FOREIGN KEY' AND CONSTRAINT_NAME <> @constraint AND TABLE_NAME = @name ORDER BY CONSTRAINT_NAME)
+        END
+    SELECT @name = (SELECT TOP 1 TABLE_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'FOREIGN KEY' ORDER BY TABLE_NAME)
+    END
+    GO
 
-##  10. <a name='Bibliography'></a>Bibliography
+    /* Drop all Primary Key constraints */
+    DECLARE @name VARCHAR(128)
+    DECLARE @constraint VARCHAR(254)
+    DECLARE @SQL VARCHAR(254)
+
+    SELECT @name = (SELECT TOP 1 TABLE_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'PRIMARY KEY' ORDER BY TABLE_NAME)
+
+    WHILE @name IS NOT NULL
+    BEGIN
+        SELECT @constraint = (SELECT TOP 1 CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'PRIMARY KEY' AND TABLE_NAME = @name ORDER BY CONSTRAINT_NAME)
+        WHILE @constraint is not null
+        BEGIN
+            SELECT @SQL = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@constraint)+']'
+            EXEC (@SQL)
+            PRINT 'Dropped PK Constraint: ' + @constraint + ' on ' + @name
+            SELECT @constraint = (SELECT TOP 1 CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'PRIMARY KEY' AND CONSTRAINT_NAME <> @constraint AND TABLE_NAME = @name ORDER BY CONSTRAINT_NAME)
+        END
+    SELECT @name = (SELECT TOP 1 TABLE_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() AND CONSTRAINT_TYPE = 'PRIMARY KEY' ORDER BY TABLE_NAME)
+    END
+    GO
+
+    /* Drop all tables */
+    DECLARE @name VARCHAR(128)
+    DECLARE @SQL VARCHAR(254)
+
+    SELECT @name = (SELECT TOP 1 [name] FROM sysobjects WHERE [type] = 'U' AND category = 0 ORDER BY [name])
+
+    WHILE @name IS NOT NULL
+    BEGIN
+        SELECT @SQL = 'DROP TABLE [dbo].[' + RTRIM(@name) +']'
+        EXEC (@SQL)
+        PRINT 'Dropped Table: ' + @name
+        SELECT @name = (SELECT TOP 1 [name] FROM sysobjects WHERE [type] = 'U' AND category = 0 AND [name] > @name ORDER BY [name])
+    END
+    GO
+    ```
+
+##  11. <a name='Bibliography'></a>Bibliography
