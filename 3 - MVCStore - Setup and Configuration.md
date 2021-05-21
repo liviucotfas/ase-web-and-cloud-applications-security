@@ -102,7 +102,7 @@
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
-    The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The `@addTagHelper` statement enables the built-in tag helpers.
+    >The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The `@addTagHelper` statement enables the built-in tag helpers.
 
 2.  Add the Razor View Start.
 
@@ -113,7 +113,23 @@
     ```
 
     > The view start file tells Razor to use a layout file in the HTML that it generates, reducing the amount of duplication in views.
-3.  
+3.  Add the Razor Layout.
+
+    ```HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>SportsStore</title>
+    </head>
+    <body>
+        <div>
+        @RenderBody()
+        </div>
+    </body>
+    </html>
+    ```
+
 4.  Run the application. An error message is shown because there are no controllers in the application to handle requests at the moment.
 
 ##  6. <a name='AddtheUnitTestProject'></a>Add the Unit Test Project
