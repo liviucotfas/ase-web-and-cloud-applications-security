@@ -1,9 +1,11 @@
 # MVCStore - Authorization, Roles
 
 <!-- vscode-markdown-toc -->
-* 1. [Documentation](#Documentation)
-* 2. [Introduction](#Introduction)
-* 3. [Roles](#Roles)
+* 1. [Objectives](#Objectives)
+* 2. [Documentation](#Documentation)
+* 3. [Introduction](#Introduction)
+* 4. [Roles](#Roles)
+* 5. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -11,15 +13,17 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='Documentation'></a>Documentation
+##  1. <a name='Objectives'></a>Objectives
+
+##  2. <a name='Documentation'></a>Documentation
 - Authorization Overview: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-2.1
 
-##  2. <a name='Introduction'></a>Introduction
+##  3. <a name='Introduction'></a>Introduction
 Authorization refers to the process that determines what a user is able to do. For example, an administrative user is allowed to create a document library, add documents, edit documents, and delete them. A non-administrative user working with the library is only authorized to read the documents.
 
 Authorization is orthogonal and independent from authentication. However, authorization requires an authentication mechanism. Authentication is the process of ascertaining who a user is. Authentication may create one or more identities for the current user.
 
-##  3. <a name='Roles'></a>Roles
+##  4. <a name='Roles'></a>Roles
 
 1. Update the `Initialize` method in the `IdentitySeedData` class to also create a role.
 
@@ -69,3 +73,5 @@ Authorization is orthogonal and independent from authentication. However, author
 	```C#
 	[Authorize(Roles = "ProductManagement")]
 	```
+
+##  5. <a name='Bibliography'></a>Bibliography
