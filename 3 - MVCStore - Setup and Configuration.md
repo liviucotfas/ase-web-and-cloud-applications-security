@@ -115,7 +115,7 @@
     > The view start file tells Razor to use a layout file in the HTML that it generates, reducing the amount of duplication in views.
 3.  Add the Razor Layout. Add a Razor layout file named _Layout.cshtml to the Views/Shared folder, with the content show below.
 
-    ```HTML
+    ```CSHTML
     <!DOCTYPE html>
     <html>
     <head>
