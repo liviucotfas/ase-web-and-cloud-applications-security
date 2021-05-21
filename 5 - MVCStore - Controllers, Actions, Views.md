@@ -1,11 +1,15 @@
 # Controllers, Actions and Views
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
-* 2. [Bibliography](#Bibliography)
-* 3. [Creating a Fake Repository](#CreatingaFakeRepository)
-* 4. [Registering the Repository Service](#RegisteringtheRepositoryService)
-* 5. [Adding a Controller](#AddingaController)
-* 6. [Setting the Default Route](#SettingtheDefaultRoute)
+* 2. [Preparing the Controller](#PreparingtheController)
+* 3. [Unit Testing the HomeController](#UnitTestingtheHomeController)
+* 4. [Updating the View](#UpdatingtheView)
+* 5. [Displaying Page Links](#DisplayingPageLinks)
+* 6. [Bibliography](#Bibliography)
+* 7. [Creating a Fake Repository](#CreatingaFakeRepository)
+* 8. [Registering the Repository Service](#RegisteringtheRepositoryService)
+* 9. [Adding a Controller](#AddingaController)
+* 10. [Setting the Default Route](#SettingtheDefaultRoute)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -15,9 +19,138 @@
 
 ##  1. <a name='Objectives'></a>Objectives
 
-##  2. <a name='Bibliography'></a>Bibliography
+##  2. <a name='PreparingtheController'></a>Preparing the Controller
 
-##  3. <a name='CreatingaFakeRepository'></a>Creating a Fake Repository
+1. Modify the `HomeController` as highlighted below.
+
+    ```C#
+    public class HomeController : Controller
+    {
+        private IStoreRepository repository;
+        public HomeController(IStoreRepository repo)
+        {
+            repository = repo;
+        }
+        public IActionResult Index()
+        {
+            return View(repository.Products);
+        }
+    }
+    ```
+
+    > When ASP.NET Core needs to create a new instance of the `HomeController` class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the `IStoreRepository` interface. To determine what implementation class should be used, ASP.NET Core consults the configuration in the `Startup` class, which tells it that `EFStoreRepository` should be used and that a new instance should be created for every request. ASP.NET Core creates a new `EFStoreRepository` object and uses it to invoke the `HomeController` constructor to create the controller object that will process the HTTP request.
+    > This is known as **dependency injection**, and its approach allows the `HomeController` object to access the application’s repository through the `IStoreRepository` interface without knowing which implementation class has been configured. I could reconfigure the service to use a different implementation class—one that doesn’t use Entity Framework Core, for example—and dependency injection means that the controller will continue to work without changes.
+
+##  3. <a name='UnitTestingtheHomeController'></a>Unit Testing the HomeController
+
+2. We can unit test that the controller is accessing the repository correctly by creating a mock repository, injecting it into the constructor of the `HomeController` class, and then calling the `Index` method to get the response that contains the list of products. We then compare the `Product` objects we get to what we would expect from the test data in the mock implementation.
+
+    ```C#
+    public class HomeControllerTests
+    {
+        [Fact]
+        public void Can_Use_Repository()
+        {
+            // Arrange
+            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+            mock.Setup(m => m.Products).Returns(
+                (new Product[] {
+                    new Product {ProductID = 1, Name = "P1"},
+                    new Product {ProductID = 2, Name = "P2"}
+                    }).AsQueryable<Product>()
+                 );
+            HomeController controller = new HomeController(mock.Object);
+            
+            // Act
+            IEnumerable<Product> result = (controller.Index() as ViewResult).ViewData.Model as IEnumerable<Product>;
+            
+            // Assert
+            Product[] prodArray = result.ToArray();
+            Assert.True(prodArray.Length == 2);
+            Assert.Equal("P1", prodArray[0].Name);
+            Assert.Equal("P2", prodArray[1].Name);
+        }
+    }
+    ```
+
+##  4. <a name='UpdatingtheView'></a>Updating the View
+3. The `Index `action method passes the collection of `Product` objects from the repository to the `View` method, which means these objects will be the view model that Razor uses when it generates HTML content from the view. Make the changes to the view shown below to generate content using the `Product` view model objects.
+
+    ```CSHTML
+    @model IQueryable<Product>
+
+    @foreach (var p in Model) {
+        <div>
+            <h3>@p.Name</h3>
+            @p.Description
+            <h4>@p.Price.ToString("c")</h4>
+        </div>
+    }
+    ```
+
+    >Note: You might need to add the following line to the `_ViewImports.cshtml` file.
+
+    ```CSHTML
+    @using MVCStore.Models
+    ```
+
+    >The `@model `expression at the top of the file specifies that the view expects to receive a sequence of `Product` objects from the action method as its model data. We use an `@foreach` expression to work through the sequence and generate a simple set of HTML elements for each `Product` object that is received.
+    The view doesn’t know where the `Product` objects came from, how they were obtained, or whether they represent all the products known to the application. Instead, the view deals only with how details of each `Product` are displayed using HTML elements.
+
+4. Add support for pagination so that the view displays a smaller number of products on a page, and the user can move from page to page to view the overall catalog. Update the `Index` method on the `HomeController` as follows.
+
+    ```C#
+
+    private int PageSize = 2;
+    public IActionResult Index(int productPage = 1)
+    {
+        var products = repository.Products
+            .OrderBy(p => p.ProductID)
+            .Skip((productPage - 1) * PageSize)
+            .Take(PageSize);
+
+        return View(products);
+    }
+    ```
+    > The `PageSize` field specifies the number of products per page. We have added an optional parameter to the `Index` method, which means that if the method is called without a parameter, the call is treated as though we had supplied the value specified in the parameter definition, with the effect that the action method displays the first page of products when it is invoked without an argument. Within the body of the action method, we get the `Product` objects, order them by the primary key, skip over the products that occur before the start of the current page, and take the number of products specified by the `PageSize` field.
+
+5. Unit test the pagination feature in the `HomeControllerTests` class.
+
+    ```C#
+    [Fact]
+    public void Can_Paginate()
+    {
+        // Arrange
+        Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+        mock.Setup(m => m.Products).Returns((new Product[] {
+            new Product {ProductID = 1, Name = "P1"},
+            new Product {ProductID = 2, Name = "P2"},
+            new Product {ProductID = 3, Name = "P3"},
+            new Product {ProductID = 4, Name = "P4"},
+            new Product {ProductID = 5, Name = "P5"}
+            }).AsQueryable<Product>());
+        HomeController controller = new HomeController(mock.Object);
+        controller.PageSize = 3;
+        
+        // Act
+        IEnumerable<Product> result = (controller.Index(2) as ViewResult).ViewData.Model as IEnumerable<Product>;
+        
+        // Assert
+        Product[] prodArray = result.ToArray();
+        Assert.True(prodArray.Length == 2);
+        Assert.Equal("P4", prodArray[0].Name);
+        Assert.Equal("P5", prodArray[1].Name);
+    }
+    ```
+##  5. <a name='DisplayingPageLinks'></a>Displaying Page Links
+
+6. Create a `ViewModels` folder in your project.
+
+
+
+##  6. <a name='Bibliography'></a>Bibliography
+
+##  7. <a name='CreatingaFakeRepository'></a>Creating a Fake Repository
 
 3. Create the fake repository called `FakeProductRepository` in the `Data` folder.
 
@@ -34,7 +167,7 @@
 
     > The `FakeProductRepository` class implements the `IProductRepository` interface by returning a fixed collection of `Product` objects as the value of the Products property. The `AsQueryable` method is used to convert the fixed collection of objects to an `IQueryable<Product>`, which is required to implement the `IProductRepository` interface and allows us to create a compatible fake repository without having to deal with real queries.    
 
-##  4. <a name='RegisteringtheRepositoryService'></a>Registering the Repository Service
+##  8. <a name='RegisteringtheRepositoryService'></a>Registering the Repository Service
 
 >MVC emphasizes the use of loosely coupled components, which means that you can make a change in one part of the application without having to make corresponding changes elsewhere. This approach categorizes parts of the application as services, which provide features that other parts of the application use. The class that provides a service can then be altered or replaced without requiring changes in the classes that use it.
 
@@ -52,7 +185,7 @@
 
 The statement added to the `ConfigureServices` method tells ASP.NET that when a component, such as a controller, needs an implementation of the `IProductRepository` interface, it should receive an instance of the `FakeProductRepository` class. The AddTransient method specifies that a new `FakeProductRepository` object should be created each time the `IProductRepository` interface is needed.
 
-##  5. <a name='AddingaController'></a>Adding a Controller
+##  9. <a name='AddingaController'></a>Adding a Controller
 
 7. Add a controler called `ProductController` to the `Controllers` folder
 
@@ -124,7 +257,7 @@ The statement added to the `ConfigureServices` method tells ASP.NET that when a 
     @using MVCStore.Models
     ```
 
-##  6. <a name='SettingtheDefaultRoute'></a>Setting the Default Route
+##  10. <a name='SettingtheDefaultRoute'></a>Setting the Default Route
 
 10. Update the default route in the `Configure` method of the `Startup` class to match the code bellow
 
