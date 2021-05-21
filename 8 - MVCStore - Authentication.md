@@ -2,7 +2,8 @@
 
 ## Changing the Context Class
 
-1. Change the `ApplicationDbContext` class as follows.
+1. Install the NuGet package "Microsoft.AspNetCore.Identity.EntityFrameworkCore".
+2. Change the `ApplicationDbContext` class as follows.
 
 	```C#
 	public class ApplicationDbContext : IdentityDbContext<IdentityUser>
@@ -13,7 +14,7 @@
 	}
 	```
 
-	> The AppIdentityDbContext class is derived from IdentityDbContext, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the IdentityUser class, which is the built-in class used to represent users. 
+	> The `ApplicationDbContext` class is derived from `IdentityDbContext`, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the `IdentityUser` class, which is the built-in class used to represent users. 
 
 2. Install the package "Microsoft.AspNetCore.Identity.UI". In the `Startup` class make the following changes in the `ConfigureServices` method.
 
