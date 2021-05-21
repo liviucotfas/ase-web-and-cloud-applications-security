@@ -21,28 +21,18 @@
 	```C#
 	public void ConfigureServices(IServiceCollection services)
     {
-        /*services.AddTransient
-                <IProductRepository, 
-                FakeProductRepository>();*/
+		services.AddControllersWithViews();
 
 		services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+		options.UseSqlServer(
+			Configuration.GetConnectionString("DefaultConnection")));
 
-		
-		//new lines{
-		services.AddDefaultIdentity<IdentityUser>()
-              .AddEntityFrameworkStores<ApplicationDbContext>();
-		//}new lines
+		// !!!! new/updated code
+		services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+		//}
 
-		services.AddTransient
-                <IProductRepository, 
-                EFProductRepository>();
-
-		//new lines{
-        services.AddControllersWithViews();
-        services.AddRazorPages();
-		//}new lines
+		services.AddScoped<IStoreRepository, EFStoreRepository>();
     }
 	```
 
@@ -55,22 +45,18 @@
 
 	app.UseRouting();
 
-	//new lines{
+	// !!!! new/updated code
 	app.UseAuthentication();
 	app.UseAuthorization();
-	//}	
+	//}
 
-	app.UseEndpoints(endpoints =>
-		{
-			endpoints.MapControllerRoute(
-				name: "default",
-				pattern: "{controller=Home}/{action=Index}/{id?}"
-				);
-			
-			//new lines{
-			endpoints.MapRazorPages();
-			//}	
-		});
+	app.UseEndpoints(endpoints => {
+		endpoints.MapControllerRoute("pagination", "Products/Page{productPage}", new { Controller = "Home", action = "Index" });
+		endpoints.MapDefaultControllerRoute();
+		// !!!! new/updated code
+		endpoints.MapRazorPages();
+		//}
+	});
 	```
 
 ## Creating and Applying the Database Migration
@@ -90,12 +76,15 @@
     {
         private const string adminEmail = "admin@test.com";
         private const string adminPassword = "Secret123$";
-        public static async Task Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IApplicationBuilder app)
         {
+            var serviceProvider = app.ApplicationServices
+            .CreateScope().ServiceProvider;
+
             using (var userManager = serviceProvider
                 .GetRequiredService<UserManager<IdentityUser>>())
             {
-              	IdentityUser user = await userManager.FindByEmailAsync(adminEmail);
+                IdentityUser user = await userManager.FindByEmailAsync(adminEmail);
 
                 if (user == null)
                 {
@@ -107,12 +96,12 @@
     }
 	```
 
-2. Call the `EnsurePopulated` method in the `Main` method of the `Program` class. 
+2. Call the `EnsurePopulated` method in the `Configure` method of the `Startup` class. 
 
 	```C#
 	Task.Run(async () =>
 		{
-			await IdentitySeedData.Initialize(services);
+			await IdentitySeedData.Initialize(app);
 		}).Wait(); 
 	```
 
