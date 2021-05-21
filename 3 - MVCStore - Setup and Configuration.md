@@ -98,7 +98,7 @@
     
     Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Imports" item from the ASP.NET Core > Web > ASP.NET category.
     
-    ``` c#
+    ```c#
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
@@ -106,7 +106,7 @@
 
 2.  Add the Razor View Start.
 
-    ```
+    ```C#
     @{
         Layout = "_Layout";
     }
