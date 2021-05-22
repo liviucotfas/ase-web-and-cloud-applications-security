@@ -25,7 +25,7 @@ Authorization is orthogonal and independent from authentication. However, author
 
 ##  4. <a name='Roles'></a>Roles
 
-1. Update the `Initialize` method in the `IdentitySeedData` class to also create a role.
+1. Update the `EnsurePopulated` method in the `SeedDataIdentity` class to also create a role.
 
 	```C#
 	var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -40,11 +40,13 @@ Authorization is orthogonal and independent from authentication. However, author
 
 	```C#
 	var adminWithRoleEmail = "adminRole@test.com";
+	var adminWithRolePassword = "Secret123$";
+
 	IdentityUser adminWithRole = await userManager.FindByEmailAsync(adminWithRoleEmail);
 	if (adminWithRole == null)
 	{
 		adminWithRole = new IdentityUser { UserName = adminWithRoleEmail, Email = adminWithRoleEmail };
-		await userManager.CreateAsync(adminWithRole, adminPassword);
+		await userManager.CreateAsync(adminWithRole, adminWithRolePassword);
 		await userManager.AddToRoleAsync(adminWithRole, roleName);
 	}
 	```
