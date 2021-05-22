@@ -53,10 +53,15 @@ Authorization is orthogonal and independent from authentication. However, author
 3. Modify the `ConfigureServices` in the `Startup` class as follows
 
 	```C#
-		services.AddIdentity<IdentityUser, IdentityRole>()
-			.AddRoleManager<RoleManager<IdentityRole>>()
-			.AddDefaultUI()
-			.AddEntityFrameworkStores<ApplicationDbContext>();
+	// !!!! new/updated code {
+	/*services.AddDefaultIdentity<IdentityUser>()
+		.AddEntityFrameworkStores<ApplicationDbContext>();*/
+
+	services.AddIdentity<IdentityUser, IdentityRole>()
+		.AddRoleManager<RoleManager<IdentityRole>>()
+		.AddDefaultUI()
+		.AddEntityFrameworkStores<ApplicationDbContext>();
+	//}
 	```
 
 4. Update the last few lines in the `Index.cshtml` corresponding to the `AdminController` as follows.
