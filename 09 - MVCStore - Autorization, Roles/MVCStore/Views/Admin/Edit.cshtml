@@ -1,35 +1,33 @@
-﻿@model Product
+﻿@model MVCStore.Models.Product
+
 @{
-    ViewBag.Title = "Edit Product";
+    ViewBag.Title = "Edit";
     Layout = "_AdminLayout";
 }
 
 <h1>Edit product</h1>
+<hr />
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ProductID" />
     <div class="form-group">
-        <label asp-for="Name"></label>
-        <div><span asp-validation-for="Name" class="text-danger"></span></div>
+        <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Description"></label>
-        <div><span asp-validation-for="Description" class="text-danger"></span></div>
-        <textarea asp-for="Description" class="form-control"></textarea>
+        <label asp-for="Description" class="control-label"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Category"></label>
-        <div><span asp-validation-for="Category" class="text-danger"></span></div>
-        <input asp-for="Category" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Price"></label>
-        <div><span asp-validation-for="Price" class="text-danger"></span></div>
+        <label asp-for="Price" class="control-label"></label>
         <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
-    <div class="text-center">
-        <button class="btn btn-primary" type="submit">Save</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <div>
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 </form>

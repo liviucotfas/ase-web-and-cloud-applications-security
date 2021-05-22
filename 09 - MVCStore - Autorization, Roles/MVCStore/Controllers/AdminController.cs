@@ -1,38 +1,37 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MVCStore.Data;
+using MVCStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using MVCStore.Models;
 
 namespace MVCStore.Controllers
 {
     [Authorize]
     public class AdminController : Controller
     {
-        private IProductRepository repository;
-        public AdminController(IProductRepository repo)
-        {
-            repository = repo;
-        }
-        public IActionResult Index()
-        {
-            return View(repository.Products);
-        }
-
-        [Authorize(Roles = "ProductManagement")]
-        public IActionResult Edit(int productId)
-        {
-            return View(repository.Products.FirstOrDefault(p => p.ProductID == productId));
-        }
-
+		private IStoreRepository repository;
+		public AdminController(IStoreRepository repo)
+		{
+			repository = repo;
+		}
+		public IActionResult Index()
+		{
+			return View(repository.Products);
+		}
+		public IActionResult Edit(int productId)
+		{
+			var product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
+			return View(product);
+		}
         [HttpPost]
-        public IActionResult Edit(Product product)
+        public async Task<IActionResult> Edit(Product product)
         {
             if (ModelState.IsValid)
             {
-                repository.SaveProduct(product);
+                await repository.SaveProductAsync(product);
                 TempData["message"] = $"{product.Name} has been saved";
                 return RedirectToAction("Index");
             }
@@ -42,16 +41,14 @@ namespace MVCStore.Controllers
                 return View(product);
             }
         }
-
         public IActionResult Create()
         {
             return View("Edit", new Product());
         }
-
         [HttpPost]
-        public IActionResult Delete(int productId)
+        public async Task<IActionResult> Delete(int productId)
         {
-            Product deletedProduct = repository.DeleteProduct(productId);
+            Product deletedProduct = await repository.DeleteProductAsync(productId);
             if (deletedProduct != null)
             {
                 TempData["message"] = $"{deletedProduct.Name} was deleted";
