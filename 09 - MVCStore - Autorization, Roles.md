@@ -16,7 +16,7 @@
 ##  1. <a name='Objectives'></a>Objectives
 
 ##  2. <a name='Documentation'></a>Documentation
-- Authorization Overview: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-2.1
+- Authorization Overview: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction
 
 ##  3. <a name='Introduction'></a>Introduction
 Authorization refers to the process that determines what a user is able to do. For example, an administrative user is allowed to create a document library, add documents, edit documents, and delete them. A non-administrative user working with the library is only authorized to read the documents.
