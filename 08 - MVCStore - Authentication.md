@@ -147,7 +147,7 @@
 	```CSHTML
 	@RenderSection("Scripts", required: false)
 	```
-5. Check the code in the Register, Login, and LogOut pages
+5. Check the code in the Register, Login, and LogOut pages. Change their default layout to `_AdminLayout` by modifying in the folder `Areas/Indentity/Pages` the `_ViewStart.cshtml`.
 
 6. Create a partial view called `_LoginPartial.cshtml` in the `Views/Shared` folder.
 
