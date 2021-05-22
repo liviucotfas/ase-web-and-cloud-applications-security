@@ -15,6 +15,7 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
+- implementing the identity framework;
 
 ##  2. <a name='ChangingtheContextClass'></a>Changing the Context Class
 
@@ -51,8 +52,9 @@
 		services.AddScoped<IStoreRepository, EFStoreRepository>();
     }
 	```
+	> The `AddDefaultIdentity` method adds a set of common identity services to the application, including a default UI, token providers, and configures authentication to use identity cookies. Further reading: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity
 
-2. Also update the `Configure` method as follows.
+3. Also update the `Configure` method as follows.
 
 	```C#
 	//......
@@ -85,14 +87,14 @@
 
 ##  4. <a name='DefiningtheSeedData'></a>Defining the Seed Data
 
-1. Add a new class called `IdentitySeedData` to the `Data` folder
+1. Add a new class called `SeedDataIdentity` to the `Data` folder
 
 	```C#
-	public static class IdentitySeedData
+	public static class SeedDataIdentity
     {
         private const string adminEmail = "admin@test.com";
         private const string adminPassword = "Secret123$";
-        public static async Task Initialize(IApplicationBuilder app)
+        public static async Task EnsurePopulated(IApplicationBuilder app)
         {
             var serviceProvider = app.ApplicationServices
             .CreateScope().ServiceProvider;
@@ -117,7 +119,7 @@
 	```C#
 	Task.Run(async () =>
 		{
-			await IdentitySeedData.Initialize(app);
+			await SeedDataIdentity.Initialize(app);
 		}).Wait(); 
 	```
 
