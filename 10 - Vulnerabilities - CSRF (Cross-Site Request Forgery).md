@@ -30,9 +30,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 1. Create a new ASP.NET Core Web Application project. 
 
-2. Choose the "Web Application (Model-View-Controller)" template. Select the "Indvidual User Accounts" as an authentication option, as shown below.
-
-    ![](media/change-authentication.png)
+2. Choose the "Web Application (Model-View-Controller)" template. Select the "Indvidual User Accounts" as an authentication option.
 
 3. Notice that in the `Data` folder the applciation already includes the necessary database migrations.
 
