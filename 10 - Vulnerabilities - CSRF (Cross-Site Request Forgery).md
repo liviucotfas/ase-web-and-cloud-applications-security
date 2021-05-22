@@ -26,6 +26,8 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 ##  3. <a name='Step1-Createanapplicationwithindividualuseraccounts'></a>Step 1 - Create an application with individual user accounts
 
+> :octocat: Full source code available, check the `10 - Vulnerabilities - CSRF (Cross-Site Request Forgery)` folder.
+
 1. Create a new ASP.NET Core Web Application project. 
 
 2. Choose the "Web Application (Model-View-Controller)" template. Select the "Indvidual User Accounts" as an authentication option, as shown below.
@@ -105,7 +107,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 ##  5. <a name='Maliciousorinfectedwebsite'></a>Malicious or infected web site
 
-> :octocat: Full source code available, check the `8 - Vulnerabilities - CSRF (Cross-Site Request Forgery)` folder.
+> :octocat: Full source code available, check the `10 - Vulnerabilities - CSRF (Cross-Site Request Forgery)` folder.
 
 1. Create an `html` file with the following content.
 
@@ -132,7 +134,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     </html>
     ```
 
-2. You will need to replace "http://good-banking-site.com/api/account" with the actual address of the vulnerable form (ex: https://localhost:5001/BankAcount/Transfer).
+2. You will need to replace "http://good-banking-site.com/api/account" with the actual address of the vulnerable form (ex: https://localhost:5001/BankAccount/Transfer).
 
 ##  6. <a name='Attacks'></a>Attacks
 
