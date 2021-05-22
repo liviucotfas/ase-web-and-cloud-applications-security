@@ -40,9 +40,11 @@
 	}
     ```
 
+    > The controller constructor declares a dependency on the `IStoreRepository` interface, which will be resolved when instances are created. The controller defines a single action method, `Index`, that calls the `View` method to select the default view for the action, passing the set of products in the database as the view model.
+
 ##  3. <a name='DisplayingtheProducts'></a>Displaying the Products
 
-2. Add a new layout with the following code
+2. Add a new layout file, called `_AdminLayout`, to the `Views/Shared` folder with the following code.
 
     ```CSHTML
     <!DOCTYPE html>
