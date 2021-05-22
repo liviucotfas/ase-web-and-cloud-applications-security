@@ -224,7 +224,7 @@
 
     > Notice the `TempData` object
 
-8. Update the `Layout.cshtml` layout file in order to display the confirmation message.
+8. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
 
     ```CSHTML
     @if (TempData["message"] != null)
@@ -296,7 +296,7 @@
     } 
     ```
 
-14. Add a test method
+14. Add a new unit test class in the `MVCStore.Tests` project called `AdminControllerTests`. Add the follwing test method.
 
     ```C#
     [Fact]
