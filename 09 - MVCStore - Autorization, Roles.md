@@ -67,15 +67,14 @@ Authorization is orthogonal and independent from authentication. However, author
 4. Update the last few lines in the `Index.cshtml` corresponding to the `AdminController` as follows.
 
 	```HTML
-	<a asp-action="Create" class="btn btn-primary
-	   @if(!User.IsInRole("ProductManagement")){
+	<a asp-action="Create" class="btn btn-primary mb-3
+   	@if(!User.IsInRole("ProductManagement")){
 		@: disabled
 	   }
-	   "
-	   >Add Product</a>
+   	">Add Product</a>
 	```
 
-5. You can decorate the actions that will only be available to users that have the `ProductManagement` role as follows.
+5. You should decorate the actions that will only be available to users that have the `ProductManagement` role as follows.
 
 	```C#
 	[Authorize(Roles = "ProductManagement")]
