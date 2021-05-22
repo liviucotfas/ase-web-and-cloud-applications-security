@@ -149,58 +149,19 @@
 	```
 5. Check the code in the Register, Login, and LogOut pages. Change their default layout to `_AdminLayout` by modifying in the folder `Areas/Indentity/Pages` the `_ViewStart.cshtml`.
 
-6. Create a partial view called `_LoginPartial.cshtml` in the `Views/Shared` folder.
+6. Notice that a file called `_LoginPartial.cshtml` has been added to the `Views/Shared` folder.
 
-	```CSHTML
-	@using Microsoft.AspNetCore.Identity
-	@inject SignInManager<IdentityUser> SignInManager
-	@inject UserManager<IdentityUser> UserManager
-
-	<ul class="navbar-nav">
-	@if (SignInManager.IsSignedIn(User))
-	{
-		<li class="nav-item">
-			<a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
-		</li>
-		<li class="nav-item">
-			<form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-				<button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-			</form>
-		</li>
-	}
-	else
-	{
-		<li class="nav-item">
-			<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-		</li>
-	}
-	</ul>
-	```
-7. Include the LoginPartial in the _Layout file
+7. Include the `LoginPartial` in the `_AdminLayout` file
 
 	```HTML
- 	<header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVCStore</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+ 	<div class="bg-dark text-white p-2">
+        <span class="navbar-brand ml-2">MVC STORE</span>
+        <!-- !!!! new/updated code { -->
+        <div style="background-color:white;display:inline-block;">
+            <partial name="_LoginPartial" />
+        </div>
+        <!-- } -->
+    </div>
 	```
 
 ##  6. <a name='Bibliography'></a>Bibliography
