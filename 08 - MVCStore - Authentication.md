@@ -84,6 +84,11 @@
 	```
 	Add-Migration Identity
 	```
+2. Apply the migration by calling the following command.
+
+	```
+	Update-Database
+	```
 
 ##  4. <a name='DefiningtheSeedData'></a>Defining the Seed Data
 
