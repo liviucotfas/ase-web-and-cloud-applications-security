@@ -1,6 +1,22 @@
 # MVCStore - Security
 
-## Changing the Context Class
+<!-- vscode-markdown-toc -->
+* 1. [Objectives](#Objectives)
+* 2. [Changing the Context Class](#ChangingtheContextClass)
+* 3. [Creating and Applying the Database Migration](#CreatingandApplyingtheDatabaseMigration)
+* 4. [Defining the Seed Data](#DefiningtheSeedData)
+* 5. [Applying a Basic Authorization Policy](#ApplyingaBasicAuthorizationPolicy)
+* 6. [Bibliography](#Bibliography)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+##  1. <a name='Objectives'></a>Objectives
+
+##  2. <a name='ChangingtheContextClass'></a>Changing the Context Class
 
 1. Install the NuGet package "Microsoft.AspNetCore.Identity.EntityFrameworkCore".
 2. Change the `ApplicationDbContext` class as follows.
@@ -59,7 +75,7 @@
 	});
 	```
 
-## Creating and Applying the Database Migration
+##  3. <a name='CreatingandApplyingtheDatabaseMigration'></a>Creating and Applying the Database Migration
 
 1. Add a new migration to our application by running the following command.
 
@@ -67,7 +83,7 @@
 	Add-Migration Identity
 	```
 
-## Defining the Seed Data
+##  4. <a name='DefiningtheSeedData'></a>Defining the Seed Data
 
 1. Add a new class called `IdentitySeedData` to the `Data` folder
 
@@ -109,7 +125,7 @@
 - What changes should be made to the application in order to store additional details for a User?
 	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/add-user-data
 
-## Applying a Basic Authorization Policy
+##  5. <a name='ApplyingaBasicAuthorizationPolicy'></a>Applying a Basic Authorization Policy
 
 1. The `[Authorize]` attribute is used to restrict access to action methods or controllers. Decorate the `AdminController` with this attribute.
 
@@ -179,3 +195,5 @@
         </nav>
     </header>
 	```
+
+##  6. <a name='Bibliography'></a>Bibliography
