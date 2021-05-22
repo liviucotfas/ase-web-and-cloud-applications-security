@@ -48,57 +48,33 @@
 
     ```CSHTML
     <!DOCTYPE html>
+
     <html lang="en">
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@ViewBag.Title</title>
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+
+        <!-- Bootstrap required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebAppMvcIdentity</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                        </ul>
-                    
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
+        <div class="bg-dark text-white p-2">
+            <span class="navbar-brand ml-2">MVC STORE</span>
         </div>
 
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2021 - MVCStore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </div>
-        </footer>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+
         @await RenderSectionAsync("Scripts", required: false)
     </body>
     </html>
     ```
 
-3. In the Views/Admin folder add a Razor file called Index.cshtml
+3. Add a veiew corrsponding to the `Index` action in the `Admin` controller.
 
     ```CSHTML
    @model IEnumerable<Product>
@@ -129,7 +105,9 @@
                     asp-route-productId="@item.ProductID">
                         Edit
                     </a>
-                    <form asp-action="Delete" method="post">
+                    <form 
+                        asp-action="Delete" 
+                        method="post" style="display: inline">
                         <input type="hidden" name="ProductId" value="@item.ProductID" />
                         <button type="submit" class="btn btn-danger btn-sm">
                             Delete
@@ -159,7 +137,8 @@
     @model MVCStore.Models.Product
 
     @{
-        ViewData["Title"] = "Edit";
+        ViewBag.Title = "Edit";
+        Layout = "_AdminLayout";
     }
 
     <h1>Edit product</h1>
@@ -183,7 +162,7 @@
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
-        <div class="form-group text-right">
+        <div>
             <input type="submit" value="Save" class="btn btn-primary" />
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
