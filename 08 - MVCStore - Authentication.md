@@ -45,7 +45,7 @@
 			Configuration.GetConnectionString("DefaultConnection")));
 
 		// !!!! new/updated code
-		services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+		services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 		//}
 
