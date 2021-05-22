@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IronBankWeb.Controllers
 {
     [Authorize]
-    public class BankAcountController : Controller
+    public class BankAccountController : Controller
     {
         public IActionResult Transfer()
         {
