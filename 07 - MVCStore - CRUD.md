@@ -121,7 +121,7 @@
 
 ##  4. <a name='EditingtheProducts'></a>Editing the Products
 
-3. Add an `Edit` action on the `AdminController` 
+4. Add an `Edit` action on the `AdminController` 
 
     ```C#
     public IActionResult Edit(int productId)
@@ -131,7 +131,7 @@
     }
     ```
 
-4. Add the corresponding view. Update the content of the view as follows:
+5. Add the corresponding view. Update the content of the view as follows:
 
     ```HTML
     @model MVCStore.Models.Product
@@ -169,7 +169,7 @@
     </form>
     ```
 
-5. Add a `SaveProduct` method in the `IStoreRepository` interface.
+6. Add a `SaveProduct` method in the `IStoreRepository` interface.
     ```C#
     public interface IStoreRepository
 	{
@@ -179,7 +179,7 @@
 	}
     ```
 
-6. Implement the `SaveProduct` method as follows.
+7. Implement the `SaveProduct` method as follows.
     ```C#
     public async Task SaveProductAsync(Product product)
     {
@@ -202,7 +202,7 @@
     }
     ```
 
-7. Add the `Edit` action that will handle POST requests on the `AdminController`
+8. Add the `Edit` action that will handle POST requests on the `AdminController`
 
     ```C#
     [HttpPost]
@@ -224,7 +224,7 @@
 
     > Notice the `TempData` object
 
-8. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
+9. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
 
     ```CSHTML
     @if (TempData["message"] != null)
@@ -233,7 +233,7 @@
     }
     ```
 
-9. Update the `Product` class as follows.
+10. Update the `Product` class as follows.
 
     ```C#
     public class Product {
@@ -252,7 +252,7 @@
 
 ##  5. <a name='CreatingNewProducts'></a>Creating New Products
 
-10. Add a `Create` action to the `AdminController` class.
+11. Add a `Create` action to the `AdminController` class.
 
     ```C#
     public IActionResult Create(){
@@ -262,13 +262,13 @@
 
 ##  6. <a name='DeletingProducts'></a>Deleting Products
 
-11. Add a `DeleteProduct` method to the `IStoreRepository` interface.
+12. Add a `DeleteProduct` method to the `IStoreRepository` interface.
 
     ```C#
     Task<Product> DeleteProductAsync(int productID);
     ```
 
-12. Implement the method in the `EFProductRepository` class.
+13. Implement the method in the `EFProductRepository` class.
 
     ```C#
     public async Task<Product> DeleteProductAsync(int productID) { 
@@ -283,7 +283,7 @@
         return dbEntry; 
     } 
     ```
-13. Add the corresponding action to the `AdminController`
+14. Add the corresponding action to the `AdminController`
 
     ```C#
     [HttpPost] 
@@ -296,7 +296,7 @@
     } 
     ```
 
-14. Add a new unit test class in the `MVCStore.Tests` project called `AdminControllerTests`. Add the follwing test method.
+15. Add a new unit test class in the `MVCStore.Tests` project called `AdminControllerTests`. Add the follwing test method.
 
     ```C#
     [Fact]
