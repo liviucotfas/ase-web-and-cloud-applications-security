@@ -124,7 +124,7 @@
 	```C#
 	Task.Run(async () =>
 		{
-			await SeedDataIdentity.Initialize(app);
+			await SeedDataIdentity.EnsurePopulated(app);
 		}).Wait(); 
 	```
 
