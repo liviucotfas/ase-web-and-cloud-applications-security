@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CourseInvites.Models
+﻿namespace CourseInvites.Models
 {
-    public class Repository
-    {
+	public static class Repository
+	{
 		private static List<GuestResponse> responses = new List<GuestResponse>();
 		public static IEnumerable<GuestResponse> Responses
 		{
