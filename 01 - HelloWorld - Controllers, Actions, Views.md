@@ -15,7 +15,7 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='LearningObjectives'></a>Learning Objectives
-- creating ASP.NET Core MVC project
+- creating ASP.NET project
 - adding controllers
 - working with actions that return a string
 - working with actions that return a View
@@ -23,9 +23,10 @@
 - understanding routes
 
 ##  2. <a name='Creatingtheproject'></a>Creating the project
-1. Create the ASP.NET Core Project.
-    To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the `ASP.NET Core Web Application (Model-View-Controller)` item, and enter `FirstCoreApplication` into the Name field.
-2. Run the project
+1. Create the ASP.NET project. 
+   
+   To create the project, select `New > Project` from the Visual Studio `File` menu and select the `Templates > Visual C# > .NET Core` section of the `New Project` dialog window. Select the `ASP.NET Core Web Application (Model-View-Controller)` item, and enter `HelloWorld` into the Name field. Check the "Do not use top-level statements" checkbox.
+2. Run the project.
 
 ##  3. <a name='Controller'></a>Controller
 
@@ -52,10 +53,8 @@ You can request any of the following URLs, and they will be directed to the Inde
     * /Home
     * /Home/Index
 
-> This is a good example of benefiting from following conventions implemented by ASP.NET Core MVC. In this case, the convention is that I will have a controller called HomeController and that it will be
-the starting point for the MVC application. The default configuration that Visual Studio creates for a new project assumes that I will follow this convention. And since I did follow the convention, I automatically
-got support for the URLs in the preceding list. If I had not followed the convention, I would need to modify the configuration to point to whatever controller I had created instead. For this simple example, the default
-configuration is all I need.
+> This is a good example of benefiting from following conventions implemented by ASP.NET. In this case, the convention is that we are going to have a controller called HomeController and that this controller will be the starting point for the MVC application. The default configuration that Visual Studio creates for a new project assumes that we will follow this convention. And since we did follow the convention, we automatically
+got support for the URLs in the preceding list. If we had not followed the convention, we would need to modify the configuration to point to whatever controller we had created instead. For this simple example, the default configuration is all we need.
 
 ##  5. <a name='Views-RenderingWebPages'></a>Views - Rendering Web Pages
  
@@ -83,7 +82,7 @@ The output from the current application is just the string Hello World. In order
 
     > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
 
-    > Visual Studio creates the Home and Shared folders automatically when the Web Application template is used and puts in some placeholder views to get the project started.
+    > Visual Studio creates the `Home` and `Shared `folders automatically when the Web Application template is used and puts in some placeholder views to get the project started.
 
 8. Change the `HomeController` as follows:
 
