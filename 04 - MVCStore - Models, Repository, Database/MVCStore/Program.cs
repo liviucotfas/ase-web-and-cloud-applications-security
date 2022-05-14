@@ -1,11 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MVCStore.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace MVCStore
 {
@@ -13,14 +7,24 @@ namespace MVCStore
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+                opts.UseSqlServer(
+                builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            });
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+
+            var app = builder.Build();
+            app.UseStaticFiles();
+            app.MapDefaultControllerRoute();
+
+            // !!!! new/updated code {
+            SeedData.EnsurePopulated(app);
+            //}
+
+            app.Run();
+        }
     }
 }

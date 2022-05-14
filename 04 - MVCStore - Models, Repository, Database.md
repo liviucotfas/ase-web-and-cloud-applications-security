@@ -2,8 +2,8 @@
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
-* 2. [ 2. Installing the Entity Framework](#2.InstallingtheEntityFramework)
-* 3. [3. Defining the Connection String](#DefiningtheConnectionString)
+* 2. [Installing the Entity Framework](#InstallingtheEntityFramework)
+* 3. [Defining the Connection String](#DefiningtheConnectionString)
 * 4. [Starting the Data Model](#StartingtheDataModel)
 * 5. [Creating the Database Context Class](#CreatingtheDatabaseContextClass)
 * 6. [Configuring Entity Framework Core](#ConfiguringEntityFrameworkCore)
@@ -26,7 +26,7 @@
 - using database migrations;
 - seeding data.
 
-##  2. <a name='2.InstallingtheEntityFramework'></a>Installing the Entity Framework
+##  2. <a name='InstallingtheEntityFramework'></a>Installing the Entity Framework
 
 The MVCStore application will store its data in a SQL Server LocalDB database, which is accessed using Entity Framework Core.
 
@@ -86,31 +86,25 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 
 Entity Framework Core must be configured so that it knows the type of database to which it will connect, which connection string describes that connection, and which context class will present the data in the database.
 
-7. Add the following code to the `Startup` class
+7. Modify the `Main` method in the `Program` class as follows.
 
     ```C#
-    private IConfiguration Configuration;
-    public Startup(IConfiguration configuration)
+    public static void Main(string[] args)
     {
-        Configuration = configuration;
-    }
-    ```
-8. Update the `ConfigureServices` method in the `Startup` class as follows.
-
-    ```C#
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllersWithViews();
-
-        // !!!! new/updated code {
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                Configuration.GetConnectionString("DefaultConnection")));
-        //}
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+            opts.UseSqlServer(
+            builder.Configuration["ConnectionStrings:DefaultConnection"]);
+        });
+        var app = builder.Build();
+        app.UseStaticFiles();
+        app.MapDefaultControllerRoute();
+        app.Run();
     }
     ```
 
-    > The `IConfiguration` interface provides access to the ASP.NET Core configuration system, which includes the contents of the `appsettings.json` file. The constructor receives an `IConfiguration` object through its constructor and assigns it to the `Configuration` property, which is used to access the connection string.
+    > The `IConfiguration` interface provides access to the ASP.NET Core configuration system, which includes the contents of the `appsettings.json` file. Access to the configuration data is through the `builder.Configuration` property, which allows the database connection string to be obtained. Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSQLServer` method declares that SQL Server is being used.
 
     >Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSQLServer` method declares that SQL Server is being used and the connection string is read via the `IConfiguration` object.
 
@@ -118,7 +112,7 @@ Entity Framework Core must be configured so that it knows the type of database t
 
 > The repository pattern is widely used, and it provides a consistent way to access the features presented by the database context class. It can reduce duplication and ensures that operations on the database are performed consistently.
 
-9. Add a `Data` folder and define the `IStoreRepository` interface as follows.
+9. In the `Data` folder define the `IStoreRepository` interface as follows.
 
     ```C#
     public interface IStoreRepository
@@ -135,8 +129,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     >The `IQueryable<T>` interface is useful because it allows a collection of objects to be queried efficiently. Later, when we add support for retrieving a subset of `Product` objects from a database, using the `IQueryable<T>` interface allows us to ask the database for just the objects that we require using standard LINQ statements and without needing to know what database server stores the data or how it processes the query. Without the `IQueryable<T>` interface, we would have to retrieve all of the `Product` objects from the database and then discard the ones we don’t want, which becomes an expensive operation as the amount of data used by an application increases. It is for this reason that the `IQueryable<T>` interface is typically used instead of `IEnumerable<T>` in database repository interfaces and classes.
     >However, care must be taken with the `IQueryable<T>` interface because each time the collection of objects is enumerated, the query will be evaluated again, which means that a new query will be sent to the database. This can undermine the efficiency gains of using `IQueryable<T>`. In such situations, you can convert `IQueryable<T>` to a more predictable form using the `ToList` or `ToArray` extension method.
 
-10. Create an implementation of the repository interface,named `EFStoreRepository.cs` in the `Models` folder and
-use it to define the class shown below.
+10. Create an implementation of the repository interface,named `EFStoreRepository.cs` in the `Models` folder and use it to define the class shown below.
 
     ```C#
     public class EFStoreRepository : IStoreRepository {
@@ -155,21 +148,28 @@ use it to define the class shown below.
     ```
     > The repository implementation maps the `Products` property defined by the `IStoreRepository` interface onto the `Products` property defined by the `ApplicationDbContext` class. The `Products` property in the context class returns a `DbSet<Product>` object, which implements the `IQueryable<T>` interface and makes it easy to implement the repository interface when using Entity Framework Core.
 
-11. Add the statement shown below to the `Startup` class to create a service for the `IStoreRepository` interface that uses `EFStoreRepository` as the implementation class
+11. Add the statement shown below to the `Main` method of the `Program` class to create a service for the `IStoreRepository` interface that uses `EFStoreRepository` as the implementation class
+12. 
     > ASP.NET Core supports services that allow objects to be accessed throughout the application. One benefit of services is they allow classes to use interfaces without needing to know which implementation class is being used. Application components can access objects that implement the `IStoreRepository` interface without knowing that it is the `EFStoreRepository` implementation class they are using. This makes it easy to change the implementation class the application uses without needing to make changes to the individual components. 
     
     ```C#
-    public void ConfigureServices(IServiceCollection services) {
-        services.AddControllersWithViews();
-
-        services.AddDbContext<StoreDbContext>(opts => {
-        opts.UseSqlServer(
-        Configuration["ConnectionStrings:SportsStoreConnection"]);
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+            opts.UseSqlServer(
+            builder.Configuration["ConnectionStrings:DefaultConnection"]);
         });
 
         // !!!! new/updated code {
-        services.AddScoped<IStoreRepository, EFStoreRepository>();
+        builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
         //}
+
+        var app = builder.Build();
+        app.UseStaticFiles();
+        app.MapDefaultControllerRoute();
+        app.Run();
     }
     ```
     > The `AddScoped` method creates a service where each HTTP request gets its own repository object, which is the way that Entity Framework Core is typically used.
@@ -201,16 +201,17 @@ use it to define the class shown below.
     > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
 
     ```C#
-    public class SeedData
+     public static class SeedData
     {
         public static void EnsurePopulated(IApplicationBuilder app)
         {
-            ApplicationDbContext context = app.ApplicationServices
-            .CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            ApplicationDbContext context = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
             if (context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
             }
+            
             if (!context.Products.Any())
             {
                 context.Products.AddRange(
@@ -234,42 +235,44 @@ use it to define the class shown below.
                     Description = "FIFA-approved size and weight",
                     Category = "Soccer",
                     Price = 19.50m
-                });
+                }
+                );
+
+                context.SaveChanges();
             }
-            context.SaveChanges();
         }
     }
     ```
 
-    >The static `EnsurePopulated` method receives an `IApplicationBuilder `argument, which is the interface used in the `Configure` method of the `Startup` class to register middleware components to handle HTTP requests. 
+    >The static `EnsurePopulated` method receives an `IApplicationBuilder `argument, which is the interface used in the `Main` method of the `Program` class to register middleware components to handle HTTP requests. 
     
     >`IApplicationBuilder` also provides access to the application’s services, including the Entity Framework Core database context service.
 
     > The `EnsurePopulated` method obtains a `ApplicationDbContext` object through the `IApplicationBuilder` interface and calls the `Database.Migrate` method if there are any pending migrations, which means that the database will be created and prepared so that it can store `Product` objects. Next, the number of `Product` objects in the database is checked. If there are no objects in the database, then the database is populated using a collection of `Product` objects using the `AddRange` method and then written to the database using the `SaveChanges` method.
 
-15. Call the `EnsurePopulated` in the `Configure` method of the `Startup` class.
+15. Call the `EnsurePopulated` in the `Main` method of the `Program` class.
 
     ```C#
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static void Main(string[] args)
     {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
-        app.UseStatusCodePages();
-        app.UseStaticFiles();
-
-        app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapDefaultControllerRoute();
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+            opts.UseSqlServer(
+            builder.Configuration["ConnectionStrings:DefaultConnection"]);
         });
+
+        builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+
+        var app = builder.Build();
+        app.UseStaticFiles();
+        app.MapDefaultControllerRoute();
 
         // !!!! new/updated code {
         SeedData.EnsurePopulated(app);
         //}
+
+        app.Run();
     }
     ```
 
