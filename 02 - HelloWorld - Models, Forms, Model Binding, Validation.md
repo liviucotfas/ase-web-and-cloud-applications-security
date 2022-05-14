@@ -37,7 +37,7 @@ Imagine that we want to implement an application that allows people to electroni
 
  > Note: the application will not persisit the answers to any storage.
 
-1. Create a new project named `CourseInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template.
+1. Create a new project named `CourseInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template. Check the "Do not use top-level statements" checkbox.
 2. Let's start with a little cleanup. Remove from the `Views` folder the `Home` and `Shared` folders. Remove from the `Models` folder the `ErrorViewModel` class.
 3. Modify the `HomeController` as follows.
 
@@ -479,7 +479,6 @@ Imagine that we want to implement an application that allows people to electroni
         <link rel="stylesheet" href="~/css/site.css" />
     </head>
     <body>
-        <h5 class="bg-primary text-white text-center m-2 p-2">RSVP</h5>
         <form asp-action="RsvpForm" method="post" class="m-2">
             <div asp-validation-summary="All"></div>
             <div class="form-group">
