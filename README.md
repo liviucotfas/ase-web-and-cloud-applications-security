@@ -1,7 +1,7 @@
 # Web and Cloud Applications Security
 
 ## Prerequisites
-- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the ASP.NET and web development workload is installed.
+- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the "ASP.NET and web development" workload is installed, either during setup or afterwards from "Tools > Get Tools and Features".
 
 ## Microsoft Azure for Students
 - Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
