@@ -1,7 +1,8 @@
 # Web and Cloud Applications Security
 
 ## Prerequisites
-- Microsoft Visual Studio 2019 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the "ASP.NET and web development" workload is installed, either during setup or afterwards from "Tools > Get Tools and Features".
+- Microsoft Visual Studio 2022 (can be downloaded from https://visualstudio.microsoft.com/vs/community ). Make sure that the "ASP.NET and web development" workload is installed, either during setup or afterwards from "Tools > Get Tools and Features".
+- Note: If you are not regularly using Microsoft Visual Studio 2022, you can install it in a Virtual Machine, either on your computer or in the cloud. If you are using Windows 10/11, Hyper-V Manager offers the possibility to download a Windows 11 Virtual Machine pre-configured with Visual Studio by choosing the "Quick Create" option and selecting the "Windows 11 dev environment" image. The Microsoft Azure cloud computing platform also provides a virtual machine template that has Visual Studio installed.
 
 ## Microsoft Azure for Students
 - Get started with $100 in Azure credits to be used within the first 12 month. More details: [link](https://azure.microsoft.com/en-us/free/students/)
@@ -21,7 +22,7 @@
 
 **Are there any mistakes in the code samples / labs / course presentation?**
 
->A: possibly... if you find any, please create a [Pull Request](https://help.github.com/articles/about-pull-requests/). :)
+>A: possibly... if you find any, you can create an Issue (from the "Issues" menu at the top of the page) or you can try to fix them yourself and afterwards create a [Pull Request](https://help.github.com/articles/about-pull-requests/). :)
 
 **Is it possible to convert the .md files to .pdf/.docx ?**
 
