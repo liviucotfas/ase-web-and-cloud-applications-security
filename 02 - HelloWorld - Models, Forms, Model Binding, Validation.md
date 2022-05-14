@@ -322,7 +322,7 @@ Imagine that we want to implement an application that allows people to electroni
         return View(Repository.Responses.Where(r => r.WillAttend == true)); 
     } 
     ```
-2. Add the corresponding view
+2. Add the corresponding view.
 
     ```C#
     @model IEnumerable<CourseInvites.Models.GuestResponse>
@@ -451,12 +451,12 @@ Imagine that we want to implement an application that allows people to electroni
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <title>ASP.NET lecture!</title>
         <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
+        <title>Index</title>
     </head>
-    <body class="container">
-        <div class="text-center">
-                We're going to have a lecture on ASP.NET.<br />
+    <body>
+        <div class="text-center m-2">
+            <h3> We're going to have an exciting party!</h3>
             <h4>And YOU are invited!</h4>
             <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
         </div>
@@ -475,43 +475,37 @@ Imagine that we want to implement an application that allows people to electroni
     <head>
         <meta name="viewport" content="width=device-width" />
         <title>RsvpForm</title>
-        <link rel="stylesheet" href="/css/styles.css" />
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
     </head>
-    <body class="container">
-        <div class="panel panel-success"> 
-            <div class="panel-heading text-center"><h4>RSVP</h4></div> 
-            <div class="panel-body"> 
-                <form class="p-a-1" asp-action="RsvpForm" method="post"> 
-                    <div asp-validation-summary="All"></div> 
-                    <div class="form-group"> 
-                        <label asp-for="Name">Your name:</label> 
-                        <input class="form-control" asp-for="Name" /> 
-                    </div> 
-                    <div class="form-group"> 
-                        <label asp-for="Email">Your email:</label> 
-                        <input class="form-control" asp-for="Email" /> 
-                    </div> 
-                    <div class="form-group"> 
-                        <label asp-for="Phone">Your phone:</label> 
-                        <input class="form-control" asp-for="Phone" /> 
-                    </div> 
-                    <div class="form-group"> 
-                        <label>Will you attend?</label> 
-                        <select class="form-control" asp-for="WillAttend"> 
-                            <option value="">Choose an option</option> 
-                            <option value="true">Yes, I'll be there</option> 
-                            <option value="false">No, I can't come</option> 
-                        </select> 
-                    </div> 
-                    <div class="text-center"> 
-                        <button class="btn btn-primary" type="submit"> 
-                            Submit RSVP 
-                        </button> 
-                    </div> 
-                </form> 
-            </div> 
-        </div> 
+    <body>
+        <h5 class="bg-primary text-white text-center m-2 p-2">RSVP</h5>
+        <form asp-action="RsvpForm" method="post" class="m-2">
+            <div asp-validation-summary="All"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="form-label">Your name:</label>
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">Your email:</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="form-label">Your phone:</label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="WillAttend" class="form-label">
+                    Will you attend?
+                </label>
+                <select asp-for="WillAttend" class="form-control">
+                    <option value="">Choose an option</option>
+                    <option value="true">Yes, I'll be there</option>
+                    <option value="false">No, I can't come</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Submit RSVP</button>
+        </form>
     </body>
     </html>
     ```
@@ -519,28 +513,27 @@ Imagine that we want to implement an application that allows people to electroni
  3. Style the `Thanks.cstml` file as follows
   
     ```HTML
-    @model CourseInvites.Models.GuestResponse
-    @{
-        Layout = null;
-    }
     <!DOCTYPE html>
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
         <title>Thanks</title>
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" /> 
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
     </head>
-    <body class="text-center"> 
-        <p>
-            <h1>Thank you, @Model.Name!</h1>
-            @if (Model.WillAttend == true) {
+    <body class="text-center">
+        <div>
+            <h1>Thank you, @Model?.Name!</h1>
+            @if (Model?.WillAttend == true)
+            {
                 @:It's great that you're coming. The drinks are already in the fridge!
-            } else {
-    @:Sorry to hear that you can't make it, but thanks for letting us know.
             }
-        </p>
-        Click <a class="nav-link" asp-action="ListResponses">here</a> 
-        to see who is coming. 
+            else
+            {
+                @:Sorry to hear that you can't make it, but thanks for letting us know.
+            }
+        </div>
+        Click
+        <a asp-action="ListResponses">here</a> to see who is coming.
     </body>
     </html>
     ```
@@ -555,22 +548,20 @@ Imagine that we want to implement an application that allows people to electroni
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
         <title>Responses</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
     </head>
-    <body class="container">
-        <div class="panel-body">
-            <h2>Here is the list of people attending the course</h2>
-            <table class="table table-sm table-striped table-bordered">
+    <body>
+        <div class="text-center p-2">
+            <h2 class="text-center">
+                Here is the list of people attending the party
+            </h2>
+            <table class="table table-bordered table-striped table-sm">
                 <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                    </tr>
+                    <tr><th>Name</th><th>Email</th><th>Phone</th></tr>
                 </thead>
                 <tbody>
-                    @foreach (GuestResponse r in Model)
+                    @foreach (CourseInvites.Models.GuestResponse r in Model!)
                     {
                         <tr>
                             <td>@r.Name</td>
