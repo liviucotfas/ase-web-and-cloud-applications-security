@@ -13,7 +13,9 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
-- adding client-side libraries.
+- adding client-side libraries;
+- styling with Bootstrap;
+- creating and using partial views.
 
 ##  2. <a name='ApplyingBootstrapStyles'></a>Applying Bootstrap Styles
 
