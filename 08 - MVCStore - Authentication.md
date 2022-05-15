@@ -33,23 +33,59 @@
 
 	> The `ApplicationDbContext` class is derived from `IdentityDbContext`, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the `IdentityUser` class, which is the built-in class used to represent users. 
 
-2. Install the package "Microsoft.AspNetCore.Identity.UI". In the `Startup` class make the following changes in the `ConfigureServices` method.
+2. Install the package "Microsoft.AspNetCore.Identity.UI". In the `Program` class make the following changes in the `Main` method.
 
 	```C#
-	public void ConfigureServices(IServiceCollection services)
+	 public class Program
     {
-		services.AddControllersWithViews();
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-		services.AddDbContext<ApplicationDbContext>(options =>
-		options.UseSqlServer(
-			Configuration.GetConnectionString("DefaultConnection")));
+            // Add services to the container.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-		// !!!! new/updated code
-		services.AddDefaultIdentity<IdentityUser>()
+			 // !!!! new/updated code {
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-		//}
+			//}
+            builder.Services.AddControllersWithViews();
 
-		services.AddScoped<IStoreRepository, EFStoreRepository>();
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseMigrationsEndPoint();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+			// !!!! new/updated code {
+            app.UseAuthentication();
+            app.UseAuthorization();
+			//}
+
+            app.MapControllerRoute("pagination",
+                "Products/Page{productPage}",
+                new { Controller = "Home", action = "Index" });
+            //}
+            app.MapDefaultControllerRoute();
+
+            app.Run();
+        }
     }
 	```
 	> The `AddDefaultIdentity` method adds a set of common identity services to the application, including a default UI, token providers, and configures authentication to use identity cookies. Further reading: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity
