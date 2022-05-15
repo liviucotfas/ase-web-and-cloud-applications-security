@@ -61,10 +61,10 @@
             HomeController controller = new HomeController(mock.Object);
             
             // Act
-            IEnumerable<Product> result = (controller.Index() as ViewResult).ViewData.Model as IEnumerable<Product>;
+            IEnumerable<Product>? result = (controller.Index() as ViewResult)?.ViewData.Model as IEnumerable<Product>;
             
             // Assert
-            Product[] prodArray = result.ToArray();
+            Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
             Assert.True(prodArray.Length == 2);
             Assert.Equal("P1", prodArray[0].Name);
             Assert.Equal("P2", prodArray[1].Name);
@@ -78,7 +78,7 @@
     ```CSHTML
     @model IQueryable<Product>
 
-    @foreach (var p in Model) {
+    @foreach (var p in Model ?? Enumerable.Empty<Product>()) {
         <div>
             <h3>@p.Name</h3>
             @p.Description
@@ -100,7 +100,7 @@
 
     ```C#
 
-    private int PageSize = 2;
+    public int PageSize = 2;
     public IActionResult Index(int productPage = 1)
     {
         var products = repository.Products
@@ -121,6 +121,7 @@
     {
         // Arrange
         Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+
         mock.Setup(m => m.Products).Returns((new Product[] {
             new Product {ProductID = 1, Name = "P1"},
             new Product {ProductID = 2, Name = "P2"},
@@ -128,12 +129,13 @@
             new Product {ProductID = 4, Name = "P4"},
             new Product {ProductID = 5, Name = "P5"}
             }).AsQueryable<Product>());
+
         HomeController controller = new HomeController(mock.Object);
         controller.PageSize = 3;
-        
+
         // Act
-        IEnumerable<Product> result = (controller.Index(2) as ViewResult).ViewData.Model as IEnumerable<Product>;
-        
+        IEnumerable<Product> result = (controller.Index(2) as ViewResult)?.ViewData.Model as IEnumerable<Product> ?? Enumerable.Empty<Product>();
+
         // Assert
         Product[] prodArray = result.ToArray();
         Assert.True(prodArray.Length == 2);
@@ -169,33 +171,33 @@ To support the tag helper that will display the page numbers, we need to pass in
     public class PageLinkTagHelper : TagHelper
     {
         private IUrlHelperFactory urlHelperFactory;
-        
         public PageLinkTagHelper(IUrlHelperFactory helperFactory)
         {
             urlHelperFactory = helperFactory;
         }
-        
         [ViewContext]
         [HtmlAttributeNotBound]
-        public ViewContext ViewContext { get; set; }
-        
-        public PagingInfo PageModel { get; set; }
-        
-        public string PageAction { get; set; }
-        
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public ViewContext? ViewContext { get; set; }
+        public PagingInfo? PageModel { get; set; }
+        public string? PageAction { get; set; }
+        public override void Process(TagHelperContext context,
+        TagHelperOutput output)
         {
-            IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
-
-            TagBuilder result = new TagBuilder("div");
-            for (int i = 1; i <= PageModel.TotalPages; i++)
+            if (ViewContext != null && PageModel != null)
             {
-                TagBuilder tag = new TagBuilder("a");
-                tag.Attributes["href"] = urlHelper.Action(PageAction, new {productPage = i});
-                tag.InnerHtml.Append(i.ToString());
-                result.InnerHtml.AppendHtml(tag);
+                IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+                TagBuilder result = new TagBuilder("div");
+                for (int i = 1; i <= PageModel.TotalPages; i++)
+                {
+                    TagBuilder tag = new TagBuilder("a");
+                    tag.Attributes["href"] = urlHelper.Action(PageAction,
+                    new { productPage = i });
+
+                    tag.InnerHtml.Append(i.ToString());
+                    result.InnerHtml.AppendHtml(tag);
+                }
+                output.Content.AppendHtml(result.InnerHtml);
             }
-            output.Content.AppendHtml(result.InnerHtml);
         }
     }
     ```
@@ -270,15 +272,15 @@ To support the tag helper that will display the page numbers, we need to pass in
     ```C#
     public class ProductsListViewModel
     {
-        public IEnumerable<Product> Products { get; set; }
-        public PagingInfo PagingInfo { get; set; }
+        public IEnumerable<Product> Products { get; set; } = Enumerable.Empty<Product>();
+        public PagingInfo PagingInfo { get; set; } = new();
     }
     ```
 
 11. Update the `Index` action in the `HomeController` class to use the `ProductsListViewModel` class in order to provide the view with details of the products to display on the page and with details of the pagination, as shown below.
 
     ```C#
-    public IActionResult Index(int productPage = 1)
+    public ViewResult Index(int productPage = 1)
     {
         var viewModel = new ProductsListViewModel
         {
@@ -301,6 +303,67 @@ To support the tag helper that will display the page numbers, we need to pass in
     >These changes pass a `ProductsListViewModel` object as the model data to the view.
 
 12. Modify the earlier unit tests to reflect the new result from the Index action method.
+    ```c#
+    [Fact]
+    public void Can_Use_Repository()
+    {
+        // Arrange
+        Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+        mock.Setup(m => m.Products).Returns(
+            (new Product[] {
+                new Product {ProductID = 1, Name = "P1"},
+                new Product {ProductID = 2, Name = "P2"}
+                }).AsQueryable<Product>()
+                );
+        HomeController controller = new HomeController(mock.Object);
+
+        // Act
+        // !!!! new/updated code {
+        ProductsListViewModel result = controller.Index()?.ViewData.Model as ProductsListViewModel ?? new();
+        // }
+
+        // Assert
+        // !!!! new/updated code {
+        Product[] prodArray = result.Products.ToArray();
+        // }
+        Assert.True(prodArray.Length == 2);
+        Assert.Equal("P1", prodArray[0].Name);
+        Assert.Equal("P2", prodArray[1].Name);
+    }
+    ```
+
+    ```C#
+    [Fact]
+    public void Can_Paginate()
+    {
+        // Arrange
+        Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+
+        mock.Setup(m => m.Products).Returns((new Product[] {
+            new Product {ProductID = 1, Name = "P1"},
+            new Product {ProductID = 2, Name = "P2"},
+            new Product {ProductID = 3, Name = "P3"},
+            new Product {ProductID = 4, Name = "P4"},
+            new Product {ProductID = 5, Name = "P5"}
+            }).AsQueryable<Product>());
+
+        HomeController controller = new HomeController(mock.Object);
+        controller.PageSize = 3;
+
+        // Act
+        // !!!! new/updated code {
+        ProductsListViewModel result =  controller.Index(2)?.ViewData.Model as ProductsListViewModel ?? new();
+        // }
+
+        // Assert
+        // !!!! new/updated code {
+        Product[] prodArray = result.Products.ToArray();
+        // }
+        Assert.True(prodArray.Length == 2);
+        Assert.Equal("P4", prodArray[0].Name);
+        Assert.Equal("P5", prodArray[1].Name);
+    }
+    ```
 
 13. Add a unit test in order to check if controller sends the correct pagination data to the view in the class `HomeControllerTests`.
 
@@ -321,8 +384,7 @@ To support the tag helper that will display the page numbers, we need to pass in
         HomeController controller =
         new HomeController(mock.Object) { PageSize = 3 };
         // Act
-        ProductsListViewModel result =
-        (controller.Index(2) as ViewResult).ViewData.Model as ProductsListViewModel;
+        ProductsListViewModel result = controller.Index(2)?.ViewData.Model as ProductsListViewModel ?? new();
         // Assert
         PagingInfo pageInfo = result.PagingInfo;
         Assert.Equal(2, pageInfo.CurrentPage);
@@ -335,8 +397,7 @@ To support the tag helper that will display the page numbers, we need to pass in
 
     ```CSHTML
     @model ProductsListViewModel
-
-    @foreach (var p in Model.Products)
+    @foreach (var p in Model?.Products ?? Enumerable.Empty<Product>())
     {
         <div>
             <h3>@p.Name</h3>
@@ -361,37 +422,40 @@ To support the tag helper that will display the page numbers, we need to pass in
         </div>
     }
 
-    <div page-model="@Model.PagingInfo" page-action="Index"></div>
+    <div page-model="@Model?.PagingInfo" page-action="Index"></div>
     ```
 
     > When Razor finds the page-model attribute on the div element, it asks the PageLinkTagHelper class to transform the element.
 
-16. Let's improve the urls using the ASP.NET Core routing feature. Modify the `Configure` method of the `Startup` class as follows.
+16. Let's improve the urls using the ASP.NET Core routing feature. Modify the `Main` method of the `Program` class as follows.
 
     ```C#
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static void Main(string[] args)
     {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
-        app.UseStatusCodePages();
-        app.UseStaticFiles();
-
-        app.UseRouting();
-
-        // !!!! new/updated code {
-        app.UseEndpoints(endpoints => {
-            endpoints.MapControllerRoute("pagination", "Products/Page{productPage}", new { Controller = "Home", action = "Index" });
-            endpoints.MapDefaultControllerRoute();
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+            opts.UseSqlServer(
+            builder.Configuration["ConnectionStrings:DefaultConnection"]);
         });
+
+        builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+
+        var app = builder.Build();
+        app.UseStaticFiles();
+        // !!!! new/updated code {
+        app.MapControllerRoute("pagination",
+            "Products/Page{productPage}",
+            new { Controller = "Home", action = "Index" });
         //}
+        app.MapDefaultControllerRoute();
 
         SeedData.EnsurePopulated(app);
+
+        app.Run();
     }
     ```
-    > It is important that you add the new route before the call to the MapDefaultControllerRoute method. The routing system processes routes in the order they are listed, and we need the new route to take precedence over the existing one.
+    > It is important that you add the new route before the call to the `MapDefaultControllerRoute` method. The routing system processes routes in the order they are listed, and we need the new route to take precedence over the existing one.
 
     > This is the only alteration required to change the URL scheme for product pagination. ASP.NET Core and the routing function are tightly integrated, so the application automatically reflects a change like this in the URLs used by the application, including those generated by tag helpers.
 
