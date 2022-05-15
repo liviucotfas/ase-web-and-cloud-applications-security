@@ -6,7 +6,7 @@
     <title>@ViewBag.Title</title>
 
     <!-- !!!! new/updated code { -->
-    <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <!-- } -->
 </head>
 <body>
@@ -23,5 +23,6 @@
         </div>
     </div>
     <!-- } -->
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

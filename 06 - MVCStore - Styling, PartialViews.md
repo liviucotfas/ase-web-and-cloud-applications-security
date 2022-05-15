@@ -5,13 +5,6 @@
 * 2. [Applying Bootstrap Styles](#ApplyingBootstrapStyles)
 * 3. [Partial Views](#PartialViews)
 * 4. [Bibliography](#Bibliography)
-* 5. [Creating a CRUD Controller](#CreatingaCRUDController)
-* 6. [Implementing the List View](#ImplementingtheListView)
-* 7. [Editing Products](#EditingProducts)
-* 8. [Handling Edit POST Requests](#HandlingEditPOSTRequests)
-* 9. [Adding model validation](#Addingmodelvalidation)
-* 10. [Creating New Products](#CreatingNewProducts)
-* 11. [Deleting Products](#DeletingProducts)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -20,11 +13,12 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
+- adding client-side libraries.
 
 ##  2. <a name='ApplyingBootstrapStyles'></a>Applying Bootstrap Styles
 
 1. Add a new folder called `wwwroot` to the project.
-2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "cdnjs" as a provider and search for "twitter" in order to install version 4.3.1. 
+2. Add the "Bootstrap" framework to your project by right clicking on the project and chosing "Add" > "Client Side Library". Use "cdnjs" as a provider and search for "twitter" in order to install version 5.x. 
 3. Razor layouts provide common content so that it doesn’t have to be repeated in multiple views. Update the `_Layout.cshtml` file in the `Views/Shared` folder to include the Bootstrap CSS stylesheet in the content sent to the browser and define a common header that will be used throughout the application
 
     ```CSHTML
@@ -36,7 +30,7 @@
         <title>@ViewBag.Title</title>
 
         <!-- !!!! new/updated code { -->
-        <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <!-- } -->
     </head>
     <body>
@@ -53,6 +47,7 @@
             </div>
         </div>
         <!-- } -->
+        @await RenderSectionAsync("Scripts", required: false)
     </body>
     </html>
     ```
@@ -99,38 +94,43 @@ properties we added to the tag helper class, which are then used to style the a 
         }
         [ViewContext]
         [HtmlAttributeNotBound]
-        public ViewContext ViewContext { get; set; }
-        public PagingInfo PageModel { get; set; }
-        public string PageAction { get; set; }
+        public ViewContext? ViewContext { get; set; }
+        public PagingInfo? PageModel { get; set; }
+        public string? PageAction { get; set; }
 
-        // !!!! new/updated code {
+        // new/updated code {
         public bool PageClassesEnabled { get; set; } = false;
-        public string PageClass { get; set; }
-        public string PageClassNormal { get; set; }
-        public string PageClassSelected { get; set; }
+        public string PageClass { get; set; } = String.Empty;
+        public string PageClassNormal { get; set; } = String.Empty;
+        public string PageClassSelected { get; set; } = String.Empty;
         //}
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context,
+        TagHelperOutput output)
         {
-            IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
-
-            TagBuilder result = new TagBuilder("div");
-            for (int i = 1; i <= PageModel.TotalPages; i++)
+            if (ViewContext != null && PageModel != null)
             {
-                TagBuilder tag = new TagBuilder("a");
-                tag.Attributes["href"] = urlHelper.Action(PageAction, new {productPage = i});
+                IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+                TagBuilder result = new TagBuilder("div");
+                for (int i = 1; i <= PageModel.TotalPages; i++)
+                {
+                    TagBuilder tag = new TagBuilder("a");
+                    tag.Attributes["href"] = urlHelper.Action(PageAction, new { productPage = i });
 
-                // !!!! new/updated code {
-                if (PageClassesEnabled) {
-                    tag.AddCssClass(PageClass);
-                    tag.AddCssClass(i == PageModel.CurrentPage? PageClassSelected : PageClassNormal);
+                     // new/updated code {
+                    if (PageClassesEnabled)
+                    {
+                        tag.AddCssClass(PageClass);
+                        tag.AddCssClass(i == PageModel.CurrentPage
+                        ? PageClassSelected : PageClassNormal);
+                    }
+                    //}
+
+                    tag.InnerHtml.Append(i.ToString());
+                    result.InnerHtml.AppendHtml(tag);
                 }
-                //}
-
-                tag.InnerHtml.Append(i.ToString());
-                result.InnerHtml.AppendHtml(tag);
+                output.Content.AppendHtml(result.InnerHtml);
             }
-            output.Content.AppendHtml(result.InnerHtml);
         }
     }
     ```
@@ -146,31 +146,32 @@ properties we added to the tag helper class, which are then used to style the a 
     <div class="card card-outline-primary m-1 p-1">
         <div class="bg-faded p-1">
             <h4>
-                @Model.Name
-                <span class="badge badge-pill badge-primary" style="float:right">
-                    <small>@Model.Price.ToString("c")</small>
+                @Model?.Name
+                <span class="badge rounded-pill bg-primary text-white"
+                    style="float:right">
+                    <small>@Model?.Price.ToString("c")</small>
                 </span>
             </h4>
         </div>
-        <div class="card-text p-1">@Model.Description</div>
+        <div class="card-text p-1">@Model?.Description</div>
     </div>
     ```
 7. Update the `Index.cshtml` file in the `Views/Home` folder so that it uses the partial view.
 
     ```CSHTML
     @model ProductsListViewModel
-
-    @foreach (var p in Model.Products)
+    
+    @foreach (var p in Model?.Products ?? Enumerable.Empty<Product>())
     {
         <partial name="ProductSummary" model="p" />
     }
 
-    <div page-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true"
+    <div page-model="@Model?.PagingInfo" page-action="Index" page-classes-enabled="true"
         page-class="btn" page-class-normal="btn-outline-dark"
         page-class-selected="btn-primary" class="btn-group pull-right m-1">
     </div>
     ```
 
-    > We have taken the markup that was previously in the `@foreach` expression in the `Index.cshtml` view and moved it to the new partial view. I call the partial view using a partial element, using the name and model attributes to specify the name of the partial view and its view model. Using a partial view allows the same markup to be inserted into any view that needs to display a summary of a product.
+    > We have taken the markup that was previously in the `@foreach` expression in the `Index.cshtml` view and moved it to the new partial view. We call the partial view using a partial element, using the name and model attributes to specify the name of the partial view and its view model. Using a partial view allows the same markup to be inserted into any view that needs to display a summary of a product.
 
 ##  4. <a name='Bibliography'></a>Bibliography

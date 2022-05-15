@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MVCStore.ViewModels
+﻿namespace MVCStore.ViewModels
 {
     public class PagingInfo
     {
@@ -12,8 +7,8 @@ namespace MVCStore.ViewModels
         public int CurrentPage { get; set; }
         public int TotalPages
         {
-            get 
-            { 
+            get
+            {
                 return (int)Math.Ceiling((decimal)TotalItems / ItemsPerPage);
             }
         }
