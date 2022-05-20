@@ -51,14 +51,11 @@
 
     <html lang="en">
     <head>
-        <title>@ViewBag.Title</title>
-
-        <!-- Bootstrap required meta tags -->
-        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Bootstrap CSS -->
-        <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <title>@ViewBag.Title</title>
+
+        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
         <div class="bg-dark text-white p-2">
@@ -80,7 +77,8 @@
    @model IEnumerable<Product>
 
     @{
-        ViewBag.Title = "All Products";
+        ViewBag.Title = "Admin";
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
     }
 
     <h1>Products</h1>
