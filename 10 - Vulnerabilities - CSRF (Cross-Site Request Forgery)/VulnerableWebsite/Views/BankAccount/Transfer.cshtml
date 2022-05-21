@@ -1,0 +1,21 @@
+﻿@model TransferViewModel
+@{
+    ViewData["Title"] = "Transfer";
+}
+
+<h2>Transfer</h2>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Message
+    </div>
+}
+
+<form method="post">
+    <label asp-for="DestinationAccount"></label>
+    <input asp-for="DestinationAccount" />
+    <label asp-for="Amount"></label>
+    <input asp-for="Amount" />
+    <input type="submit" />
+</form>
