@@ -25,12 +25,12 @@
 
 ##  4. <a name='Roles'></a>Roles
 
-1. Update the `EnsurePopulated` method in the `SeedDataIdentity` class to also create a role.
+1. Update the `EnsurePopulatedAsync` method in the `SeedDataIdentity` class to also create a role.
 
 	```C#
 	var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-	var roleName = "ProductManagement";
+	var roleName = "DeleteProductsRole";
 
 	if (!await roleManager.RoleExistsAsync(roleName))
 		await roleManager.CreateAsync(new IdentityRole(roleName));

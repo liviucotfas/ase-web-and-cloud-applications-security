@@ -94,29 +94,6 @@
 	```
 	> The `AddDefaultIdentity` method adds a set of common identity services to the application, including a default UI, token providers, and configures authentication to use identity cookies. Further reading: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity
 
-3. Also update the `Configure` method as follows.
-
-	```C#
-	//......
- 	app.UseHttpsRedirection();
-	app.UseStaticFiles();
-
-	app.UseRouting();
-
-	// !!!! new/updated code
-	app.UseAuthentication();
-	app.UseAuthorization();
-	//}
-
-	app.UseEndpoints(endpoints => {
-		endpoints.MapControllerRoute("pagination", "Products/Page{productPage}", new { Controller = "Home", action = "Index" });
-		endpoints.MapDefaultControllerRoute();
-		// !!!! new/updated code
-		endpoints.MapRazorPages();
-		//}
-	});
-	```
-
 ##  3. <a name='CreatingandApplyingtheDatabaseMigration'></a>Creating and Applying the Database Migration
 
 1. Add a new migration to our application by running the following command.

@@ -55,7 +55,7 @@
 
         <title>@ViewBag.Title</title>
 
-        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
        <nav class="navbar bg-light navbar-expand-sm">

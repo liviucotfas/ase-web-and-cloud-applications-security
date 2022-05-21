@@ -32,7 +32,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 2. For "Authentication type" choose "Indvidual Accounts".
 
-3. Notice that in the `Data` folder the applciation already includes the necessary database migrations.
+3. Notice that in the `Data` folder the application already includes the necessary database migrations.
 
 4. Create an SQL Server database and update the connection string in `appsettings.json`.
 
@@ -44,7 +44,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 1. Add a new controller, called `BankAccountController`.
 2. Decorate the controller using the `[Authorize]` annotation in order to prevent any unauthenticated requests towards the actions on this controller.
-2. Add an action called `Transfer` to the `BankAccountController` as follows.
+3. Add an action called `Transfer` to the `BankAccountController` as follows.
 
     ```C#
     public IActionResult Transfer()
@@ -53,7 +53,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     }
     ```
 
-3. Add a new viewmodel class to the `Models` folder.
+4. Add a new viewmodel class to the `Models` folder.
 
     ```C#
     public class TransferViewModel
@@ -73,10 +73,10 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
     <h2>Transfer</h2>
 
-    @if(ViewBag.Message != null)
+    @if(TempData["message"] != null)
     {
         <div class="alert alert-danger">
-            @ViewBag.Message
+            @TempData["message"]
         </div>
     }
 

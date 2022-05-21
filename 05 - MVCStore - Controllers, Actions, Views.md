@@ -93,7 +93,7 @@
     @using MVCStore.Models
     ```
 
-    >The `@model `expression at the top of the file specifies that the view expects to receive a sequence of `Product` objects from the action method as its model data. We use an `@foreach` expression to work through the sequence and generate a simple set of HTML elements for each `Product` object that is received.
+    >The `@model` expression at the top of the file specifies that the view expects to receive a sequence of `Product` objects from the action method as its model data. We use an `@foreach` expression to work through the sequence and generate a simple set of HTML elements for each `Product` object that is received.
     The view doesn’t know where the `Product` objects came from, how they were obtained, or whether they represent all the products known to the application. Instead, the view deals only with how details of each `Product` are displayed using HTML elements.
 
 4. Add support for pagination so that the view displays a smaller number of products on a page, and the user can move from page to page to view the overall catalog. Update the `Index` method on the `HomeController` as follows.
@@ -147,10 +147,10 @@
 
 To support the tag helper that will display the page numbers, we need to pass information to the view about the number of pages available, the current page, and the total number of products in the repository. The easiest way to do this is to create a view model class, which is used specifically to pass data between a controller and a view.
 
-6. Create a `ViewModels` folder in your project. Add a class called `PagingInfo`.
+6. Create a `ViewModels` folder in your project. Add a class called `PagingInfoViewModel`.
 
     ```C#
-    public class PagingInfo
+    public class PagingInfoViewModel
     {
         public int TotalItems { get; set; }
         public int ItemsPerPage { get; set; }
@@ -178,7 +178,7 @@ To support the tag helper that will display the page numbers, we need to pass in
         [ViewContext]
         [HtmlAttributeNotBound]
         public ViewContext? ViewContext { get; set; }
-        public PagingInfo? PageModel { get; set; }
+        public PagingInfoViewModel? PageModel { get; set; }
         public string? PageAction { get; set; }
         public override void Process(TagHelperContext context,
         TagHelperOutput output)
@@ -202,7 +202,7 @@ To support the tag helper that will display the page numbers, we need to pass in
     }
     ```
     
-    >This tag helper populates a div element with a elements that correspond to pages of products. Tag helpers are one of the most useful ways that you can introduce C# logic into your views. The code for a tag helper can look tortured because C# and HTML don’t mix easily. But using tag helpers is preferable to including blocks of C# code in a view because a tag helper can be easily unit tested.
+    >This tag helper populates a `div` element with a elements that correspond to pages of products. Tag helpers are one of the most useful ways that you can introduce C# logic into your views. The code for a tag helper can look tortured because C# and HTML don’t mix easily. But using tag helpers is preferable to including blocks of C# code in a view because a tag helper can be easily unit tested.
 
 8. Register the new tag helper in the `_ViewImports.cshtml` file.
 
@@ -273,7 +273,7 @@ To support the tag helper that will display the page numbers, we need to pass in
     public class ProductsListViewModel
     {
         public IEnumerable<Product> Products { get; set; } = Enumerable.Empty<Product>();
-        public PagingInfo PagingInfo { get; set; } = new();
+        public PagingInfoViewModel PagingInfo { get; set; } = new();
     }
     ```
 
@@ -425,7 +425,7 @@ To support the tag helper that will display the page numbers, we need to pass in
     <div page-model="@Model?.PagingInfo" page-action="Index"></div>
     ```
 
-    > When Razor finds the page-model attribute on the div element, it asks the PageLinkTagHelper class to transform the element.
+    > When Razor finds the `page-model` attribute on the `div` element, it asks the `PageLinkTagHelper` class to transform the element.
 
 16. Let's improve the urls using the ASP.NET Core routing feature. Modify the `Main` method of the `Program` class as follows.
 
