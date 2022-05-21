@@ -1,11 +1,6 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MVCStore.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace MVCStore
 {
@@ -13,14 +8,44 @@ namespace MVCStore
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+                opts.UseSqlServer(
+                builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            });
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddRoleManager<RoleManager<IdentityRole>>()
+        .AddDefaultUI()
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+
+            // Configure the HTTP request pipeline.
+            var app = builder.Build();
+            app.UseStaticFiles();
+
+            // !!!! new/updated code {
+            app.UseAuthentication();
+            app.UseAuthorization();
+            //}
+
+            app.MapControllerRoute("pagination",
+                "Products/Page{productPage}",
+                new { Controller = "Home", action = "Index" });
+            app.MapDefaultControllerRoute();
+            app.MapRazorPages();
+
+            SeedData.EnsurePopulated(app);
+            Task.Run(async () =>
+            {
+                await SeedDataIdentity.EnsurePopulatedAsync(app);
+            }).Wait();
+
+            app.Run();
+        }
     }
 }

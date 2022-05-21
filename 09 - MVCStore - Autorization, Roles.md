@@ -19,9 +19,9 @@
 - Authorization Overview: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction
 
 ##  3. <a name='Introduction'></a>Introduction
-Authorization refers to the process that determines what a user is able to do. For example, an administrative user is allowed to create a document library, add documents, edit documents, and delete them. A non-administrative user working with the library is only authorized to read the documents.
+**Authorization** refers to the process that determines what a user is able to do. For example, an administrative user is allowed to create a document library, add documents, edit documents, and delete them. A non-administrative user working with the library is only authorized to read the documents.
 
-Authorization is orthogonal and independent from authentication. However, authorization requires an authentication mechanism. Authentication is the process of ascertaining who a user is. Authentication may create one or more identities for the current user.
+**Authorization** is orthogonal and independent from authentication. However, authorization requires an authentication mechanism. Authentication is the process of ascertaining who a user is. Authentication may create one or more identities for the current user.
 
 ##  4. <a name='Roles'></a>Roles
 
@@ -50,14 +50,14 @@ Authorization is orthogonal and independent from authentication. However, author
 		await userManager.AddToRoleAsync(adminWithRole, roleName);
 	}
 	```
-3. Modify the `ConfigureServices` in the `Startup` class as follows
+3. Modify the `Main` method in the `Program` class as follows
 
 	```C#
 	// !!!! new/updated code {
-	/*services.AddDefaultIdentity<IdentityUser>()
+	/*builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
 		.AddEntityFrameworkStores<ApplicationDbContext>();*/
 
-	services.AddIdentity<IdentityUser, IdentityRole>()
+	builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 		.AddRoleManager<RoleManager<IdentityRole>>()
 		.AddDefaultUI()
 		.AddEntityFrameworkStores<ApplicationDbContext>();
@@ -67,11 +67,23 @@ Authorization is orthogonal and independent from authentication. However, author
 4. Update the last few lines in the `Index.cshtml` corresponding to the `AdminController` as follows.
 
 	```HTML
-	<a asp-action="Create" class="btn btn-primary mb-3
-   	@if(!User.IsInRole("ProductManagement")){
-		@: disabled
-	   }
-   	">Add Product</a>
+	<td class="text-center">
+		<a asp-action="Edit" class="btn btn-sm btn-warning"
+		asp-route-productId="@item.ProductID">
+			Edit
+		</a>
+		@if (User.IsInRole("ProductManagement"))
+		{
+			<form 
+				asp-action="Delete" 
+				method="post" style="display: inline">
+				<input type="hidden" name="ProductId" value="@item.ProductID" />
+				<button type="submit" class="btn btn-danger btn-sm">
+					Delete
+				</button>
+			</form>
+		}
+    </td>
 	```
 
 5. You should decorate the actions that will only be available to users that have the `ProductManagement` role as follows.

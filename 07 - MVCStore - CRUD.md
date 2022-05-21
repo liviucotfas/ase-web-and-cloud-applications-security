@@ -58,9 +58,11 @@
         <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
-        <div class="bg-dark text-white p-2">
-            <span class="navbar-brand ml-2">MVC STORE</span>
-        </div>
+       <nav class="navbar bg-light navbar-expand-sm">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0">MVCStore</span>
+            </div>
+        </nav>
 
         <div class="container-fluid">
             @RenderBody()
@@ -70,6 +72,8 @@
     </body>
     </html>
     ```
+
+    > For navbars that never collapse, add the `.navbar-expand` class on the navbar. Link: https://getbootstrap.com/docs/4.0/components/navbar/
 
 3. Add a veiew corrsponding to the `Index` action in the `Admin` controller.
 

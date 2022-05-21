@@ -43,13 +43,14 @@
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+           builder.Services.AddDbContext<ApplicationDbContext>(opts => {
+            opts.UseSqlServer(
+            builder.Configuration["ConnectionStrings:DefaultConnection"]);
+        });
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 			 // !!!! new/updated code {
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 			//}
             builder.Services.AddControllersWithViews();
@@ -83,6 +84,9 @@
                 new { Controller = "Home", action = "Index" });
             //}
             app.MapDefaultControllerRoute();
+            // !!!! new/updated code {
+            app.MapRazorPages();
+            //}
 
             app.Run();
         }
@@ -135,7 +139,7 @@
     {
         private const string adminEmail = "admin@test.com";
         private const string adminPassword = "Secret123$";
-        public static async Task EnsurePopulated(IApplicationBuilder app)
+        public static async Task EnsurePopulatedAsync(IApplicationBuilder app)
         {
             var serviceProvider = app.ApplicationServices
             .CreateScope().ServiceProvider;
@@ -160,7 +164,7 @@
 	```C#
 	Task.Run(async () =>
 		{
-			await SeedDataIdentity.EnsurePopulated(app);
+			await SeedDataIdentity.EnsurePopulatedAsync(app);
 		}).Wait(); 
 	```
 
@@ -190,14 +194,18 @@
 7. Include the `LoginPartial` in the `_AdminLayout` file
 
 	```HTML
- 	<div class="bg-dark text-white p-2">
-        <span class="navbar-brand ml-2">MVC STORE</span>
-        <!-- !!!! new/updated code { -->
-        <div style="background-color:white;display:inline-block;">
-            <partial name="_LoginPartial" />
+    <nav class="navbar bg-light navbar-expand-sm">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0">MVCStore</span>
+             <!-- !!!! new/updated code { -->
+            <div class="d-sm-inline-flex justify-content-between">
+                <partial name="_LoginPartial" />
+            </div>
+            <!-- } -->
         </div>
-        <!-- } -->
-    </div>
+    </nav>
 	```
+
+    > `d-inline-flex` creates an inline flexbox container: https://getbootstrap.com/docs/5.2/utilities/display/#notation. For `sm` check https://getbootstrap.com/docs/5.2/layout/breakpoints/#available-breakpoints .
 
 ##  6. <a name='Bibliography'></a>Bibliography

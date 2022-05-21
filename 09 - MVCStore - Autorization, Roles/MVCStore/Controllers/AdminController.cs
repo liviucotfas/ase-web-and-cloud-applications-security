@@ -2,10 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCStore.Data;
 using MVCStore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MVCStore.Controllers
 {
@@ -21,7 +17,7 @@ namespace MVCStore.Controllers
 		{
 			return View(repository.Products);
 		}
-		public IActionResult Edit(int productId)
+        public IActionResult Edit(int productId)
 		{
 			var product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
 			return View(product);
@@ -46,6 +42,7 @@ namespace MVCStore.Controllers
             return View("Edit", new Product());
         }
         [HttpPost]
+        [Authorize(Roles = "ProductManagement")]
         public async Task<IActionResult> Delete(int productId)
         {
             Product deletedProduct = await repository.DeleteProductAsync(productId);

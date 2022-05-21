@@ -1,23 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCStore.Data;
 using MVCStore.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MVCStore.Controllers
 {
     public class HomeController : Controller
     {
         private IStoreRepository repository;
-        public int PageSize = 2;
-
         public HomeController(IStoreRepository repo)
         {
             repository = repo;
         }
-        public IActionResult Index(int productPage = 1)
+        public int PageSize = 2;
+        public ViewResult Index(int productPage = 1)
         {
             var viewModel = new ProductsListViewModel
             {

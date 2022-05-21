@@ -2,22 +2,23 @@
 
 <html lang="en">
 <head>
-    <title>@ViewBag.Title</title>
-
-    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+
+    <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="bg-dark text-white p-2">
-        <span class="navbar-brand ml-2">MVC STORE</span>
-
-        <div style="background-color:white;display:inline-block;">
-            <partial name="_LoginPartial" />
+    <nav class="navbar bg-light navbar-expand-sm">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0">MVCStore</span>
+             <!-- !!!! new/updated code { -->
+            <div class="d-sm-inline-flex justify-content-between">
+                <partial name="_LoginPartial" />
+            </div>
+            <!-- } -->
         </div>
-
-    </div>
+    </nav>
 
     <div class="container-fluid">
         @if (TempData["message"] != null)
