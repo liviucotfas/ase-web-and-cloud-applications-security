@@ -16,7 +16,7 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
-- configuring the folder structure
+- configuring the folder structure;
 - configuring services;
 - configuring middleware components;
 - configuring the Razor View Engine (importing types, layout page);
