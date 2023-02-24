@@ -223,7 +223,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 1. Update the HomeController as follows.
 
-    > Handing `GET` and `POST` requests in separate C# methods helps to keep the controller code tidy, since the two methods have different responsibilities. Both action methods are invoked by the same URL, but MVC makes sure that the appropriate method is called, based on whether we are dealing with a GET or POST request.
+    > Handing `GET` and `POST` requests in separate C# methods helps to keep the controller code tidy, since the two methods have different responsibilities. Both action methods are invoked by the same URL, but MVC makes sure that the appropriate method is called, based on whether we are dealing with a `GET` or `POST` request.
 
     ```C#
     public class HomeController : Controller {
@@ -381,7 +381,7 @@ Imagine that we want to implement an application that allows people to electroni
         public bool? WillAttend { get; set; }
     }
     ```
-    >Notice that a nullable bool was used for the WillAttend property. We did this so that we could apply the Required validation attribute. If we had used a regular bool, the value we received through model binding could be only true or false, and we would not be able to tell whether the user had selected a value. A nullable bool has three possible values: true, false, and null. The browser sends a null value if the user has not selected a value, and this causes the Required attribute to report a validation error. This is a nice example of how MVC elegantly blends C# features with HTML and HTTP. 
+    >Notice that a nullable bool was used for the `WillAttend` property. We did this so that we could apply the `Required` validation attribute. If we had used a regular bool, the value we received through model binding could be only true or false, and we would not be able to tell whether the user had selected a value. A nullable bool has three possible values: true, false, and null. The browser sends a null value if the user has not selected a value, and this causes the Required attribute to report a validation error. This is a nice example of how MVC elegantly blends C# features with HTML and HTTP. 
 
 2. Update the `RsvpForm` action on the `HomeController` as follows. We check to see whether there has been a validation problem using the `ModelState.IsValid` property in the controller class.
 
