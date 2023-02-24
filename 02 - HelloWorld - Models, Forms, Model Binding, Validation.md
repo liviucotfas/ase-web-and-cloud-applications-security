@@ -433,10 +433,6 @@ Imagine that we want to implement an application that allows people to electroni
     <link rel="stylesheet" href="~/css/site.css" />
     ```
 
-**Assignment (for you to solve)**
-1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
-    Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
-
 ##  12. <a name='StylingtheContent'></a>Styling the Content
 
 > Bootstrap is already included in the project. If you are not familiar with it check [http://getbootstrap.com/](http://getbootstrap.com/)
@@ -574,3 +570,7 @@ Imagine that we want to implement an application that allows people to electroni
     </body>
     </html>
     ```
+
+**Assignment (for you to solve)**
+1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
+    Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
