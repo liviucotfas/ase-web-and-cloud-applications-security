@@ -17,9 +17,9 @@
 ##  1. <a name='LearningObjectives'></a>Learning Objectives
 - creating ASP.NET project
 - adding controllers
-- working with actions that return a string
-- working with actions that return a View
-- communicating between the Controller and the View using the ViewBag
+- working with actions that return a `string`
+- working with actions that return a `View`
+- communicating between the `Controller` and the `View` using the `ViewBag`
 - understanding routes
 
 ##  2. <a name='Creatingtheproject'></a>Creating the project
