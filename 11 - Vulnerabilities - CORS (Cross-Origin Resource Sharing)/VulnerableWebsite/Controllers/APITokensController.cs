@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IronBankWeb.Controllers
 {
     [Authorize]
-    public class ApiSecretsController : Controller
+    public class APITokensController : Controller
     {
         public IActionResult Index()
         {

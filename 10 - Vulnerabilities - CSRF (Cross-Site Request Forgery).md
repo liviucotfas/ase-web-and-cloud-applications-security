@@ -1,4 +1,4 @@
-# Cross-Site Request Forgery (XSRF/CSRF) attacks 
+# Cross-Site Request Forgery (XSRF/CSRF) Attacks 
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
