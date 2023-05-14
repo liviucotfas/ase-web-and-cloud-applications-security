@@ -1,7 +1,13 @@
 #  Vulnerabilities - CORS (Cross-Origin Resource Sharing) Attacks
 
 <!-- vscode-markdown-toc -->
-* 1. [Bibliography](#Bibliography)
+* 1. [Objectives](#Objectives)
+* 2. [Documentation](#Documentation)
+* 3. [Scenario](#Scenario)
+* 4. [Step 1 - Create the first application (the one conaining the secret)](#Step1-Createthefirstapplicationtheoneconainingthesecret)
+* 5. [Step 2 - Create the second application (that is vulnerable to XSS)](#Step2-CreatethesecondapplicationthatisvulnerabletoXSS)
+* 6. [Step 3 - Performing the attack](#Step3-Performingtheattack)
+* 7. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -9,12 +15,12 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc --> 
 
-## Objectives
+##  1. <a name='Objectives'></a>Objectives
 
-## Documentation
+##  2. <a name='Documentation'></a>Documentation
 You can learn more details about this type of attack at https://portswigger.net/web-security/cors . 
 
-## Scenario
+##  3. <a name='Scenario'></a>Scenario
 In the following we want to focus on "Exploiting XSS via CORS trust relationships" 
 
 > Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to cross-site scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application. Source: https://portswigger.net/web-security/cors
@@ -31,7 +37,7 @@ Let's suppose that the attacker has already been able to perform a successful **
             .then(html => console.log(html)) // here we could send the data
 ```
 
-## Step 1 - Create the first application (the one conaining the secret)
+##  4. <a name='Step1-Createthefirstapplicationtheoneconainingthesecret'></a>Step 1 - Create the first application (the one conaining the secret)
 1. In an existing or a new application supporting implementing individual user accounts add the following `APITokensController`:
 
     ```
@@ -56,7 +62,7 @@ Let's suppose that the attacker has already been able to perform a successful **
 
     Access Token: BKBEHGIE87274234293
     ```
-## Step 2 - Create the second application (that is vulnerable to XSS)
+##  5. <a name='Step2-CreatethesecondapplicationthatisvulnerabletoXSS'></a>Step 2 - Create the second application (that is vulnerable to XSS)
 1. Create an application including a View that contains the following JavaScript code (let's suppose that it is there due to an **XSS** attack). Note: Don't forget to update the port.
 
     ```
@@ -65,15 +71,17 @@ Let's suppose that the attacker has already been able to perform a successful **
             .then(html => console.log(html)) // here we could send the data
     ```
 
-## Step 3 - Performing the attack
+##  6. <a name='Step3-Performingtheattack'></a>Step 3 - Performing the attack
 1. Check what gets displayed in the console for the second application.
-2. Update the `Main` method in the `Program` class as follows for the first application to enable **CORS**. Note: Don't forget to update the port.
+2. Update the `Main` method in the `Program` class as follows for the first application to enable **CORS**. 
+   > Note: Don't forget to update the port.
+
+    First, call `AddCors`.
     ```
-    var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-    
+    string corsPolicyForSecondDomain = "AllowSecondDomain";
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy(name: MyAllowSpecificOrigins,
+        options.AddPolicy(name: corsPolicyForSecondDomain,
                             policy =>
                             {
                                 policy.WithOrigins("https://localhost:7102")
@@ -83,10 +91,19 @@ Let's suppose that the attacker has already been able to perform a successful **
                             });
     });
     ```
+    Second, call `UseCors`.
+
+    ```
+    app.UseRouting();
+
+    app.UseCors(corsPolicyForSecondDomain);
+
+    app.UseAuthentication();
+    ```
 3. Check what gets displayed in the console for the second application.
 
 
-##  1. <a name='Bibliography'></a>Bibliography
+##  7. <a name='Bibliography'></a>Bibliography
 
 - Fetch method: https://developer.mozilla.org/en-US/docs/Web/API/fetch#credentials
 - ASP.NET CORS settings: https://learn.microsoft.com/en-us/aspnet/core/security
