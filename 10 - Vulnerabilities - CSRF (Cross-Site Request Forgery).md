@@ -97,7 +97,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     {
         if(ModelState.IsValid)
         {
-            ViewBag.Message = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+            TempData["Message"] = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
         }
         return View(transfer);
     }
