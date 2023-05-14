@@ -32,7 +32,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 2. For "Authentication type" choose "Indvidual Accounts".
 
-3. Notice that in the `Data` folder the application already includes the necessary database migrations.
+3. Notice that in the "Data" folder the application already includes the necessary database migrations.
 
 4. Create an SQL Server database and update the connection string in `appsettings.json`.
 
