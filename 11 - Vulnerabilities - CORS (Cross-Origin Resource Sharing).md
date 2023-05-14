@@ -57,7 +57,7 @@ Let's suppose that the attacker has already been able to perform a successful **
     Access Token: BKBEHGIE87274234293
     ```
 ## Step 2 - Create the second application (that is vulnerable to XSS)
-1. Create an application including a View that contains the following JavaScript code (let's suppose that it is there due to an XSS attack). Note: Don't forget to update the port.
+1. Create an application including a View that contains the following JavaScript code (let's suppose that it is there due to an **XSS** attack). Note: Don't forget to update the port.
 
     ```
     fetch('https://localhost:7093/APITokens', { credentials: "include" })
@@ -67,7 +67,7 @@ Let's suppose that the attacker has already been able to perform a successful **
 
 ## Step 3 - Performing the attack
 1. Check what gets displayed in the console for the second application.
-2. Update the `Main` method in the `Program` class as follows for the first application to enable CORS. Note: Don't forget to update the port.
+2. Update the `Main` method in the `Program` class as follows for the first application to enable **CORS**. Note: Don't forget to update the port.
     ```
     var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     
