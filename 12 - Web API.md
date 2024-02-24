@@ -3,7 +3,8 @@
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
 * 2. [Documentation](#Documentation)
-* 3. [Bibliography](#Bibliography)
+* 3. [Activity](#Activity)
+* 4. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -15,5 +16,9 @@
 
 ##  2. <a name='Documentation'></a>Documentation
 https://dotnet.microsoft.com/en-us/apps/aspnet/apis
+https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis?view=aspnetcore-7.0
 
-##  3. <a name='Bibliography'></a>Bibliography
+##  3. <a name='Activity'></a>Activity
+Follow the tutorial at https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
+
+##  4. <a name='Bibliography'></a>Bibliography
