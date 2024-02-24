@@ -126,8 +126,6 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
                 <input type="hidden" name="Amount" value="1000000">
                 <input type="submit" value="Click to collect your prize!">
             </form>
-
-
         </body>
     </html>
     ```
