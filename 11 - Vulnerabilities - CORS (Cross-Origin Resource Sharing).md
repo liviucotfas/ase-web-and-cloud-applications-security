@@ -23,7 +23,7 @@ You can learn more details about this type of attack at https://portswigger.net/
 ##  3. <a name='Scenario'></a>Scenario
 In the following we want to focus on "Exploiting XSS via CORS trust relationships" 
 
-> Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to cross-site scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application. Source: https://portswigger.net/web-security/cors
+> Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to Cross-Site Scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application. Source: https://portswigger.net/web-security/cors
 
 Let's suppose that we have two applications. The first one includes a webpage where users can find some secret information (ex: their API Key, serial number, etc.) after authenticating themselves. The second application could be a partner website or another website belonging to our organization that needs to be able to perform client-side requests to the first application.
 
@@ -63,7 +63,7 @@ Let's suppose that the attacker has already been able to perform a successful **
     Access Token: BKBEHGIE87274234293
     ```
 ##  5. <a name='Step2-CreatethesecondapplicationthatisvulnerabletoXSS'></a>Step 2 - Create the second application (that is vulnerable to XSS)
-1. Create an application including a View that contains the following JavaScript code (let's suppose that it is there due to an **XSS** attack). Note: Don't forget to update the port.
+1. Create an application including a page (`html`, `Razor`, etc.) that contains the following JavaScript code (let's suppose that it is there due to an **XSS** attack). Note: Don't forget to update the port.
 
     ```
     fetch('https://localhost:7093/APITokens', { credentials: "include" })
