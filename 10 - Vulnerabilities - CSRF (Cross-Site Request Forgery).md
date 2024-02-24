@@ -32,7 +32,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 2. For "Authentication type" choose "Indvidual Accounts".
 
-3. Notice that in the `Data` folder the application already includes the necessary database migrations.
+3. Notice that in the "Data" folder the application already includes the necessary database migrations.
 
 4. Create an SQL Server database and update the connection string in `appsettings.json`.
 
@@ -58,8 +58,10 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     ```C#
     public class TransferViewModel
     {
+        [Required]
         public string DestinationAccount { get; set; }
-        public decimal Amount { get; set; }
+        [Required]
+        public decimal? Amount { get; set; }
     }
     ```
 
@@ -97,7 +99,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     {
         if(ModelState.IsValid)
         {
-            ViewBag.Message = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+            TempData["Message"] = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
         }
         return View(transfer);
     }

@@ -11,10 +11,10 @@ namespace IronBankWeb
             var builder = WebApplication.CreateBuilder(args);
 
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            string corsPolicyForSecondDomain = "AllowSecondDomain";
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
+                options.AddPolicy(name: corsPolicyForSecondDomain,
                                   policy =>
                                   {
                                       policy.WithOrigins("https://localhost:7102")
@@ -60,7 +60,7 @@ namespace IronBankWeb
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(corsPolicyForSecondDomain);
 
             app.UseAuthentication();
             app.UseAuthorization();
