@@ -5,12 +5,9 @@
 </head>
 <body style="text-align:center;">
 
-    This could be a partner website or another applciation belonging to our organization for which we have made special CORS ((Cross-Origin Resource Sharing) settings.
-
-    
-
+    This could be a partner website or another application belonging to our organization for which we have made special CORS ((Cross-Origin Resource Sharing) settings.
     <script>
-        fetch('https://localhost:7093/BankAccount/Transfer', { credentials: "include" })
+        fetch('https://localhost:7093/ApiTokens/Index', { credentials: "include" })
             .then((response) => response.text())
             .then(html => console.log(html)) // here we could send the data
     </script>
