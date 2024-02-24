@@ -136,7 +136,10 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 ##  6. <a name='Attacks'></a>Attacks
 
-1. Check the cookie policy in Google Chome. Change the same site policy to none by adding the following code to the `Main` method of the `Program` class.
+1. Try to perform the attack. You will notice that in modern browsers the attack is not working. 
+2. Check the cookie policy in Google Chome.. Notice that the `AspNetCore.Identity.Application` cookie has the `SameSite` policy set to `Strict`. Let's change the `SameSite` policy to `SameSiteMode.None` by adding the following code to the `Main` method of the `Program` class.
+
+    > Potentially valid reasons for setting the `SameSite` policy to `SameSiteMode.None`: https://andrewlock.net/understanding-samesite-cookies/#:~:text=The%20one%20advantage%20of%20SameSite,and%20Lax%20won't%20work.
 
     ```C#
     builder.Services.ConfigureApplicationCookie(options =>
@@ -144,11 +147,20 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
         options.Cookie.SameSite = SameSiteMode.None;
     });
     ```
+3. Try to perform the attack again. The attack should work successfully. 
+4. Let's prevent the attack by adding the `[ValidateAntiForgeryToken]` annotation to the `Transfer` action, as shown below.
 
-2. 
-// asp-antiforgery="false"
-// [ValidateAntiForgeryToken]
-// TODO? Method using GET
+    ```C#
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Transfer(TransferViewModel transfer)
+    {
+        ....
+    }
+    ```
+5. Check the hidden input in the form and the cookies set by the application.
+
+    > Have you noticed that the token in the cookie and the one in the hidden input are different? You can read more about the reason at: https://stackoverflow.com/questions/20911470/why-is-there-a-difference-in-the-validateantiforgerytoken-cookie-value-and-hidde
 
 ##  7. <a name='Bibliography'></a>Bibliography
 - Prevent Cross-Site Request Forgery (XSRF/CSRF) attacks in ASP.NET Core: https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?

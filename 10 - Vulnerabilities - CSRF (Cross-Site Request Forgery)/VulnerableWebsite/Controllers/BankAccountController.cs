@@ -13,7 +13,7 @@ namespace IronBankWeb.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public IActionResult Transfer(TransferViewModel transfer)
         {
             if (ModelState.IsValid)
