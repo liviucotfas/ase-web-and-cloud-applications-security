@@ -74,7 +74,7 @@ Let's suppose that the attacker has already been able to perform a successful **
 ##  6. <a name='Step3-Performingtheattack'></a>Step 3 - Performing the attack
 1. Check what gets displayed in the console for the second application.
 2. Update the `Main` method in the `Program` class as follows for the first application to enable **CORS**. 
-   > Note: Don't forget to update the port.
+   > Note: Don't forget to update the port. You should run the applciationb using a webserver (e.g.,"Live Server" in VS Code, etc.)
 
     First, call `AddCors`.
     ```
