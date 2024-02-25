@@ -91,15 +91,16 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     </form>
     ```
 
-5. Add a POST method for the form in the View
+5. Add a `POST` method for the form in the View
 
     ```C#
     [HttpPost]
     public IActionResult Transfer(TransferViewModel transfer)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             TempData["Message"] = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+            return RedirectToAction(nameof(Transfer));
         }
         return View(transfer);
     }
@@ -138,6 +139,8 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 1. Try to perform the attack. You will notice that in modern browsers the attack is not working. 
 2. Check the cookie policy in Google Chome.. Notice that the `AspNetCore.Identity.Application` cookie has the `SameSite` policy set to `Strict`. Let's change the `SameSite` policy to `SameSiteMode.None` by adding the following code to the `Main` method of the `Program` class.
+
+    > Documentation for `SameSite`: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
 
     > Potentially valid reasons for setting the `SameSite` policy to `SameSiteMode.None`: https://andrewlock.net/understanding-samesite-cookies/#:~:text=The%20one%20advantage%20of%20SameSite,and%20Lax%20won't%20work.
 

@@ -18,7 +18,8 @@ namespace IronBankWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                ViewBag.Message = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+                TempData["Message"] = $"You have transfered {transfer.Amount} euros to {transfer.DestinationAccount}.";
+                return RedirectToAction(nameof(Transfer));
             }
             return View(transfer);
         }

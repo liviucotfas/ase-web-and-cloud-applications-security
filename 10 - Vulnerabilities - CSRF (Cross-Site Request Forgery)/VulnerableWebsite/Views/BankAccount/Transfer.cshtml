@@ -5,10 +5,10 @@
 
 <h2>Transfer</h2>
 
-@if (ViewBag.Message != null)
+@if (TempData["Message"] != null)
 {
     <div class="alert alert-danger">
-        @ViewBag.Message
+        @TempData["Message"]
     </div>
 }
 
