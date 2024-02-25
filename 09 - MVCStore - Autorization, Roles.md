@@ -86,7 +86,7 @@
     </td>
 	```
 
-5. You should decorate the actions that will only be available to users that have the `ProductManagement` role as follows.
+5. You should alos decorate the actions that will only be available to users that have the `ProductManagement` role as follows.
 
 	```C#
 	[Authorize(Roles = "ProductManagement")]
