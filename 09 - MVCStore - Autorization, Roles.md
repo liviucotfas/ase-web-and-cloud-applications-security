@@ -30,7 +30,7 @@
 	```C#
 	var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-	var roleName = "DeleteProductsRole";
+	var roleName = "ProductManagement";
 
 	if (!await roleManager.RoleExistsAsync(roleName))
 		await roleManager.CreateAsync(new IdentityRole(roleName));
