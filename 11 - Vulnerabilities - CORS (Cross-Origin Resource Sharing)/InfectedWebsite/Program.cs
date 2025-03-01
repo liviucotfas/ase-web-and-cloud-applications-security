@@ -1,4 +1,4 @@
-namespace InfectedWebsite
+namespace XSSVulnerableApplication
 {
     public class Program
     {

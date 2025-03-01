@@ -1,8 +1,8 @@
-﻿namespace IronBankWeb.Models
+﻿namespace MainApplication.Models
 {
     public class TransferViewModel
     {
-        public string DestinationAccount { get; set; }
+        public required string DestinationAccount { get; set; }
         public decimal Amount { get; set; }
     }
 }

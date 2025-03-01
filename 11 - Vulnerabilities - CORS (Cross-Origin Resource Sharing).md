@@ -23,7 +23,7 @@ You can learn more details about this type of attack at https://portswigger.net/
 ##  3. <a name='Scenario'></a>Scenario
 In the following we want to focus on "Exploiting XSS via CORS trust relationships" 
 
-> Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to Cross-Site Scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application. Source: https://portswigger.net/web-security/cors
+> Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to Cross-Site Scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application. Source: https://portswigger.net/web-security/cors .
 
 Let's suppose that we have two applications. The first one includes a webpage where users can find some secret information (ex: their API Key, serial number, etc.) after authenticating themselves. The second application could be a partner website or another website belonging to our organization that needs to be able to perform client-side requests to the first application.
 
@@ -38,7 +38,7 @@ Let's suppose that the attacker has already been able to perform a successful **
 ```
 
 ##  4. <a name='Step1-Createthefirstapplicationtheoneconainingthesecret'></a>Step 1 - Create the first application (the one conaining the secret)
-1. In an existing or a new application supporting implementing individual user accounts add the following `APITokensController`:
+1. In an existing or a new application implementing individual user accounts add the following `APITokensController` controller:
 
     ```
     [Authorize]

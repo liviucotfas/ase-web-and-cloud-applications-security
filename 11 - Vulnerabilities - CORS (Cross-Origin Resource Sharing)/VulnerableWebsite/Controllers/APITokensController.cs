@@ -1,8 +1,8 @@
-﻿using IronBankWeb.Models;
+﻿using MainApplication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IronBankWeb.Controllers
+namespace MainApplication.Controllers
 {
     [Authorize]
     public class APITokensController : Controller

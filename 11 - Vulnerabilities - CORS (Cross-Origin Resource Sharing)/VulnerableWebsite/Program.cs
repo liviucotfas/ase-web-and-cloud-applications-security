@@ -1,8 +1,8 @@
-using IronBankWeb.Data;
+using XSSVulnerableApplication.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace IronBankWeb
+namespace MainApplication
 {
     public class Program
     {
