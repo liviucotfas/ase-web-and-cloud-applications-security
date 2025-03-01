@@ -73,15 +73,12 @@ The output from the current application is just the string Hello World. In order
 
     > Visual Studio creates the Home and Shared folders automatically when the  Web Application template is used and puts in some placeholder views to get the project started.
 
-6. Change the `HomeController` as follows:
+6. Change the `Index` action as follows:
 
     ```c#
-	public class HomeController : Controller
+	public IActionResult Index()
 	{
-		public IActionResult Index()
-		{
-			return View("MyView");
-		}
+		return View("MyView");
 	}
     ```
 
