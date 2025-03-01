@@ -16,9 +16,9 @@
 
 ##  2. <a name='Documentation'></a>Documentation
 https://dotnet.microsoft.com/en-us/apps/aspnet/apis
-https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis?view=aspnetcore-7.0
+https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis
 
 ##  3. <a name='Activity'></a>Activity
-Follow the tutorial at https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
+Follow the tutorial at https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api
 
 ##  4. <a name='Bibliography'></a>Bibliography
