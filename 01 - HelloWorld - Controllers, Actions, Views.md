@@ -73,7 +73,7 @@ The output from the current application is just the string Hello World. In order
 
     > Visual Studio creates the Home and Shared folders automatically when the  Web Application template is used and puts in some placeholder views to get the project started.
 
-6. Change the `Index` action as follows:
+6. Modify the `Index` action in the `Home` controller as follows.
 
     ```c#
 	public IActionResult Index()
@@ -88,7 +88,7 @@ The output from the current application is just the string Hello World. In order
 
     > Visual Studio creates the `Home` and `Shared `folders automatically when the Web Application template is used and puts in some placeholder views to get the project started.
 
-8. Change the `HomeController` as follows:
+8. Modify the `Index` action in the `Home` controller as follows.
 
     ```c#
 	public class HomeController : Controller
@@ -127,17 +127,14 @@ The output from the current application is just the string Hello World. In order
 
 > One way to pass data from the controller to the view is by using the `ViewBag` object, which is a member of the `Controller` base class. `ViewBag` is a dynamic object to which you can assign arbitrary properties, making those values available in whatever view is subsequently rendered. 
 
-12. Modify the `HomeController` as follows.
+12. Modify the `Index` action in the `Home` controller as follows.
 
     ```C#
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-        public IActionResult Index()
-        {
-            int hour = DateTime.Now.Hour;
-            ViewBag.Greeting = hour < 12 ? "Good Morning" : "Good Afternoon";
-            return View();
-        }
+        int hour = DateTime.Now.Hour;
+        ViewBag.Greeting = hour < 12 ? "Good Morning" : "Good Afternoon";
+        return View();
     }
     ```
 
