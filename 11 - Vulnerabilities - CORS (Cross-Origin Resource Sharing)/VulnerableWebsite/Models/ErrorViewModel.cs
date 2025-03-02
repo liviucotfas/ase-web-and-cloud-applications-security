@@ -1,4 +1,4 @@
-namespace IronBankWeb.Models
+namespace MainApplication.Models
 {
     public class ErrorViewModel
     {

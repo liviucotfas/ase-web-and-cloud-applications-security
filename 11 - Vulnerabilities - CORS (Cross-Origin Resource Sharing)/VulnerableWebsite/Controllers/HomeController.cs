@@ -1,8 +1,8 @@
-﻿using IronBankWeb.Models;
+﻿using MainApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace IronBankWeb.Controllers
+namespace XSSVulnerableApplication.Controllers
 {
     public class HomeController : Controller
     {

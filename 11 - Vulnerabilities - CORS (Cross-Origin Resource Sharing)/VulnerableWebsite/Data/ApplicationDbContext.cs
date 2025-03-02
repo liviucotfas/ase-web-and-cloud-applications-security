@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace IronBankWeb.Data
+namespace XSSVulnerableApplication.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
