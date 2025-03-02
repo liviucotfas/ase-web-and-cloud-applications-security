@@ -35,7 +35,7 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 1. Install the packages `Microsoft.EntityFrameworkCore.Design` and `Microsoft.EntityFrameworkCore.SqlServer`.
 
 ##  3. <a name='DefiningtheConnectionString'></a>Defining the Connection String
-2. Create an empty database using the SQL Server Explorer panel.
+2. Create an empty database (example "ism-mvcstore") using the SQL Server Explorer panel.
 
 3. Modify the `appsettings.json` (or `appsettings.Development.json`) file in order to store the connection string.
 
