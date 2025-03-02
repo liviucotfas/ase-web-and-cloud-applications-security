@@ -34,7 +34,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 
 3. Notice that in the "Data" folder the application already includes the necessary database migrations.
 
-4. Create an SQL Server database and update the connection string in `appsettings.json`.
+4. Create an SQL Server database (such as "ism-csrf") and update the connection string in `appsettings.json`.
 
 5. Run the application.
 
@@ -138,7 +138,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
 ##  6. <a name='Attacks'></a>Attacks
 
 1. Try to perform the attack. You will notice that in modern browsers the attack is not working. 
-2. Check the cookie policy in Google Chome.. Notice that the `AspNetCore.Identity.Application` cookie has the `SameSite` policy set to `Strict`. Let's change the `SameSite` policy to `SameSiteMode.None` by adding the following code to the `Main` method of the `Program` class.
+2. Check the cookie policy in Google Chome.. Notice that the `AspNetCore.Identity.Application` cookie has the `SameSite` policy set to `Strict` (or `Lax`). Let's change the `SameSite` policy to `SameSiteMode.None` by adding the following code to the `Main` method of the `Program` class.
 
     > Documentation for `SameSite`: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
 
