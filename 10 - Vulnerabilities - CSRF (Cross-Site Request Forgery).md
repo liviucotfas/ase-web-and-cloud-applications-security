@@ -59,7 +59,7 @@ Cross-site request forgery (also known as XSRF or CSRF, pronounced see-surf) is 
     public class TransferViewModel
     {
         [Required]
-        public string DestinationAccount { get; set; }
+        public required string DestinationAccount { get; set; }
         [Required]
         public decimal? Amount { get; set; }
     }
