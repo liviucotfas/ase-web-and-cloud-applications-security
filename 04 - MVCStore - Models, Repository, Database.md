@@ -49,7 +49,6 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
     }
     ```
 
-
 > **Security Warning:** Never store passwords or other sensitive data in source code or configuration files. Production secrets must not be used for development or test environments, and secrets must not be deployed with the application. Use secure secret management solutions for production credentials. See [ASP.NET Core App Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) for implementation guidance.
 
 ##  4. <a name='StartingtheDataModel'></a>Starting the Data Model
@@ -156,8 +155,7 @@ Entity Framework Core must be configured so that it knows the type of database t
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(
-            builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
         // !!!! new/updated code {
@@ -165,9 +163,6 @@ Entity Framework Core must be configured so that it knows the type of database t
         //}
 
         var app = builder.Build();
-        app.UseStaticFiles();
-        app.MapDefaultControllerRoute();
-        app.Run();
     }
     ```
     > The `AddScoped` method creates a service where each HTTP request gets its own repository object, which is the way that Entity Framework Core is typically used.
@@ -176,18 +171,31 @@ Entity Framework Core must be configured so that it knows the type of database t
 
 > Entity Framework Core is able to generate the schema for the database using the data model classes through a feature called migrations. When you prepare a migration, Entity Framework Core creates a C# class that contains the SQL commands required to prepare the database. If you need to modify your model classes, then you can create a new migration that contains the SQL commands required to reflect the changes.
 
-12.  Run the following command to generate the initial migration using the `Package Manager Console` panel.
+12.  Run one of the following command to generate the initial migration.
 
+    Package Manager Console` panel:
     ```
     Add-Migration Initial
     ```
     
     > If the command is not recognized, install the package `Microsoft.EntityFrameworkCore.Tools` 
 
+    Alternative using .NET CLI:
+    
+    ```
+    dotnet ef migrations add Initial
+    ```
+
 13. Run the following command to update the database.
 
+    Package Manager Console panel:
     ```
     Update-Database
+    ```
+
+    Alternative using .NET CLI: 
+    ```
+    dotnet ef database update
     ```
 
 14. Check the tables that have been created in the database.
@@ -199,7 +207,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
 
     ```C#
-     public static class SeedData
+    public static class SeedData
     {
         public static void EnsurePopulated(IApplicationBuilder app)
         {
@@ -256,8 +264,7 @@ Entity Framework Core must be configured so that it knows the type of database t
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(
-            builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
         builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
