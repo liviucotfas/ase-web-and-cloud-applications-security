@@ -20,14 +20,14 @@
 - configuring services;
 - configuring middleware components;
 - configuring the Razor View Engine (importing types, layout page);
-- creating the defualt controller, action and view.
+- creating the default controller, action and view.
 
 ##  2. <a name='CreatingtheProjects'></a>Creating the Projects
 1. To create the project, select `New > Project` from the Visual Studio `File` menu and choose the `ASP.NET Core Empty`. Name the project `MVCStore`. Check the "Do not use top-level statements" checkbox.
 2. Run the project. Why do you think that we are seeing the "Hello World!" text?
-3. Right-click on the solution item in the Solution Explorer and select **Add > New Project** from the popup menu. Select **xUnit Test Project** from the list of project templates and set the name of the project to MVCStore.Tests. Click OK to create the unit test project. 
+3. Right-click on the solution item in the Solution Explorer and select **Add > New Project** from the popup menu. Select **xUnit Test Project** from the list of project templates and set the name of the project to `MVCStore.Tests`. Click OK to create the unit test project. 
 4.  Add a reference towards the `MVCStore` project.
-5.  Install the Moq NuGet package.
+5.  Install the **Moq** NuGet package.
 
 ##  3. <a name='CreatingtheFolderStructure'></a>Creating the Folder Structure
 
@@ -45,12 +45,49 @@
 7. Modify the `main` method in the `Program` class as follows in order to enable the MVC framework.
 
     ``` c#
+    // Existing code
     var builder = WebApplication.CreateBuilder(args);
+
+    // New code
+    // Add services to the container.
     builder.Services.AddControllersWithViews();
+
     var app = builder.Build();
     //app.MapGet("/", () => "Hello World!");
-    app.UseStaticFiles();
-    app.MapDefaultControllerRoute();
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        //app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    // Redirects HTTP requests to HTTPS automatically
+    // Enhances security by ensuring all traffic uses encrypted connections
+    app.UseHttpsRedirection();
+    // Adds endpoint routing to the pipeline
+    // Matches incoming requests to available endpoints (controllers, actions, etc.)
+    // Must be placed before UseAuthorization() and endpoint mapping methods
+    app.UseRouting();
+
+    // Enables authorization middleware
+    // Checks if the user is authorized to access the requested resource
+    // Should be placed after UseRouting() and before endpoint mapping methods
+    app.UseAuthorization();
+
+    // Maps static file assets (CSS, JavaScript, images) with optimization
+    app.MapStaticAssets();
+
+    // Defines the default routing pattern for MVC controllers
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
+        // Chains static asset support to the route
+        // Enables fingerprinting for static files referenced in views served by this route
+        .WithStaticAssets();
+
+    // Existing code
     app.Run();
     ```
 
@@ -58,17 +95,17 @@
 
     >`AddControllersWithViews()` adds the services for controllers. This method configures the MVC services for the commonly used features with controllers with views. It combines the effects of `AddMvcCore(IServiceCollection)`, `AddApiExplorer(IMvcCoreBuilder)`, `AddAuthorization(IMvcCoreBuilder)`, `AddCors(IMvcCoreBuilder)`, `AddDataAnnotations(IMvcCoreBuilder)`, `AddFormatterMappings(IMvcCoreBuilder)`, `AddCacheTagHelper(IMvcCoreBuilder)`, `AddViews(IMvcCoreBuilder)`, and `AddRazorViewEngine(IMvcCoreBuilder)`.
 
-    >Documenattion: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.mvcservicecollectionextensions.addcontrollerswithviews
+    >Documentation: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.mvcservicecollectionextensions.addcontrollerswithviews
 
     >The `UseStaticFiles` method enables support for serving static content from the `wwwroot` folder.
 
-    ASP.NET Core receives HTTP requests and passes them along a request pipeline, which is populated with middleware components registered using the app property. Each middleware component is able to inspect requests, modify them, generate a response, or modify the responses that other components have produced. One especially important middleware component provides the endpoint routing feature, which matches HTTP requests to the application features—known as endpoints—able to produce responses for them. The endpoint routing feature is added to the request pipeline automatically, and the `MapDefaultControllerRoute` registers the MVC Framework as a source of endpoints using a default convention for mapping requests to classes and methods.
+    ASP.NET Core receives HTTP requests and passes them along a request pipeline, which is populated with middleware components registered using the app property. Each middleware component is able to inspect requests, modify them, generate a response, or modify the responses that other components have produced. One especially important middleware component provides the endpoint routing feature, which matches HTTP requests to the application features—known as endpoints—able to produce responses for them. The endpoint routing feature is added to the request pipeline automatically, and the `MapControllerRoute` registers the MVC Framework as a source of endpoints using a default convention for mapping requests to classes and methods.
 
 ##  5. <a name='ConfiguringtheRazorViewEngine'></a>Configuring the Razor View Engine
 
 > The Razor view engine is responsible for processing view files, which have the **.cshtml** extension, to generate HTML responses.
 
-1.  Add the Razor View Imports. Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Imports" item from the ASP.NET Core > Web > ASP.NET category.
+1.  Add the Razor View Imports. Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Imports" item from the ASP.NET Core > Web > ASP.NET category. The name of the file should be `_ViewImports.cshtml`. Add the following statements to the file.
     
     ```c#
     @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -76,7 +113,7 @@
 
     >The `@using` statement will allow us to use the types in the MVCStore.Models namespace in views without needing to refer to the namespace. The `@addTagHelper` statement enables the built-in tag helpers.
 
-2.  Add the Razor View Start.
+2.  Add the Razor View Start. Right-click the Views folder, select Add > New Item from the pop-up menu, and select the "Razor View Start" item from the ASP.NET Core > Web > ASP.NET category. The name of the file should be `_ViewStart.cshtml`. Add the following statements to the file.
 
     ```C#
     @{
@@ -85,7 +122,7 @@
     ```
 
     > The view start file tells Razor to use a layout file in the HTML that it generates, reducing the amount of duplication in views.
-3.  Add the Razor Layout. Add a Razor layout file named _Layout.cshtml to the Views/Shared folder, with the content show below.
+3.  Add the Razor Layout. Add a Razor layout file named `_Layout.cshtml` to the Views/Shared folder, with the content show below.
 
     ```CSHTML
     <!DOCTYPE html>
