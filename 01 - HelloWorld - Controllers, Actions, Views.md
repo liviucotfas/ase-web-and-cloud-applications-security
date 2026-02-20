@@ -81,7 +81,7 @@ The output from the current application is just the string "Hello World". In ord
 	}
     ```
 
-7. Run the application and notice the error.
+7. Run the application and notice the error — you should see a view-not-found error because no view exists yet.
 
     > Views are stored in the `Views` folder, organized into subfolders. Views that are associated with the `Home` controller, for example, are stored in a folder called `Views/Home`. Views that are not specific to a single controller are stored in a folder called `Views/Shared`.
 
