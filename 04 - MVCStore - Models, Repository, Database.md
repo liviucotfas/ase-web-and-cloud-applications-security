@@ -261,17 +261,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     ```C#
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-        });
-
-        builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
-
-        var app = builder.Build();
-        app.UseStaticFiles();
-        app.MapDefaultControllerRoute();
+        ......
 
         // !!!! new/updated code {
         SeedData.EnsurePopulated(app);
