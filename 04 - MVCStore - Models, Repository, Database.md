@@ -43,7 +43,7 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 
     ```
     {
-         "ConnectionStrings": {
+        "ConnectionStrings": {
             "DefaultConnection": "...."
         }
     }
