@@ -2,21 +2,21 @@
 
 namespace MVCStore.Data
 {
-    public class EFStoreRepository : IStoreRepository
-    {
-        private ApplicationDbContext context;
+	public class EFStoreRepository : IStoreRepository
+	{
+		private ApplicationDbContext context;
 
-        public EFStoreRepository(ApplicationDbContext ctx)
-        {
-            context = ctx;
-        }
+		public EFStoreRepository(ApplicationDbContext ctx)
+		{
+			context = ctx;
+		}
 
-        public IQueryable<Product> Products
-        {
-            get
-            {
-                return context.Products;
-            }
-        }
-    }
+		public IQueryable<Product> Products
+		{
+			get
+			{
+				return context.Products;
+			}
+		}
+	}
 }

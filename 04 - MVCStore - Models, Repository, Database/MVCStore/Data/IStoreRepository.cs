@@ -2,7 +2,7 @@
 
 namespace MVCStore.Data
 {
-    public interface IStoreRepository
+	public interface IStoreRepository
 	{
 		IQueryable<Product> Products { get; }
 	}

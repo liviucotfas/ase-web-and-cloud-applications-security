@@ -209,52 +209,56 @@ Entity Framework Core must be configured so that it knows the type of database t
     ```C#
     public static class SeedData
     {
-        public static void EnsurePopulated(IApplicationBuilder app)
+        public static void EnsurePopulated(WebApplication app)
         {
-            ApplicationDbContext context = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
-            }
-            
-            if (!context.Products.Any())
-            {
-                context.Products.AddRange(
-                new Product
+                /* Not recommended for production code, but useful during development to automatically create and update the database. In production, you should use the command line tools or CI/CD to apply migrations to the database.
+                if (context.Database.GetPendingMigrations().Any())
                 {
-                    Name = "Kayak",
-                    Description = "A boat for one person",
-                    Category = "Watersports",
-                    Price = 275
-                },
-                new Product
+                    context.Database.Migrate();
+                }*/
+                
+                if (!context.Products.Any())
                 {
-                    Name = "Lifejacket",
-                    Description = "Protective and fashionable",
-                    Category = "Watersports",
-                    Price = 48.95m
-                },
-                new Product
-                {
-                    Name = "Soccer Ball",
-                    Description = "FIFA-approved size and weight",
-                    Category = "Soccer",
-                    Price = 19.50m
+                    context.Products.AddRange(
+                    new Product
+                    {
+                        Name = "Kayak",
+                        Description = "A boat for one person",
+                        Category = "Watersports",
+                        Price = 275
+                    },
+                    new Product
+                    {
+                        Name = "Lifejacket",
+                        Description = "Protective and fashionable",
+                        Category = "Watersports",
+                        Price = 48.95m
+                    },
+                    new Product
+                    {
+                        Name = "Soccer Ball",
+                        Description = "FIFA-approved size and weight",
+                        Category = "Soccer",
+                        Price = 19.50m
+                    }
+                    );
+
+                    context.SaveChanges();
                 }
-                );
-
-                context.SaveChanges();
             }
         }
     }
     ```
 
-    >The static `EnsurePopulated` method receives an `IApplicationBuilder `argument, which is the interface used in the `Main` method of the `Program` class to register middleware components to handle HTTP requests. 
+    >The static `EnsurePopulated` method receives an `WebApplication `argument, which is the interface used in the `Main` method of the `Program` class to register middleware components to handle HTTP requests. 
     
-    >`IApplicationBuilder` also provides access to the application’s services, including the Entity Framework Core database context service.
+    >`WebApplication` also provides access to the application’s services, including the Entity Framework Core database context service.
 
-    > The `EnsurePopulated` method obtains a `ApplicationDbContext` object through the `IApplicationBuilder` interface and calls the `Database.Migrate` method if there are any pending migrations, which means that the database will be created and prepared so that it can store `Product` objects. Next, the number of `Product` objects in the database is checked. If there are no objects in the database, then the database is populated using a collection of `Product` objects using the `AddRange` method and then written to the database using the `SaveChanges` method.
+    > The `EnsurePopulated` method obtains a `ApplicationDbContext` object through the `WebApplication` interface and calls the `Database.Migrate` method if there are any pending migrations, which means that the database will be created and prepared so that it can store `Product` objects. Next, the number of `Product` objects in the database is checked. If there are no objects in the database, then the database is populated using a collection of `Product` objects using the `AddRange` method and then written to the database using the `SaveChanges` method.
 
 15. Call the `EnsurePopulated` in the `Main` method of the `Program` class.
 
@@ -266,6 +270,10 @@ Entity Framework Core must be configured so that it knows the type of database t
         // !!!! new/updated code {
         SeedData.EnsurePopulated(app);
         //}
+
+        app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.Run();
     }
