@@ -35,7 +35,7 @@ Imagine that we want to implement an application that allows people to electroni
  - validation for the RSVP form, which will display a thank-you page;
  - a summary page that shows who is coming to the event.
 
- > Note: the application will not persisit the answers to any storage.
+ > Note: the application will not persist the answers to any storage.
 
 1. Create a new project named `PartyInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template. Check the "Do not use top-level statements" checkbox.
 2. Let's start with a little cleanup. Remove from the `Views` folder the `Home` and `Shared` folders. Remove from the `Models` folder the `ErrorViewModel` class.
@@ -137,7 +137,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 ##  5. <a name='LinkingActionMethods'></a>Linking Action Methods
 
-1. We want to be able to create a link from the `Index` view so that guests can see the RsvpForm view without having to know the URL that targets a specific action method. Let's update de `Index` view as follows.
+1. We want to be able to create a link from the `Index` view so that guests can see the RsvpForm view without having to know the URL that targets a specific action method. Let's update the `Index` view as follows.
 
     > The **asp-action** attribute is an example of a **tag helper attribute**, which is an instruction for Razor that will be performed when the view is rendered. The asp-action attribute is an instruction to add a href attribute to the a element that contains a URL for an action method.
 
@@ -429,7 +429,7 @@ Imagine that we want to implement an application that allows people to electroni
     .validation-summary-errors { font-weight: bold; color: #f00;}
     .validation-summary-valid  { display: none;}
     ```
-6. Reference the stylesheet
+6. Reference the stylesheet in a layout view so it is shared by all pages.
 
     > Notice that the `wwwroot` folder is omitted from the URL. The default configuration for ASP.NET includes support for serving static content, such as images, CSS stylesheets, and JavaScript files, and it maps requests to the `wwwroot` folder automatically.
 
@@ -441,139 +441,134 @@ Imagine that we want to implement an application that allows people to electroni
 
 > Bootstrap is already included in the project. If you are not familiar with it check [http://getbootstrap.com/](http://getbootstrap.com/)
 
-1. Style the `Index.cstml` file as follows
+1. Add a shared layout so CSS is included once for the whole site.
+
+    Create the `Views/Shared/_Layout.cshtml` file with the following content:
 
     ```HTML
-    @{
-        Layout = null;
-    }
     <!DOCTYPE html>
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
-        <title>Index</title>
-    </head>
-    <body>
-        <div class="text-center m-2">
-            <h3> We're going to have an exciting party!</h3>
-            <h4>And YOU are invited!</h4>
-            <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
-        </div>
-    </body>
-    </html>
-    ```
-2. Style the `RsvpForm.cstml` file as follows
-
-    ```HTML
-    @model CourseInvites.Models.GuestResponse
-    @{
-        Layout = null;
-    }
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>RsvpForm</title>
+        <title>@ViewData["Title"]</title>
         <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </head>
     <body>
-        <form asp-action="RsvpForm" method="post" class="m-2">
-            <div asp-validation-summary="All"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="form-label">Your name:</label>
-                <input asp-for="Name" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="form-label">Your email:</label>
-                <input asp-for="Email" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="form-label">Your phone:</label>
-                <input asp-for="Phone" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="WillAttend" class="form-label">
-                    Will you attend?
-                </label>
-                <select asp-for="WillAttend" class="form-control">
-                    <option value="">Choose an option</option>
-                    <option value="true">Yes, I'll be there</option>
-                    <option value="false">No, I can't come</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Submit RSVP</button>
-        </form>
+        <div class="container py-3">
+            @RenderBody()
+        </div>
     </body>
     </html>
     ```
 
- 3. Style the `Thanks.cstml` file as follows
+    Add a `Views/_ViewStart.cshtml` file so all views use the layout by default:
+
+    ```HTML
+    @{
+        Layout = "_Layout";
+    }
+    ```
+
+2. Style the `Index.cstml` file as follows
+
+    ```HTML
+    @{
+        ViewData["Title"] = "Index";
+    }
+    <div class="text-center m-2">
+        <h3>We're going to have an exciting party!</h3>
+        <h4>And YOU are invited!</h4>
+        <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
+    </div>
+    ```
+3. Style the `RsvpForm.cstml` file as follows
+
+    ```HTML
+    @model CourseInvites.Models.GuestResponse
+    @{
+        ViewData["Title"] = "RsvpForm";
+    }
+    <form asp-action="RsvpForm" method="post" class="m-2">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group">
+            <label asp-for="Name" class="form-label">Your name:</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="form-label">Your email:</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Phone" class="form-label">Your phone:</label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="WillAttend" class="form-label">
+                Will you attend?
+            </label>
+            <select asp-for="WillAttend" class="form-control">
+                <option value="">Choose an option</option>
+                <option value="true">Yes, I'll be there</option>
+                <option value="false">No, I can't come</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Submit RSVP</button>
+    </form>
+    ```
+
+4. Style the `Thanks.cstml` file as follows
   
     ```HTML
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>Thanks</title>
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
-    </head>
-    <body class="text-center">
+    @{
+        ViewData["Title"] = "Thanks";
+    }
+    <div class="text-center">
+        <h1>Thank you, @Model?.Name!</h1>
+        @if (Model?.WillAttend == true)
+        {
+            @:It's great that you're coming. The drinks are already in the fridge!
+        }
+        else
+        {
+            @:Sorry to hear that you can't make it, but thanks for letting us know.
+        }
         <div>
-            <h1>Thank you, @Model?.Name!</h1>
-            @if (Model?.WillAttend == true)
-            {
-                @:It's great that you're coming. The drinks are already in the fridge!
-            }
-            else
-            {
-                @:Sorry to hear that you can't make it, but thanks for letting us know.
-            }
+            Click <a asp-action="ListResponses">here</a> to see who is coming.
         </div>
-        Click
-        <a asp-action="ListResponses">here</a> to see who is coming.
-    </body>
-    </html>
+    </div>
     ```
- 4. Style the `ListResponses.cstml` file as follows
+5. Style the `ListResponses.cstml` file as follows
 
     ```HTML
     @model IEnumerable<CourseInvites.Models.GuestResponse>
     @{
-        Layout = null;
+        ViewData["Title"] = "Responses";
     }
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>Responses</title>
-        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
-    </head>
-    <body>
-        <div class="text-center p-2">
-            <h2 class="text-center">
-                Here is the list of people attending the party
-            </h2>
-            <table class="table table-bordered table-striped table-sm">
-                <thead>
-                    <tr><th>Name</th><th>Email</th><th>Phone</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (CourseInvites.Models.GuestResponse r in Model!)
-                    {
-                        <tr>
-                            <td>@r.Name</td>
-                            <td>@r.Email</td>
-                            <td>@r.Phone</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </body>
-    </html>
+    <div class="text-center p-2">
+        <h2 class="text-center">
+            Here is the list of people attending the party
+        </h2>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Phone</th></tr>
+            </thead>
+            <tbody>
+                @foreach (GuestResponse r in Model!)
+                {
+                    <tr>
+                        <td>@r.Name</td>
+                        <td>@r.Email</td>
+                        <td>@r.Phone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     ```
+
+**Post/Redirect/Get (PRG) pattern**
+After a successful form submission, the controller returns a redirect to a `GET` action instead of rendering the view directly. This prevents duplicate form submissions when users refresh the page, and it makes the final URL a safe, bookmarkable `GET`. The general flow is: `POST` (save data) -> Redirect (302) -> `GET` (render confirmation page).
 
 **Assignment (for you to solve)**
 1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
