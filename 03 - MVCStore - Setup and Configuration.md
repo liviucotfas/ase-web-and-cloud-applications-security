@@ -48,7 +48,7 @@
     // Existing code
     var builder = WebApplication.CreateBuilder(args);
 
-    // New code
+    // // !!!! new/updated code {
     // Add services to the container.
     builder.Services.AddControllersWithViews();
 
@@ -86,6 +86,7 @@
         // Chains static asset support to the route
         // Enables fingerprinting for static files referenced in views served by this route
         .WithStaticAssets();
+    // }
 
     // Existing code
     app.Run();
