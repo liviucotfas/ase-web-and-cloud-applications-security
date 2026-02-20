@@ -37,7 +37,7 @@ Imagine that we want to implement an application that allows people to electroni
 
  > Note: the application will not persisit the answers to any storage.
 
-1. Create a new project named `CourseInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template. Check the "Do not use top-level statements" checkbox.
+1. Create a new project named `PartyInvites` using the "ASP.NET Core Web App (Model-View-Controller)" template. Check the "Do not use top-level statements" checkbox.
 2. Let's start with a little cleanup. Remove from the `Views` folder the `Home` and `Shared` folders. Remove from the `Models` folder the `ErrorViewModel` class.
 3. Modify the `HomeController` as follows.
 
@@ -92,9 +92,9 @@ Imagine that we want to implement an application that allows people to electroni
 
     ``` c#
     public class GuestResponse {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public bool? WillAttend { get; set;}
     }
     ```
@@ -217,11 +217,11 @@ Imagine that we want to implement an application that allows people to electroni
 
     > We have defined a `label` and `input` element for each property of the `GuestResponse` model class. The `asp-for` attribute on the `label` element sets the `value` of the for attribute. The `asp-for` attribute on the `input` element sets the `id` and `name` elements.
 
-    > The `asp-action` tag helper attribute applied to the form element, uses the application’s URL routing configuration to set the `action` attribute to a URL that will target a specific action method.
+    > The `asp-action` tag helper attribute applied to the `form` element, uses the application’s URL routing configuration to set the `action` attribute to a URL that will target a specific action method.
 
 ##  7. <a name='ReceivingFormData'></a>Receiving Form Data
 
-1. Update the HomeController as follows.
+1. Update the `HomeController` as follows.
 
     > Handing `GET` and `POST` requests in separate C# methods helps to keep the controller code tidy, since the two methods have different responsibilities. Both action methods are invoked by the same URL, but MVC makes sure that the appropriate method is called, based on whether we are dealing with a `GET` or `POST` request.
 
@@ -253,7 +253,7 @@ Imagine that we want to implement an application that allows people to electroni
 
 ##  8. <a name='UsingModelBinding'></a>Using Model Binding
 
-**Model binding** is a useful MVC feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The `GuestResponse` object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
+**Model binding** is a useful **MVC** feature whereby incoming data is parsed and the key/value pairs in the HTTP request are used to populate properties of domain model types. Model binding is a powerful and customizable feature that eliminates the grind and toil of dealing with HTTP requests directly and lets you work with C# objects rather than dealing with individual data values sent by the browser. The `GuestResponse` object that is passed as the parameter to the action method is automatically populated with the data from the form fields.
 
 ##  9. <a name='StoringResponses'></a>Storing Responses
 1. The project will include a simple in-memory repository to store the responses from users. Add a new class file called `Repository.cs` in the `Models`.
@@ -346,7 +346,7 @@ Imagine that we want to implement an application that allows people to electroni
                 </tr>
             </thead>
             <tbody>
-                @foreach (CourseInvites.Models.GuestResponse r in Model) {
+                @foreach (GuestResponse r in Model) {
                     <tr>
                         <td>@r.Name</td>
                         <td>@r.Email</td>
@@ -370,18 +370,22 @@ Imagine that we want to implement an application that allows people to electroni
     ```C#
     public class GuestResponse {
         [Required(ErrorMessage = "Please enter your name")] 
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        
         [Required(ErrorMessage = "Please enter your email address")] 
-        [RegularExpression(".+\\@.+\\..+", 
-            ErrorMessage = "Please enter a valid email address")] 
-        public string Email { get; set; }
-        [Required(ErrorMessage = "Please enter your phone number")] 
-        public string Phone { get; set; }
+        //[RegularExpression(".+\\@.+\\..+", ErrorMessage = "Please enter a valid email address")] 
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string? Email { get; set; }
+        
+        [Required(ErrorMessage = "Please enter your phone number")]
+        [Phone(ErrorMessage = "Please enter a valid phone number")]
+        public string? Phone { get; set; }
+        
         [Required(ErrorMessage = "Please specify whether you'll attend")] 
         public bool? WillAttend { get; set; }
     }
     ```
-    >Notice that a nullable bool was used for the `WillAttend` property. We did this so that we could apply the `Required` validation attribute. If we had used a regular bool, the value we received through model binding could be only true or false, and we would not be able to tell whether the user had selected a value. A nullable bool has three possible values: true, false, and null. The browser sends a null value if the user has not selected a value, and this causes the Required attribute to report a validation error. This is a nice example of how MVC elegantly blends C# features with HTML and HTTP. 
+    >Notice that a nullable bool was used for the `WillAttend` property. We did this so that we could apply the `Required` validation attribute. If we had used a regular `bool`, the value we received through model binding could be only true or false, and we would not be able to tell whether the user had selected a value. A nullable `bool` has three possible values: true, false, and null. The browser sends a null value if the user has not selected a value, and this causes the Required attribute to report a validation error. This is a nice example of how MVC elegantly blends C# features with HTML and HTTP. 
 
 2. Update the `RsvpForm` action on the `HomeController` as follows. We check to see whether there has been a validation problem using the `ModelState.IsValid` property in the controller class.
 
