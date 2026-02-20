@@ -470,7 +470,7 @@ Imagine that we want to implement an application that allows people to electroni
     }
     ```
 
-2. Style the `Index.cstml` file as follows
+2. Style the `Index.cshtml` file as follows
 
     ```HTML
     @{
@@ -482,7 +482,7 @@ Imagine that we want to implement an application that allows people to electroni
         <a class="btn btn-primary" asp-action="RsvpForm">RSVP Now</a>
     </div>
     ```
-3. Style the `RsvpForm.cstml` file as follows
+3. Style the `RsvpForm.cshtml` file as follows
 
     ```HTML
     @model CourseInvites.Models.GuestResponse
@@ -517,7 +517,7 @@ Imagine that we want to implement an application that allows people to electroni
     </form>
     ```
 
-4. Style the `Thanks.cstml` file as follows
+4. Style the `Thanks.cshtml` file as follows
   
     ```HTML
     @{
@@ -538,7 +538,7 @@ Imagine that we want to implement an application that allows people to electroni
         </div>
     </div>
     ```
-5. Style the `ListResponses.cstml` file as follows
+5. Style the `ListResponses.cshtml` file as follows
 
     ```HTML
     @model IEnumerable<CourseInvites.Models.GuestResponse>
@@ -572,4 +572,4 @@ After a successful form submission, the controller returns a redirect to a `GET`
 
 **Assignment (for you to solve)**
 1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
-    Hint: use `TempData` to pass information between actions. `Newtonsoft.Json` might be useful.
+    Hint: use `TempData` to pass information between actions. The `JsonSerializer` class from the `System.Text.Json` might be useful.
