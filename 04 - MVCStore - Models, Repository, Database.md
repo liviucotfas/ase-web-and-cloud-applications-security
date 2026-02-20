@@ -48,7 +48,9 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
         }
     }
     ```
-4. Update the connection string in `appsettings.json`
+
+
+> **Security Warning:** Never store passwords or other sensitive data in source code or configuration files. Production secrets must not be used for development or test environments, and secrets must not be deployed with the application. Use secure secret management solutions for production credentials. See [ASP.NET Core App Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) for implementation guidance.
 
 ##  4. <a name='StartingtheDataModel'></a>Starting the Data Model
 5. Add the following `Product` class to the `Models` folder
@@ -56,12 +58,12 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
     ```C#
     public class Product
 	{
-	    public int ProductID { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
+        public int ProductID { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
         [Column(TypeName = "decimal(8, 2)")]
-		public decimal Price { get; set; }
-		public string Category { get; set; }
+        public decimal Price { get; set; }
+        public required string Category { get; set; }
 	}
     ```
     >The `Price` property has been decorated with the `Column` attribute to specify the SQL data type that will be used to store values for this property. Not all C# types map neatly onto SQL types, and this attribute ensures the database uses an appropriate type for the application data.
@@ -94,13 +96,9 @@ Entity Framework Core must be configured so that it knows the type of database t
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(
-            builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
         var app = builder.Build();
-        app.UseStaticFiles();
-        app.MapDefaultControllerRoute();
-        app.Run();
     }
     ```
 
@@ -340,4 +338,13 @@ Whenever you want to delete the content of the database, you can use the followi
     GO
     ```
 
-##  11. <a name='Bibliography'></a>Bibliography
+## 11. <a name='Assignments'></a>Assignment: Configuring Secret Manager for MVCStore
+
+1. Learn how to use the Secret Manager tool (https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) to securely store sensitive configuration data during development, keeping secrets out of source control. Configure the Secret Manager tool for your MVCStore project to securely store your database connection string during development. Ensure that:
+    1. Secret Manager is initialized for the project
+    2. Your database connection string is stored as a secret (not in `appsettings.json`)
+    3. Your application successfully connects to the database using the stored secret
+    4. Sensitive data is not committed to source control
+Explain why using Secret Manager is important for development environments and how it differs from storing secrets in configuration files.
+
+##  12. <a name='Bibliography'></a>Bibliography
