@@ -1,85 +1,64 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MVCStore.Models.DTOs;
-using MVCStore.Repositories;
+using MVCStore.Data;
+using MVCStore.Models;
 
 namespace MVCStore.Services
 {
 	public class ProductService : IProductService
 	{
-		private readonly IProductRepository _productRepository;
+		private readonly ApplicationDbContext _context;
 
-		public ProductService(IProductRepository productRepository)
+		public ProductService(ApplicationDbContext context)
 		{
-			_productRepository = productRepository;
+			_context = context;
 		}
 
-		public async Task<List<ProductListItemDto>> GetAllProductsAsync(CancellationToken ct = default)
+		public Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default)
 		{
-			var products = await _productRepository.GetAllAsync(ct);
-			return products.Select(p => p.ToListItemDto()).ToList();
+			return _context.Products
+				.Include(p => p.Category)
+				.OrderBy(p => p.Name)
+				.ToListAsync(ct);
 		}
 
-		public async Task<ProductDetailsDto?> GetProductByIdAsync(int id, CancellationToken ct = default)
+		public Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default)
 		{
-			var product = await _productRepository.GetByIdAsync(id, ct);
-			return product?.ToDetailsDto();
+			return _context.Products
+				.Include(p => p.Category)
+				.FirstOrDefaultAsync(p => p.ProductID == id, ct);
 		}
 
-		public async Task<ProductDto> CreateProductAsync(CreateProductDto dto, CancellationToken ct = default)
+		public async Task CreateProductAsync(Product product, CancellationToken ct = default)
 		{
-			ArgumentNullException.ThrowIfNull(dto);
-
 			// Business validation
-			ValidateProductDto(dto.Name, dto.Price);
-
-			var product = dto.ToEntity();
-			var created = await _productRepository.AddAsync(product, ct);
-			
-			return created.ToDto();
-		}
-
-		public async Task UpdateProductAsync(UpdateProductDto dto, CancellationToken ct = default)
-		{
-			ArgumentNullException.ThrowIfNull(dto);
-
-			// Business validation
-			ValidateProductDto(dto.Name, dto.Price);
-
-			var product = await _productRepository.GetByIdAsync(dto.ProductID, ct);
-			if (product is null)
-			{
-				throw new InvalidOperationException($"Product with ID {dto.ProductID} not found.");
-			}
-
-			dto.UpdateEntity(product);
-			await _productRepository.UpdateAsync(product, ct);
-		}
-
-		public async Task DeleteProductAsync(int id, CancellationToken ct = default)
-		{
-			var product = await _productRepository.GetByIdAsync(id, ct);
-			if (product is not null)
-			{
-				await _productRepository.DeleteAsync(product, ct);
-			}
-		}
-
-		// Private helper method for business validation
-		private static void ValidateProductDto(string name, decimal price)
-		{
-			if (price < 0)
+			if (product.Price < 0)
 			{
 				throw new InvalidOperationException("Price cannot be negative.");
 			}
 
-			if (string.IsNullOrWhiteSpace(name))
+			_context.Products.Add(product);
+			await _context.SaveChangesAsync(ct);
+		}
+
+		public async Task UpdateProductAsync(Product product, CancellationToken ct = default)
+		{
+			// Business validation
+			if (product.Price < 0)
 			{
-				throw new InvalidOperationException("Product name is required.");
+				throw new InvalidOperationException("Price cannot be negative.");
 			}
 
-			if (name.Length > 100)
+			_context.Products.Update(product);
+			await _context.SaveChangesAsync(ct);
+		}
+
+		public async Task DeleteProductAsync(int id, CancellationToken ct = default)
+		{
+			var product = await GetProductByIdAsync(id, ct);
+			if (product is not null)
 			{
-				throw new InvalidOperationException("Product name cannot exceed 100 characters.");
+				_context.Products.Remove(product);
+				await _context.SaveChangesAsync(ct);
 			}
 		}
 	}

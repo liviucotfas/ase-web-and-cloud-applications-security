@@ -1,12 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MVCStore.Services;
 
 namespace MVCStore.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
+		private readonly IProductService _productService;
+
+		public HomeController(IProductService productService)
+		{
+			_productService = productService;
+		}
+
+		public async Task<IActionResult> Index(CancellationToken ct)
+		{
+			var products = await _productService.GetAllProductsAsync(ct);
+			return View(products);
+		}
+	}
 }

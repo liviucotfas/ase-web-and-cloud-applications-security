@@ -1,20 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using MVCStore.Data;
-using MVCStore.Repositories;
 using MVCStore.Services;
 
 namespace MVCStore
 {
-	public class Program
-	{
-		public static void Main(string[] args)
-		{
-			var builder = WebApplication.CreateBuilder(args);
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
 
-			// Configure Entity Framework Core to use SQL Server with the connection string from configuration
+			// Configure Entity Framework Core to use SQL Server
 			builder.Services.AddDbContext<ApplicationDbContext>(opts =>
 			{
 				opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -25,38 +24,23 @@ namespace MVCStore
 				}
 			});
 
-			// Register Repository and Service layers
-			builder.Services.AddScoped<IProductRepository, ProductRepository>();
+			// Register the Product Service
 			builder.Services.AddScoped<IProductService, ProductService>();
 
 			var app = builder.Build();
+			//app.MapGet("/", () => "Hello World!");
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment())
 			{
-				app.UseExceptionHandler("/Home/Error");
+				//app.UseExceptionHandler("/Home/Error");
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
-			else
-			{
-				app.UseDeveloperExceptionPage();
-			}
-
-			// Security: Add security headers middleware
-			app.Use(async (context, next) =>
-			{
-				context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-				context.Response.Headers["X-Frame-Options"] = "DENY";
-				context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
-				context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-				await next();
-			});
 
 			// Redirects HTTP requests to HTTPS automatically
 			// Enhances security by ensuring all traffic uses encrypted connections
 			app.UseHttpsRedirection();
-
 			// Adds endpoint routing to the pipeline
 			// Matches incoming requests to available endpoints (controllers, actions, etc.)
 			// Must be placed before UseAuthorization() and endpoint mapping methods
@@ -70,11 +54,8 @@ namespace MVCStore
 			// Maps static file assets (CSS, JavaScript, images) with optimization
 			app.MapStaticAssets();
 
-			// Map health check endpoint (requires health checks to be configured above)
-			// app.MapHealthChecks("/health");
-
-			// Seed database data (if you have SeedData class)
-			// SeedData.EnsurePopulated(app);
+			// Seed the database
+			SeedData.EnsurePopulated(app);
 
 			// Defines the default routing pattern for MVC controllers
 			app.MapControllerRoute(
@@ -85,6 +66,6 @@ namespace MVCStore
 				.WithStaticAssets();
 
 			app.Run();
-		}
-	}
+        }
+    }
 }

@@ -385,10 +385,12 @@ Entity Framework Core must be configured so that it knows the type of database t
                 {
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                    if (context.Database.GetPendingMigrations().Any())
+                    // Automatically applies pending migrations during development
+				    // WARNING: Not recommended for production - use migration tools or CI/CD instead
+                    /*if (context.Database.GetPendingMigrations().Any())
                     {
                         context.Database.Migrate();
-                    }
+                    }*/
                     
                     if (!context.Categories.Any())
                     {
