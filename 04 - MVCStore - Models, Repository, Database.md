@@ -1,4 +1,4 @@
-# MVCStore - Models, Repository and Database
+# MVCStore - Models, Service Layer and Database
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
@@ -7,7 +7,7 @@
 * 4. [Starting the Data Model](#StartingtheDataModel)
 * 5. [Creating the Database Context Class](#CreatingtheDatabaseContextClass)
 * 6. [Configuring Entity Framework Core](#ConfiguringEntityFrameworkCore)
-* 7. [Creating a Repository](#CreatingaRepository)
+* 7. [Creating a Service Layer](#CreatingaServiceLayer)
 * 8. [Creating the Database Migration](#CreatingtheDatabaseMigration)
 * 9. [Creating Seed Data](#CreatingSeedData)
 * 10. [Deleting the database](#Deletingthedatabase)
@@ -22,7 +22,7 @@
 ##  1. <a name='Objectives'></a>Objectives
 - configuring the types of the columns using attributes;
 - creating the Database Context class;
-- creating a repository;
+- creating a service layer for business logic and data access;
 - using database migrations;
 - seeding data.
 
@@ -32,7 +32,7 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 
 > **Entity Framework** Core is the Microsoft object-to-relational mapping (ORM) framework, and it is the most widely used method of accessing databases in ASP.NET Core projects.
 
-1. Install the packages `Microsoft.EntityFrameworkCore.Design` and `Microsoft.EntityFrameworkCore.SqlServer`.
+1. Install the packages `Microsoft.EntityFrameworkCore.Tools` and `Microsoft.EntityFrameworkCore.SqlServer`.
 
 ##  3. <a name='DefiningtheConnectionString'></a>Defining the Connection String
 2. Create an empty database (example "ism-mvcstore") using the SQL Server Explorer panel.
@@ -59,17 +59,15 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 	{
         public int ProductID { get; set; }
         public required string Name { get; set; }
-        public required string Description { get; set; }
         [Column(TypeName = "decimal(8, 2)")]
         public decimal Price { get; set; }
-        public required string Category { get; set; }
 	}
     ```
     >The `Price` property has been decorated with the `Column` attribute to specify the SQL data type that will be used to store values for this property. Not all C# types map neatly onto SQL types, and this attribute ensures the database uses an appropriate type for the application data.
 
 ##  5. <a name='CreatingtheDatabaseContextClass'></a>Creating the Database Context Class
 
-> The database context class is the bridge between the application and the EF Core and provides access to the application’s data using model objects.
+> The database context class is the bridge between the application and the EF Core and provides access to the application's data using model objects.
 
 6. Add a `Data` folder to the project. Add a class file called `ApplicationDbContext.cs` to the `Data` folder and defined the class shown below.
 
@@ -81,7 +79,7 @@ The MVCStore application will store its data in a SQL Server LocalDB database, w
 	}
     ```
 
-    The `DbContext` base class provides access to the Entity Framework Core’s underlying functionality, and the `Products` property will provide access to the `Product` table in the database.
+    The `DbContext` base class provides access to the Entity Framework Core's underlying functionality, and the `Products` property will provide access to the `Product` table in the database.
 
 ##  6. <a name='ConfiguringEntityFrameworkCore'></a>Configuring Entity Framework Core
 
@@ -105,49 +103,95 @@ Entity Framework Core must be configured so that it knows the type of database t
 
     >Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSQLServer` method declares that SQL Server is being used and the connection string is read via the `IConfiguration` object.
 
-##  7. <a name='CreatingaRepository'></a>Creating a Repository
+##  7. <a name='CreatingaServiceLayer'></a>Creating a Service Layer
 
-> The repository pattern is widely used, and it provides a consistent way to access the features presented by the database context class. It can reduce duplication and ensures that operations on the database are performed consistently.
+> The service layer provides a clean separation between the presentation layer (controllers/pages) and data access layer (Entity Framework Core). Services encapsulate business logic, data access operations, and validation, making the application easier to test and maintain.
 
-9. In the `Data` folder define the `IStoreRepository` interface as follows.
-
-    ```C#
-    public interface IStoreRepository
-	{
-		IQueryable<Product> Products { get; }
-	}
-    ```
-    > This interface uses `IQueryable<T>` to allow a caller to obtain a sequence of Product objects. The `IQueryable<T>` interface is derived from the more familiar `IEnumerable<T>` interface and represents a collection of objects that can be queried, such as those managed by a database.
-
-    > A class that depends on the `IStoreRepository` interface can obtain `Product` objects without needing to know the details of how they are stored or how the implementation class will deliver them.
-
-    > **Understanding IEnumerable<T> and IQueryable<T> Interfaces**
-
-    >The `IQueryable<T>` interface is useful because it allows a collection of objects to be queried efficiently. Later, when we add support for retrieving a subset of `Product` objects from a database, using the `IQueryable<T>` interface allows us to ask the database for just the objects that we require using standard LINQ statements and without needing to know what database server stores the data or how it processes the query. Without the `IQueryable<T>` interface, we would have to retrieve all of the `Product` objects from the database and then discard the ones we don’t want, which becomes an expensive operation as the amount of data used by an application increases. It is for this reason that the `IQueryable<T>` interface is typically used instead of `IEnumerable<T>` in database repository interfaces and classes.
-    >However, care must be taken with the `IQueryable<T>` interface because each time the collection of objects is enumerated, the query will be evaluated again, which means that a new query will be sent to the database. This can undermine the efficiency gains of using `IQueryable<T>`. In such situations, you can convert `IQueryable<T>` to a more predictable form using the `ToList` or `ToArray` extension method.
-
-10. Create an implementation of the repository interface,named `EFStoreRepository.cs` in the `Models` folder and use it to define the class shown below.
+9. Create a `Services` folder in the project. Add a file called `IProductService.cs` and define the interface as follows:
 
     ```C#
-    public class EFStoreRepository : IStoreRepository {
-        private ApplicationDbContext context;
-        
-        public EFStoreRepository(ApplicationDbContext ctx) {
-            context = ctx;
-        }
-
-        public IQueryable<Product> Products {
-            get {
-                return context.Products;
-            }
-        } 
+    public interface IProductService
+    {
+        Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default);
+        Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default);
+        Task CreateProductAsync(Product product, CancellationToken ct = default);
+        Task UpdateProductAsync(Product product, CancellationToken ct = default);
+        Task DeleteProductAsync(int id, CancellationToken ct = default);
     }
     ```
-    > The repository implementation maps the `Products` property defined by the `IStoreRepository` interface onto the `Products` property defined by the `ApplicationDbContext` class. The `Products` property in the context class returns a `DbSet<Product>` object, which implements the `IQueryable<T>` interface and makes it easy to implement the repository interface when using Entity Framework Core.
+    
+    > This interface defines the contract for product-related operations. It uses async methods with `CancellationToken` support for better performance and cancellation support.
 
-11. Add the statement shown below to the `Main` method of the `Program` class to create a service for the `IStoreRepository` interface that uses `EFStoreRepository` as the implementation class
-12. 
-    > ASP.NET Core supports services that allow objects to be accessed throughout the application. One benefit of services is they allow classes to use interfaces without needing to know which implementation class is being used. Application components can access objects that implement the `IStoreRepository` interface without knowing that it is the `EFStoreRepository` implementation class they are using. This makes it easy to change the implementation class the application uses without needing to make changes to the individual components. 
+    > A class that depends on the `IProductService` interface can perform product operations without needing to know the details of how data is stored or retrieved.
+
+10. Create the service implementation named `ProductService.cs` in the `Services` folder:
+
+    ```C#
+    public class ProductService : IProductService
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ProductService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default)
+        {
+            return _context.Products
+                .OrderBy(p => p.Name)
+                .ToListAsync(ct);
+        }
+
+        public Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default)
+        {
+            return _context.Products
+                .FirstOrDefaultAsync(p => p.ProductID == id, ct);
+        }
+
+        public async Task CreateProductAsync(Product product, CancellationToken ct = default)
+        {
+            // Business validation
+            if (product.Price < 0)
+            {
+                throw new InvalidOperationException("Price cannot be negative.");
+            }
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task UpdateProductAsync(Product product, CancellationToken ct = default)
+        {
+            // Business validation
+            if (product.Price < 0)
+            {
+                throw new InvalidOperationException("Price cannot be negative.");
+            }
+
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task DeleteProductAsync(int id, CancellationToken ct = default)
+        {
+            var product = await GetProductByIdAsync(id, ct);
+            if (product is not null)
+            {
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync(ct);
+            }
+        }
+    }
+    ```
+    
+    > The service implementation uses the `ApplicationDbContext` directly to perform data access operations. This is the recommended approach for modern ASP.NET Core applications, as Entity Framework Core's `DbContext` already implements the Unit of Work and Repository patterns.
+
+    > The service layer is where business logic and validation rules are enforced (e.g., checking if the price is negative). This keeps controllers/pages thin and focused on handling HTTP requests.
+
+11. Add the statement shown below to the `Main` method of the `Program` class to create a service for the `IProductService` interface that uses `ProductService` as the implementation class.
+    
+    > ASP.NET Core supports services that allow objects to be accessed throughout the application using dependency injection. One benefit of services is they allow classes to use interfaces without needing to know which implementation class is being used. Application components can access objects that implement the `IProductService` interface without knowing that it is the `ProductService` implementation class they are using. This makes it easy to change the implementation class the application uses without needing to make changes to the individual components. 
     
     ```C#
     public static void Main(string[] args)
@@ -159,34 +203,55 @@ Entity Framework Core must be configured so that it knows the type of database t
         });
 
         // !!!! new/updated code {
-        builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+        builder.Services.AddScoped<IProductService, ProductService>();
         //}
 
         var app = builder.Build();
     }
     ```
-    > The `AddScoped` method creates a service where each HTTP request gets its own repository object, which is the way that Entity Framework Core is typically used.
+    
+    > The `AddScoped` method creates a service where each HTTP request gets its own service instance, which is the recommended lifetime for services that use Entity Framework Core.
+
+12. Update the `HomeController` to use the service:
+
+    ```C#
+    public class HomeController : Controller
+    {
+        private readonly IProductService _productService;
+
+        public HomeController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public async Task<IActionResult> Index(CancellationToken ct)
+        {
+            var products = await _productService.GetAllProductsAsync(ct);
+            return View(products);
+        }
+    }
+    ```
+
+    > The controller receives an `IProductService` instance through constructor injection and uses it to retrieve products. This keeps the controller thin and focused on handling HTTP requests, while all business logic and data access is handled by the service.
 
 ##  8. <a name='CreatingtheDatabaseMigration'></a>Creating the Database Migration
 
 > Entity Framework Core is able to generate the schema for the database using the data model classes through a feature called migrations. When you prepare a migration, Entity Framework Core creates a C# class that contains the SQL commands required to prepare the database. If you need to modify your model classes, then you can create a new migration that contains the SQL commands required to reflect the changes.
 
-12.  Run one of the following command to generate the initial migration.
+13.  Run one of the following command to generate the initial migration.
 
-    Package Manager Console` panel:
+    Package Manager Console panel:
     ```
     Add-Migration Initial
     ```
     
-    > If the command is not recognized, install the package `Microsoft.EntityFrameworkCore.Tools` 
-
     Alternative using .NET CLI:
     
     ```
     dotnet ef migrations add Initial
     ```
 
-13. Run the following command to update the database.
+14. Run the following command to update the database.
 
     Package Manager Console panel:
     ```
@@ -198,11 +263,11 @@ Entity Framework Core must be configured so that it knows the type of database t
     dotnet ef database update
     ```
 
-14. Check the tables that have been created in the database.
+15. Check the tables that have been created in the database.
 
 ##  9. <a name='CreatingSeedData'></a>Creating Seed Data
 
-14. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
+16. To populate the database and provide some sample data, let's add a class file called `SeedData.cs` to the `Data` folder.
 
     > Futher details: https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/sql
 
@@ -227,22 +292,16 @@ Entity Framework Core must be configured so that it knows the type of database t
                     new Product
                     {
                         Name = "Kayak",
-                        Description = "A boat for one person",
-                        Category = "Watersports",
                         Price = 275
                     },
                     new Product
                     {
                         Name = "Lifejacket",
-                        Description = "Protective and fashionable",
-                        Category = "Watersports",
                         Price = 48.95m
                     },
                     new Product
                     {
                         Name = "Soccer Ball",
-                        Description = "FIFA-approved size and weight",
-                        Category = "Soccer",
                         Price = 19.50m
                     }
                     );
@@ -254,13 +313,13 @@ Entity Framework Core must be configured so that it knows the type of database t
     }
     ```
 
-    >The static `EnsurePopulated` method receives an `WebApplication `argument, which is the interface used in the `Main` method of the `Program` class to register middleware components to handle HTTP requests. 
+    >The static `EnsurePopulated` method receives an `WebApplication` argument, which is the interface used in the `Main` method of the `Program` class to register middleware components to handle HTTP requests. 
     
-    >`WebApplication` also provides access to the application’s services, including the Entity Framework Core database context service.
+    >`WebApplication` also provides access to the application's services, including the Entity Framework Core database context service.
 
     > The `EnsurePopulated` method obtains a `ApplicationDbContext` object through the `WebApplication` interface and calls the `Database.Migrate` method if there are any pending migrations, which means that the database will be created and prepared so that it can store `Product` objects. Next, the number of `Product` objects in the database is checked. If there are no objects in the database, then the database is populated using a collection of `Product` objects using the `AddRange` method and then written to the database using the `SaveChanges` method.
 
-15. Call the `EnsurePopulated` in the `Main` method of the `Program` class.
+17. Call the `EnsurePopulated` in the `Main` method of the `Program` class.
 
     ```C#
     public static void Main(string[] args)
@@ -272,8 +331,8 @@ Entity Framework Core must be configured so that it knows the type of database t
         //}
 
         app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.Run();
     }
