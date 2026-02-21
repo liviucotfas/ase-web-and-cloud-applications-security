@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MVCStore.Controllers;
-using MVCStore.Models;
+using MVCStore.Models.DTOs;
 using MVCStore.Services;
 using MVCStore.ViewModels;
 
@@ -15,10 +15,10 @@ namespace MVCStore.Tests
 			// Arrange
 			Mock<IProductService> mock = new Mock<IProductService>();
 			mock.Setup(m => m.GetProductsPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(new List<Product>
+				.ReturnsAsync(new List<ProductListItemDto>
 				{
-						new Product { ProductID = 1, Name = "P1", Price = 100m, CategoryID = 1 },
-						new Product { ProductID = 2, Name = "P2", Price = 200m, CategoryID = 1 }
+						new ProductListItemDto { ProductID = 1, Name = "P1", Price = 100m, CategoryName = "Category1" },
+						new ProductListItemDto { ProductID = 2, Name = "P2", Price = 200m, CategoryName = "Category1" }
 				});
 			mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(2);
@@ -26,10 +26,10 @@ namespace MVCStore.Tests
 			HomeController controller = new HomeController(mock.Object);
 
 			// Act
-			IEnumerable<Product>? result = (await controller.Index() as ViewResult)?.ViewData.Model as IEnumerable<Product>;
+			IEnumerable<ProductListItemDto>? result = (await controller.Index() as ViewResult)?.ViewData.Model as IEnumerable<ProductListItemDto>;
 
 			// Assert
-			Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
+			ProductListItemDto[] prodArray = result?.ToArray() ?? Array.Empty<ProductListItemDto>();
 			Assert.True(prodArray.Length == 2);
 			Assert.Equal("P1", prodArray[0].Name);
 			Assert.Equal("P2", prodArray[1].Name);
@@ -42,10 +42,10 @@ namespace MVCStore.Tests
 			Mock<IProductService> mock = new Mock<IProductService>();
 
 			mock.Setup(m => m.GetProductsPageAsync(2, 3, It.IsAny<CancellationToken>()))
-				.ReturnsAsync(new List<Product>
+				.ReturnsAsync(new List<ProductListItemDto>
 				{
-					new Product { ProductID = 4, Name = "P4", Price = 400m, CategoryID = 1 },
-					new Product { ProductID = 5, Name = "P5", Price = 500m, CategoryID = 1 }
+					new ProductListItemDto { ProductID = 4, Name = "P4", Price = 400m, CategoryName = "Category1" },
+					new ProductListItemDto { ProductID = 5, Name = "P5", Price = 500m, CategoryName = "Category1" }
 				});
 
 			mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
@@ -55,10 +55,10 @@ namespace MVCStore.Tests
 			controller.PageSize = 3;
 
 			// Act
-			IEnumerable<Product>? result = (await controller.Index(2) as ViewResult)?.ViewData.Model as IEnumerable<Product>;
+			IEnumerable<ProductListItemDto>? result = (await controller.Index(2) as ViewResult)?.ViewData.Model as IEnumerable<ProductListItemDto>;
 
 			// Assert
-			Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
+			ProductListItemDto[] prodArray = result?.ToArray() ?? Array.Empty<ProductListItemDto>();
 			Assert.True(prodArray.Length == 2);
 			Assert.Equal("P4", prodArray[0].Name);
 			Assert.Equal("P5", prodArray[1].Name);
@@ -70,7 +70,7 @@ namespace MVCStore.Tests
 			// Arrange
 			Mock<IProductService> mock = new Mock<IProductService>();
 			mock.Setup(m => m.GetProductsPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(new List<Product>());
+				.ReturnsAsync(new List<ProductListItemDto>());
 			mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(28);
 

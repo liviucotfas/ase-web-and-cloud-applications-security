@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using MVCStore.Data;
+using MVCStore.Repositories;
 using MVCStore.Services;
 
 namespace MVCStore
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
@@ -24,7 +25,10 @@ namespace MVCStore
 				}
 			});
 
-			// Register the Product Service
+			// Register Repository layer
+			builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+			// Register Service layer (now depends on repository)
 			builder.Services.AddScoped<IProductService, ProductService>();
 
 			var app = builder.Build();

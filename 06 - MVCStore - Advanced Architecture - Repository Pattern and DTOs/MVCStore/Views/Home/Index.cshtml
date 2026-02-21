@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Product>
+﻿@model IEnumerable<ProductListItemDto>
 
 @{
     ViewData["Title"] = "Products";
@@ -7,7 +7,7 @@
 <h1>Products</h1>
 
 <div class="row">
-    @foreach (var p in Model ?? Enumerable.Empty<Product>())
+    @foreach (var p in Model ?? Enumerable.Empty<ProductListItemDto>())
     {
         <div class="col-md-3 mb-3">
             <div class="card">
@@ -15,7 +15,7 @@
                     <h5 class="card-title">@p.Name</h5>
                     <p class="card-text">
                         <strong>Price:</strong> @p.Price.ToString("c")<br />
-                        <strong>Category:</strong> @(p.Category?.Name ?? "Unknown")
+                        <strong>Category:</strong> @p.CategoryName
                     </p>
                 </div>
             </div>
