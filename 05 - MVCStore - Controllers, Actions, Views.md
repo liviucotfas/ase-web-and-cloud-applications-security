@@ -1,11 +1,14 @@
-# Controllers, Actions and Views
+# MVCStore - Controllers, Actions and Views
+
 <!-- vscode-markdown-toc -->
-* 1. [Objectives](#Objectives)
-* 2. [Preparing the Controller](#PreparingtheController)
-* 3. [Unit Testing the HomeController](#UnitTestingtheHomeController)
-* 4. [Updating the View](#UpdatingtheView)
-* 5. [Displaying Page Links](#DisplayingPageLinks)
-* 6. [Bibliography](#Bibliography)
+* 1. [Prerequisites](#Prerequisites)
+* 2. [Objectives](#Objectives)
+* 3. [Preparing the Controller](#PreparingtheController)
+* 4. [Unit Testing the HomeController](#UnitTestingtheHomeController)
+* 5. [Updating the View](#UpdatingtheView)
+* 6. [Displaying Page Links](#DisplayingPageLinks)
+* 7. [Looking Ahead: Lab 06](#LookingAhead)
+* 8. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -13,360 +16,333 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='Objectives'></a>Objectives
-- unit testing the actions in the controllers;
-- declaring tag helpers;
-- adding a new route;
+##  1. <a name='Prerequisites'></a>Prerequisites
 
-##  2. <a name='PreparingtheController'></a>Preparing the Controller
+Before starting this lab, you should have completed **Lab 04: Models, Database, and Service Layer**. You should have:
+- A working `ProductService` that uses `ApplicationDbContext` directly
+- Domain models (`Product`, `Category`) with navigation properties
+- An `IProductService` interface registered with dependency injection
+- A functioning database with seed data
+- Basic understanding of how services work in ASP.NET Core
+
+> **Note**: This lab uses the simple service layer from Lab 04, where services access `DbContext` directly. In **Lab 06: Advanced Architecture**, you'll learn to refactor this code using DTOs and the Repository Pattern for better testability and maintainability.
+
+##  2. <a name='Objectives'></a>Objectives
+- using dependency injection in controllers;
+- unit testing controller actions;
+- working with view models and model binding;
+- creating custom tag helpers;
+- implementing pagination;
+- understanding the limitations of current architecture (preparation for Lab 06).
+
+##  3. <a name='PreparingtheController'></a>Preparing the Controller
 
 1. Modify the `HomeController` as highlighted below.
 
     ```C#
-    public class HomeController : Controller
+    using Microsoft.AspNetCore.Mvc;
+    using MVCStore.Services;
+
+    namespace MVCStore.Controllers
     {
-        private readonly IProductService _productService;
-        
-        public HomeController(IProductService productService)
+        public class HomeController : Controller
         {
-            _productService = productService;
-        }
-        
-        public async Task<IActionResult> Index(CancellationToken ct)
-        {
-            var products = await _productService.GetAllProductsAsync(ct);
-            return View(products);
+            private readonly IProductService _productService;
+            
+            public HomeController(IProductService productService)
+            {
+                _productService = productService;
+            }
+            
+            public async Task<IActionResult> Index(CancellationToken ct)
+            {
+                var products = await _productService.GetAllProductsAsync(ct);
+                return View(products);
+            }
         }
     }
     ```
 
-    > When ASP.NET Core needs to create a new instance of the `HomeController` class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the `IProductService` interface. To determine what implementation class should be used, ASP.NET Core consults the configuration in the `Program` class, which tells it that `ProductService` should be used and that a new instance should be created for every request. ASP.NET Core creates a new `ProductService` object and uses it to invoke the `HomeController` constructor to create the controller object that will process the HTTP request.
+    > When ASP.NET Core needs to create a new instance of the `HomeController` class to handle an HTTP request, it will inspect the constructor and see that it requires an object that implements the `IProductService` interface. 
     
-    > This is known as **dependency injection**, and its approach allows the `HomeController` object to access the application's data through the `IProductService` interface without knowing which implementation class has been configured. The service layer handles all business logic and data access operations, keeping the controller thin and focused on handling HTTP requests.
+    > To determine what implementation class should be used, ASP.NET Core consults the configuration in the `Program` class, which tells it that `ProductService` should be used and that a new instance should be created for every request (via `AddScoped`). 
+    
+    > ASP.NET Core creates a new `ProductService` object (which receives an `ApplicationDbContext` in its constructor) and uses it to invoke the `HomeController` constructor to create the controller object that will process the HTTP request.
+    
+    > This is known as **dependency injection**, and it allows the `HomeController` object to access the application's data through the `IProductService` interface without knowing which implementation class has been configured. 
 
-##  3. <a name='UnitTestingtheHomeController'></a>Unit Testing the HomeController
+    > **Current Implementation**: The service layer (from Lab 04) handles business logic and uses `ApplicationDbContext` directly for data access. This is a straightforward approach that works well for learning and simple applications.
+
+    > **Future Enhancement**: In Lab 06, you'll learn to add a Repository layer between the service and `DbContext`, and use DTOs instead of domain models. This provides better testability, security, and flexibility.
+
+##  4. <a name='UnitTestingtheHomeController'></a>Unit Testing the HomeController
 
 2. We can unit test that the controller is accessing the service correctly by creating a mock service, injecting it into the constructor of the `HomeController` class, and then calling the `Index` method to get the response that contains the list of products. We then compare the `Product` objects we get to what we would expect from the test data in the mock implementation.
 
+    > **Note**: Make sure you have the required NuGet packages in your test project:
+    > - `xunit`
+    > - `xunit.runner.visualstudio`
+    > - `Moq`
+    > - `Microsoft.AspNetCore.Mvc`
+
+    Create a test class `HomeControllerTests`:
+
     ```C#
-    public class HomeControllerTests
+    using Microsoft.AspNetCore.Mvc;
+    using Moq;
+    using MVCStore.Controllers;
+    using MVCStore.Models;
+    using MVCStore.Services;
+    using Xunit;
+
+    namespace MVCStore.Tests
     {
-        [Fact]
-        public async Task Can_Use_Service()
+        public class HomeControllerTests
         {
-            // Arrange
-            Mock<IProductService> mock = new Mock<IProductService>();
-            mock.Setup(m => m.GetAllProductsAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Product>
-                {
-                    new Product {ProductID = 1, Name = "P1"},
-                    new Product {ProductID = 2, Name = "P2"}
-                });
-            
-            HomeController controller = new HomeController(mock.Object);
-            
-            // Act
-            IEnumerable<Product>? result = (await controller.Index(CancellationToken.None) as ViewResult)?.ViewData.Model as IEnumerable<Product>;
-            
-            // Assert
-            Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
-            Assert.True(prodArray.Length == 2);
-            Assert.Equal("P1", prodArray[0].Name);
-            Assert.Equal("P2", prodArray[1].Name);
+            [Fact]
+            public async Task Can_Use_Service()
+            {
+                // Arrange
+                Mock<IProductService> mock = new Mock<IProductService>();
+                mock.Setup(m => m.GetAllProductsAsync(It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new List<Product>
+                    {
+                        new Product { ProductID = 1, Name = "P1", Price = 100m, CategoryID = 1 },
+                        new Product { ProductID = 2, Name = "P2", Price = 200m, CategoryID = 1 }
+                    });
+                
+                HomeController controller = new HomeController(mock.Object);
+                
+                // Act
+                IEnumerable<Product>? result = (await controller.Index(CancellationToken.None) as ViewResult)?.ViewData.Model as IEnumerable<Product>;
+                
+                // Assert
+                Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
+                Assert.True(prodArray.Length == 2);
+                Assert.Equal("P1", prodArray[0].Name);
+                Assert.Equal("P2", prodArray[1].Name);
+            }
         }
     }
     ```
 
-##  4. <a name='UpdatingtheView'></a>Updating the View
+    > **Testing Challenges**: Notice that this test requires creating full `Product` domain models with all their properties. This approach has some limitations:
+    > 
+    > 1. **Dependency on Domain Models**: Tests depend on the exact structure of domain models. If you change `Product`, tests may break.
+    > 2. **No Business Logic Testing**: We're testing the controller, but not the service's business logic (that would require a real database).
+    > 3. **Limited Scenarios**: Hard to test validation, error handling, or security concerns at this level.
+    > 
+    > In **Lab 06**, you'll learn how DTOs and the Repository Pattern make testing easier by:
+    > - Allowing you to mock the repository layer and test services without a database
+    > - Using DTOs that are independent of domain model changes
+    > - Testing business logic and validation in isolation
+
+##  5. <a name='UpdatingtheView'></a>Updating the View
+
 3. The `Index` action method passes the collection of `Product` objects from the service to the `View` method, which means these objects will be the view model that Razor uses when it generates HTML content from the view. Make the changes to the view shown below to generate content using the `Product` view model objects.
+
+    Update `Views/Home/Index.cshtml`:
 
     ```CSHTML
     @model IEnumerable<Product>
 
-    @foreach (var p in Model ?? Enumerable.Empty<Product>()) {
-        <div>
-            <h3>@p.Name</h3>
-            <h4>@p.Price.ToString("c")</h4>
-        </div>
+    @{
+        ViewData["Title"] = "Products";
     }
+
+    <h1>Products</h1>
+
+    <div class="row">
+        @foreach (var p in Model ?? Enumerable.Empty<Product>()) 
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text">
+                            <strong>Price:</strong> @p.Price.ToString("c")<br />
+                            <strong>Category:</strong> @(p.Category?.Name ?? "Unknown")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
     ```
 
-    >Note: You might need to add the following line to the `_ViewImports.cshtml` file.
+    > **Note**: You might need to add the following lines to the `_ViewImports.cshtml` file:
 
     ```CSHTML
+    @using MVCStore
     @using MVCStore.Models
+    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
     ```
 
-    >The `@model` expression at the top of the file specifies that the view expects to receive a sequence of `Product` objects from the action method as its model data. We use an `@foreach` expression to work through the sequence and generate a simple set of HTML elements for each `Product` object that is received.
+    > The `@model` expression at the top of the file specifies that the view expects to receive a sequence of `Product` objects from the action method as its model data. We use an `@foreach` expression to work through the sequence and generate a simple set of HTML elements for each `Product` object that is received.
     
-    >The view doesn't know where the `Product` objects came from, how they were obtained, or whether they represent all the products known to the application. Instead, the view deals only with how details of each `Product` are displayed using HTML elements.
+    > The view doesn't know where the `Product` objects came from, how they were obtained, or whether they represent all the products known to the application. Instead, the view deals only with how details of each `Product` are displayed using HTML elements.
 
-4. Add support for pagination so that the view displays a smaller number of products on a page, and the user can move from page to page to view the overall catalog. First, add a new method to `IProductService` interface to support pagination:
+    > **Current Approach**: We're passing domain models (`Product`) directly to the view. This works but has security implications:
+    > - Views have access to all properties of the domain model
+    > - Risk of over-posting attacks if used in forms
+    > - Changes to domain models affect views
+    > 
+    > In **Lab 06**, you'll learn to use DTOs that contain only the data needed for the view, providing better security and separation of concerns.
+
+##  6. <a name='DisplayingPageLinks'></a>Displaying Page Links
+
+To support pagination, we'll add new methods to the service and create a custom tag helper to display page links.
+
+### Step 1: Add Pagination Methods to Service
+
+4. First, add new methods to the `IProductService` interface to support pagination:
 
     ```C#
-    public interface IProductService
+    using MVCStore.Models;
+
+    namespace MVCStore.Services
     {
-        Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default);
-        Task<List<Product>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default);
-        Task<int> GetProductCountAsync(CancellationToken ct = default);
-        Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default);
-        Task CreateProductAsync(Product product, CancellationToken ct = default);
-        Task UpdateProductAsync(Product product, CancellationToken ct = default);
-        Task DeleteProductAsync(int id, CancellationToken ct = default);
+        public interface IProductService
+        {
+            Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default);
+            Task<List<Product>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default);
+            Task<int> GetProductCountAsync(CancellationToken ct = default);
+            Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default);
+            Task CreateProductAsync(Product product, CancellationToken ct = default);
+            Task UpdateProductAsync(Product product, CancellationToken ct = default);
+            Task DeleteProductAsync(int id, CancellationToken ct = default);
+        }
     }
     ```
 
 5. Implement these methods in the `ProductService` class:
 
     ```C#
-    public async Task<List<Product>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+    using Microsoft.EntityFrameworkCore;
+    using MVCStore.Data;
+    using MVCStore.Models;
+
+    namespace MVCStore.Services
     {
-        return await _context.Products
-            .OrderBy(p => p.ProductID)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(ct);
-    }
-
-    public async Task<int> GetProductCountAsync(CancellationToken ct = default)
-    {
-        return await _context.Products.CountAsync(ct);
-    }
-    ```
-
-6. Update the `Index` method on the `HomeController` as follows:
-
-    ```C#
-    public int PageSize = 2;
-    
-    public async Task<IActionResult> Index(int productPage = 1, CancellationToken ct = default)
-    {
-        var products = await _productService.GetProductsPageAsync(productPage, PageSize, ct);
-        return View(products);
-    }
-    ```
-    
-    > The `PageSize` field specifies the number of products per page. We have added an optional parameter to the `Index` method, which means that if the method is called without a parameter, the call is treated as though we had supplied the value specified in the parameter definition, with the effect that the action method displays the first page of products when it is invoked without an argument. The service method `GetProductsPageAsync` handles the pagination logic by skipping and taking the appropriate number of products.
-
-7. Unit test the pagination feature in the `HomeControllerTests` class.
-
-    ```C#
-    [Fact]
-    public async Task Can_Paginate()
-    {
-        // Arrange
-        Mock<IProductService> mock = new Mock<IProductService>();
-
-        mock.Setup(m => m.GetProductsPageAsync(2, 3, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product>
-            {
-                new Product {ProductID = 4, Name = "P4"},
-                new Product {ProductID = 5, Name = "P5"}
-            });
-
-        HomeController controller = new HomeController(mock.Object);
-        controller.PageSize = 3;
-
-        // Act
-        IEnumerable<Product> result = (await controller.Index(2) as ViewResult)?.ViewData.Model as IEnumerable<Product> ?? Enumerable.Empty<Product>();
-
-        // Assert
-        Product[] prodArray = result.ToArray();
-        Assert.True(prodArray.Length == 2);
-        Assert.Equal("P4", prodArray[0].Name);
-        Assert.Equal("P5", prodArray[1].Name);
-    }
-    ```
-
-##  5. <a name='DisplayingPageLinks'></a>Displaying Page Links
-
-To support the tag helper that will display the page numbers, we need to pass information to the view about the number of pages available, the current page, and the total number of products in the repository. The easiest way to do this is to create a view model class, which is used specifically to pass data between a controller and a view.
-
-8. Create a `ViewModels` folder in your project. Add a class called `PagingInfoViewModel`.
-
-    ```C#
-    public class PagingInfoViewModel
-    {
-        public int TotalItems { get; set; }
-        public int ItemsPerPage { get; set; }
-        public int CurrentPage { get; set; }
-        public int TotalPages
+        public class ProductService : IProductService
         {
-            get 
-            { 
-                return (int)Math.Ceiling((decimal)TotalItems / ItemsPerPage);
+            private readonly ApplicationDbContext _context;
+
+            public ProductService(ApplicationDbContext context)
+            {
+                _context = context;
             }
+
+            public Task<List<Product>> GetAllProductsAsync(CancellationToken ct = default)
+            {
+                return _context.Products
+                    .Include(p => p.Category)
+                    .OrderBy(p => p.Name)
+                    .ToListAsync(ct);
+            }
+
+            public Task<List<Product>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+            {
+                return _context.Products
+                    .Include(p => p.Category)  // Include navigation property
+                    .OrderBy(p => p.ProductID)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(ct);
+            }
+
+            public Task<int> GetProductCountAsync(CancellationToken ct = default)
+            {
+                return _context.Products.CountAsync(ct);
+            }
+
+            // ... other methods from Lab 04
         }
     }
     ```
 
-9. Let's now create the tag helper that will display the page numbers. Create a folder named `Infrastructure` and add to it a class called `PageLinkTagHelper`
+    > **Important**: Notice we include the `Category` navigation property using `.Include(p => p.Category)`. This performs eager loading to avoid the N+1 query problem and ensures category information is available in the view.
+
+    > **Note**: In Lab 06, you'll learn how the Repository Pattern centralizes these query patterns, making them more maintainable and reusable.
+
+### Step 2: Create View Model for Pagination
+
+6. Create a `ViewModels` folder in your project. Add a class called `PagingInfoViewModel`:
 
     ```C#
-    [HtmlTargetElement("div", Attributes = "page-model")]
-    public class PageLinkTagHelper : TagHelper
+    namespace MVCStore.ViewModels
     {
-        private IUrlHelperFactory urlHelperFactory;
-        public PageLinkTagHelper(IUrlHelperFactory helperFactory)
+        public class PagingInfoViewModel
         {
-            urlHelperFactory = helperFactory;
-        }
-        [ViewContext]
-        [HtmlAttributeNotBound]
-        public ViewContext? ViewContext { get; set; }
-        public PagingInfoViewModel? PageModel { get; set; }
-        public string? PageAction { get; set; }
-        public override void Process(TagHelperContext context,
-        TagHelperOutput output)
-        {
-            if (ViewContext != null && PageModel != null)
+            public int TotalItems { get; set; }
+            public int ItemsPerPage { get; set; }
+            public int CurrentPage { get; set; }
+            
+            public int TotalPages
             {
-                IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
-                TagBuilder result = new TagBuilder("div");
-                for (int i = 1; i <= PageModel.TotalPages; i++)
-                {
-                    TagBuilder tag = new TagBuilder("a");
-                    tag.Attributes["href"] = urlHelper.Action(PageAction,
-                    new { productPage = i });
-
-                    tag.InnerHtml.Append(i.ToString());
-                    result.InnerHtml.AppendHtml(tag);
+                get 
+                { 
+                    return (int)Math.Ceiling((decimal)TotalItems / ItemsPerPage);
                 }
-                output.Content.AppendHtml(result.InnerHtml);
+            }
+        }
+    }
+    ```
+
+    > View models are simple classes used to pass data between controllers and views. They differ from domain models:
+    > - **Domain Models** (`Product`, `Category`): Represent business entities and database tables
+    > - **View Models** (`PagingInfoViewModel`): Contain only data needed for a specific view
+    > 
+    > This is a good practice even in simple architectures. In Lab 06, you'll learn about DTOs, which are similar but used for data transfer between layers.
+
+### Step 3: Update Controller for Pagination
+
+7. Update the `Index` method on the `HomeController` as follows:
+
+    ```C#
+    using Microsoft.AspNetCore.Mvc;
+    using MVCStore.Services;
+    using MVCStore.ViewModels;
+
+    namespace MVCStore.Controllers
+    {
+        public class HomeController : Controller
+        {
+            private readonly IProductService _productService;
+            public int PageSize = 4;  // Number of products per page
+            
+            public HomeController(IProductService productService)
+            {
+                _productService = productService;
+            }
+            
+            public async Task<IActionResult> Index(int productPage = 1, CancellationToken ct = default)
+            {
+                var products = await _productService.GetProductsPageAsync(productPage, PageSize, ct);
+                var totalProducts = await _productService.GetProductCountAsync(ct);
+                
+                ViewBag.PagingInfo = new PagingInfoViewModel
+                {
+                    CurrentPage = productPage,
+                    ItemsPerPage = PageSize,
+                    TotalItems = totalProducts
+                };
+                
+                return View(products);
             }
         }
     }
     ```
     
-    >This tag helper populates a `div` element with `a` elements that correspond to pages of products. Tag helpers are one of the most useful ways that you can introduce C# logic into your views. The code for a tag helper can look tortured because C# and HTML don't mix easily. But using tag helpers is preferable to including blocks of C# code in a view because a tag helper can be easily unit tested.
+    > The `PageSize` field specifies the number of products per page. We have added an optional parameter to the `Index` method, which means that if the method is called without a parameter (e.g., `/Home/Index`), it defaults to page 1.
+    
+    > The service method `GetProductsPageAsync` handles the pagination logic using LINQ's `Skip` and `Take` methods to retrieve only the products for the requested page.
 
-10. Register the new tag helper in the `_ViewImports.cshtml` file.
+    > We pass pagination information to the view using `ViewBag`, which is a dynamic property bag for passing data to views.
 
-    ```CSHTML
-    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-    // !!!! new/updated code {
-    @addTagHelper *, MVCStore
-    //}
-    @using MVCStore.Models
-    // !!!! new/updated code {
-    @using MVCStore.ViewModels
-    //}
-    ```
+### Step 4: Unit Test Pagination
 
-11. Add a new class in the `MVCStore.Tests` project for unit testing the `PageLinkTagHelper` tag helper class.
-
-    ```C#
-    public class PageLinkTagHelperTests
-    {
-        [Fact]
-        public void Can_Generate_Page_Links()
-        {
-            // Arrange
-            var urlHelper = new Mock<IUrlHelper>();
-            urlHelper.SetupSequence(x => x.Action(It.IsAny<UrlActionContext>()))
-            .Returns("Test/Page1")
-            .Returns("Test/Page2")
-            .Returns("Test/Page3");
-
-            var urlHelperFactory = new Mock<IUrlHelperFactory>();
-            urlHelperFactory.Setup(f =>
-            f.GetUrlHelper(It.IsAny<ActionContext>()))
-            .Returns(urlHelper.Object);
-            PageLinkTagHelper helper =
-            new PageLinkTagHelper(urlHelperFactory.Object)
-            {
-                PageModel = new PagingInfoViewModel
-                {
-                    CurrentPage = 2,
-                    TotalItems = 28,
-                    ItemsPerPage = 10
-                },
-                PageAction = "Test"
-            };
-            TagHelperContext ctx = new TagHelperContext(
-            new TagHelperAttributeList(),
-            new Dictionary<object, object>(), "");
-            var content = new Mock<TagHelperContent>();
-            TagHelperOutput output = new TagHelperOutput("div",
-            new TagHelperAttributeList(),
-            (cache, encoder) => Task.FromResult(content.Object));
-            // Act
-            helper.Process(ctx, output);
-            // Assert
-            Assert.Equal(@"<a href=""Test/Page1"">1</a>"
-            + @"<a href=""Test/Page2"">2</a>"
-            + @"<a href=""Test/Page3"">3</a>",
-            output.Content.GetContent());
-        }
-    }
-    ```
-
-    > The complexity in this test is in creating the objects that are required to create and use a tag helper. Tag helpers use `IUrlHelperFactory` objects to generate URLs that target different parts of the application, and I have used Moq to create an implementation of this interface and the related `IUrlHelper` interface that provides test data.
-
-12. We need to provide an instance of the PagingInfoViewModel view model class to the view. Add a new class called `ProductsListViewModel` to the `ViewModels` folder.
-
-    ```C#
-    public class ProductsListViewModel
-    {
-        public IEnumerable<Product> Products { get; set; } = Enumerable.Empty<Product>();
-        public PagingInfoViewModel PagingInfo { get; set; } = new();
-    }
-    ```
-
-13. Update the `Index` action in the `HomeController` class to use the `ProductsListViewModel` class in order to provide the view with details of the products to display on the page and with details of the pagination, as shown below.
-
-    ```C#
-    public async Task<ViewResult> Index(int productPage = 1, CancellationToken ct = default)
-    {
-        var viewModel = new ProductsListViewModel
-        {
-            Products = await _productService.GetProductsPageAsync(productPage, PageSize, ct),
-            PagingInfo = new PagingInfoViewModel
-            {
-                CurrentPage = productPage,
-                ItemsPerPage = PageSize,
-                TotalItems = await _productService.GetProductCountAsync(ct)
-            }
-        };
-
-        return View(viewModel);
-    }
-    ```
-
-    >These changes pass a `ProductsListViewModel` object as the model data to the view. The service provides both the paginated products and the total count needed for pagination calculations.
-
-14. Modify the earlier unit tests to reflect the new result from the Index action method.
-    ```c#
-    [Fact]
-    public async Task Can_Use_Service()
-    {
-        // Arrange
-        Mock<IProductService> mock = new Mock<IProductService>();
-        mock.Setup(m => m.GetProductsPageAsync(1, It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product>
-            {
-                new Product {ProductID = 1, Name = "P1"},
-                new Product {ProductID = 2, Name = "P2"}
-            });
-        mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(2);
-
-        HomeController controller = new HomeController(mock.Object);
-
-        // Act
-        // !!!! new/updated code {
-        ProductsListViewModel result = (await controller.Index())?.ViewData.Model as ProductsListViewModel ?? new();
-        // }
-
-        // Assert
-        // !!!! new/updated code {
-        Product[] prodArray = result.Products.ToArray();
-        // }
-        Assert.True(prodArray.Length == 2);
-        Assert.Equal("P1", prodArray[0].Name);
-        Assert.Equal("P2", prodArray[1].Name);
-    }
-    ```
+8. Add a unit test for the pagination feature in the `HomeControllerTests` class:
 
     ```C#
     [Fact]
@@ -378,125 +354,313 @@ To support the tag helper that will display the page numbers, we need to pass in
         mock.Setup(m => m.GetProductsPageAsync(2, 3, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Product>
             {
-                new Product {ProductID = 4, Name = "P4"},
-                new Product {ProductID = 5, Name = "P5"}
+                new Product { ProductID = 4, Name = "P4", Price = 400m, CategoryID = 1 },
+                new Product { ProductID = 5, Name = "P5", Price = 500m, CategoryID = 1 }
             });
+
         mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(5);
+            .ReturnsAsync(15); // Total products
 
         HomeController controller = new HomeController(mock.Object);
         controller.PageSize = 3;
 
         // Act
-        // !!!! new/updated code {
-        ProductsListViewModel result = (await controller.Index(2))?.ViewData.Model as ProductsListViewModel ?? new();
-        // }
+        IEnumerable<Product>? result = (await controller.Index(2) as ViewResult)?.ViewData.Model as IEnumerable<Product>;
 
         // Assert
-        // !!!! new/updated code {
-        Product[] prodArray = result.Products.ToArray();
-        // }
+        Product[] prodArray = result?.ToArray() ?? Array.Empty<Product>();
         Assert.True(prodArray.Length == 2);
         Assert.Equal("P4", prodArray[0].Name);
         Assert.Equal("P5", prodArray[1].Name);
     }
-    ```
 
-15. Add a unit test in order to check if controller sends the correct pagination data to the view in the class `HomeControllerTests`.
-
-    ```C#
     [Fact]
     public async Task Can_Send_Pagination_View_Model()
     {
         // Arrange
         Mock<IProductService> mock = new Mock<IProductService>();
-        mock.Setup(m => m.GetProductsPageAsync(2, 3, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product>
-            {
-                new Product {ProductID = 4, Name = "P4"},
-                new Product {ProductID = 5, Name = "P5"}
-            });
+        mock.Setup(m => m.GetProductsPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Product>());
         mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(5);
+            .ReturnsAsync(28);
 
-        // Arrange
-        HomeController controller = new HomeController(mock.Object) { PageSize = 3 };
-        
+        HomeController controller = new HomeController(mock.Object);
+        controller.PageSize = 10;
+
         // Act
-        ProductsListViewModel result = (await controller.Index(2))?.ViewData.Model as ProductsListViewModel ?? new();
-        
+        ViewResult result = await controller.Index(2) as ViewResult ?? new ViewResult();
+        PagingInfoViewModel? pageInfo = result.ViewData["PagingInfo"] as PagingInfoViewModel;
+
         // Assert
-        PagingInfoViewModel pageInfo = result.PagingInfo;
+        Assert.NotNull(pageInfo);
         Assert.Equal(2, pageInfo.CurrentPage);
-        Assert.Equal(3, pageInfo.ItemsPerPage);
-        Assert.Equal(5, pageInfo.TotalItems);
-        Assert.Equal(2, pageInfo.TotalPages);
+        Assert.Equal(10, pageInfo.ItemsPerPage);
+        Assert.Equal(28, pageInfo.TotalItems);
+        Assert.Equal(3, pageInfo.TotalPages);
     }
     ```
 
-16. Update the `Index.cshtml` corresponding to the `HomeController` to use the new viewmodel type.
+### Step 5: Create Tag Helper for Page Links
 
-    ```CSHTML
-    @model ProductsListViewModel
-    @foreach (var p in Model?.Products ?? Enumerable.Empty<Product>())
-    {
-        <div>
-            <h3>@p.Name</h3>
-            <h4>@p.Price.ToString("c")</h4>
-        </div>
-    }
-    ```
-    >We have changed the `@model` directive to tell Razor that we are now working with a different data type.
-
-17. Display the links towards the pages in the `Index.cshtml` corresponding to the `HomeController`.
-
-    ```CSHTML
-    @model ProductsListViewModel
-
-    @foreach (var p in Model.Products)
-    {
-        <div>
-            <h3>@p.Name</h3>
-            <h4>@p.Price.ToString("c")</h4>
-        </div>
-    }
-
-    <div page-model="@Model?.PagingInfo" page-action="Index"></div>
-    ```
-
-    > When Razor finds the `page-model` attribute on the `div` element, it asks the `PageLinkTagHelper` class to transform the element.
-
-18. Let's improve the urls using the ASP.NET Core routing feature. Modify the `Main` method of the `Program` class as follows.
+9. Create a folder named `Infrastructure` and add to it a class called `PageLinkTagHelper`:
 
     ```C#
-    public static void Main(string[] args)
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using MVCStore.ViewModels;
+
+    namespace MVCStore.Infrastructure
     {
-        var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(
-            builder.Configuration["ConnectionStrings:DefaultConnection"]);
-        });
-
-        builder.Services.AddScoped<IProductService, ProductService>();
-
-        var app = builder.Build();
-        app.UseStaticFiles();
-        // !!!! new/updated code {
-        app.MapControllerRoute("pagination",
-            "Products/Page{productPage}",
-            new { Controller = "Home", action = "Index" });
-        //}
-        app.MapDefaultControllerRoute();
-
-        SeedData.EnsurePopulated(app);
-
-        app.Run();
+        [HtmlTargetElement("div", Attributes = "page-model")]
+        public class PageLinkTagHelper : TagHelper
+        {
+            private IUrlHelperFactory urlHelperFactory;
+            
+            public PageLinkTagHelper(IUrlHelperFactory helperFactory)
+            {
+                urlHelperFactory = helperFactory;
+            }
+            
+            [ViewContext]
+            [HtmlAttributeNotBound]
+            public ViewContext? ViewContext { get; set; }
+            
+            public PagingInfoViewModel? PageModel { get; set; }
+            public string? PageAction { get; set; }
+            
+            public override void Process(TagHelperContext context, TagHelperOutput output)
+            {
+                if (ViewContext != null && PageModel != null)
+                {
+                    IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+                    TagBuilder result = new TagBuilder("div");
+                    
+                    for (int i = 1; i <= PageModel.TotalPages; i++)
+                    {
+                        TagBuilder tag = new TagBuilder("a");
+                        tag.Attributes["href"] = urlHelper.Action(PageAction, new { productPage = i });
+                        
+                        // Add Bootstrap classes for styling
+                        tag.AddCssClass("btn");
+                        tag.AddCssClass(i == PageModel.CurrentPage ? "btn-primary" : "btn-outline-primary");
+                        tag.AddCssClass("mx-1");
+                        
+                        tag.InnerHtml.Append(i.ToString());
+                        result.InnerHtml.AppendHtml(tag);
+                    }
+                    
+                    output.Content.AppendHtml(result.InnerHtml);
+                }
+            }
+        }
     }
     ```
-    > It is important that you add the new route before the call to the `MapDefaultControllerRoute` method. The routing system processes routes in the order they are listed, and we need the new route to take precedence over the existing one.
+    
+    > This tag helper populates a `div` element with `a` elements that correspond to pages of products. Tag helpers are one of the most useful ways to introduce C# logic into your views. 
+    
+    > The code for a tag helper can look complex because C# and HTML don't mix easily, but using tag helpers is preferable to including blocks of C# code in a view because a tag helper can be easily unit tested and reused across multiple views.
 
-    > This is the only alteration required to change the URL scheme for product pagination. ASP.NET Core and the routing function are tightly integrated, so the application automatically reflects a change like this in the URLs used by the application, including those generated by tag helpers.
+10. Register the new tag helper in the `_ViewImports.cshtml` file:
 
+    ```CSHTML
+    @using MVCStore
+    @using MVCStore.Models
+    @using MVCStore.ViewModels
+    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+    @addTagHelper *, MVCStore
+    ```
 
-##  6. <a name='Bibliography'></a>Bibliography
+### Step 6: Unit Test the Tag Helper
+
+11. Add a new class in the `MVCStore.Tests` project for unit testing the `PageLinkTagHelper`:
+
+    ```C#
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+    using Moq;
+    using MVCStore.Infrastructure;
+    using MVCStore.ViewModels;
+    using Xunit;
+
+    namespace MVCStore.Tests
+    {
+        public class PageLinkTagHelperTests
+        {
+            [Fact]
+            public void Can_Generate_Page_Links()
+            {
+                // Arrange
+                var urlHelper = new Mock<IUrlHelper>();
+                urlHelper.SetupSequence(x => x.Action(It.IsAny<UrlActionContext>()))
+                    .Returns("Test/Page1")
+                    .Returns("Test/Page2")
+                    .Returns("Test/Page3");
+
+                var urlHelperFactory = new Mock<IUrlHelperFactory>();
+                urlHelperFactory.Setup(f => f.GetUrlHelper(It.IsAny<ActionContext>()))
+                    .Returns(urlHelper.Object);
+
+                PageLinkTagHelper helper = new PageLinkTagHelper(urlHelperFactory.Object)
+                {
+                    PageModel = new PagingInfoViewModel
+                    {
+                        CurrentPage = 2,
+                        TotalItems = 28,
+                        ItemsPerPage = 10
+                    },
+                    PageAction = "Test"
+                };
+
+                TagHelperContext ctx = new TagHelperContext(
+                    new TagHelperAttributeList(),
+                    new Dictionary<object, object>(), "");
+
+                var content = new Mock<TagHelperContent>();
+                TagHelperOutput output = new TagHelperOutput("div",
+                    new TagHelperAttributeList(),
+                    (cache, encoder) => Task.FromResult(content.Object));
+
+                // Act
+                helper.Process(ctx, output);
+
+                // Assert
+                string result = output.Content.GetContent();
+                Assert.Contains("Test/Page1", result);
+                Assert.Contains("Test/Page2", result);
+                Assert.Contains("Test/Page3", result);
+            }
+        }
+    }
+    ```
+
+### Step 7: Update the View to Use Pagination
+
+12. Update `Views/Home/Index.cshtml` to include the pagination links:
+
+    ```CSHTML
+    @model IEnumerable<Product>
+
+    @{
+        ViewData["Title"] = "Products";
+    }
+
+    <h1>Products</h1>
+
+    <div class="row">
+        @foreach (var p in Model ?? Enumerable.Empty<Product>()) 
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text">
+                            <strong>Price:</strong> @p.Price.ToString("c")<br />
+                            <strong>Category:</strong> @(p.Category?.Name ?? "Unknown")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4" page-model="@ViewBag.PagingInfo" page-action="Index"></div>
+    ```
+
+    > The `page-model` and `page-action` attributes are processed by our custom `PageLinkTagHelper` to generate the pagination links.
+
+##  7. <a name='LookingAhead'></a>Looking Ahead: Lab 06
+
+In this lab, you've worked directly with domain models (`Product`) in your views and controllers, and your service layer accesses `DbContext` directly. While this approach works and is easy to understand, it has some limitations:
+
+### Current Architecture Issues
+
+1. **Security Concerns**
+   - Views have access to all properties of domain models
+   - Risk of over-posting attacks when using models in forms
+   - No validation layer between user input and database
+
+2. **Testing Challenges**
+   - Service layer requires a real database to test (uses `DbContext`)
+   - Controller tests use domain models directly
+   - Business logic is mixed with data access
+
+3. **Tight Coupling**
+   - Service layer is tightly coupled to Entity Framework Core
+   - Hard to swap data sources (e.g., to use MongoDB or an API)
+   - Changes to domain models affect controllers and views
+
+4. **No Separation of Concerns**
+   - Data access and business logic in the same layer (service)
+   - Violates Single Responsibility Principle
+   - Hard to reuse business logic in different contexts (Web API, console app, etc.)
+
+### What You'll Learn in Lab 06
+
+In **Lab 06: Advanced Architecture - Repository Pattern and DTOs**, you'll refactor the code you've built to address these issues:
+
+1. **Data Transfer Objects (DTOs)**
+   - Separate classes for data transfer between layers
+   - Built-in validation using Data Annotations
+   - Protection against over-posting attacks
+   - Independent of domain model changes
+
+2. **Repository Pattern**
+   - Abstraction layer for data access
+   - Easy to mock for unit testing
+   - Centralized query logic
+   - Flexibility to change data sources
+
+3. **Improved Service Layer**
+   - Pure business logic (no database code)
+   - Uses repositories for data access
+   - Works with DTOs instead of domain models
+   - Easy to unit test without a database
+
+4. **SOLID Principles**
+   - Single Responsibility: Each layer has one job
+   - Dependency Inversion: Depend on abstractions, not implementations
+   - Practical application of professional patterns
+
+### Example: What Will Change
+
+**Current Controller (Lab 05)**:
+```csharp
+public async Task<IActionResult> Create(Product product)  // Domain model
+{
+    await _productService.CreateProductAsync(product);
+    return RedirectToAction("Index");
+}
+```
+
+**Refactored Controller (Lab 06)**:
+```csharp
+public async Task<IActionResult> Create(CreateProductDto dto)  // DTO with validation
+{
+    if (!ModelState.IsValid)
+        return View(dto);
+    
+    await _productService.CreateProductAsync(dto);
+    return RedirectToAction("Index");
+}
+```
+
+**Benefits**:
+- ✅ Built-in validation
+- ✅ Protection against over-posting
+- ✅ Separation of concerns
+- ✅ Easier to test
+
+This refactoring will prepare you for building production-ready applications with proper architecture and security!
+
+##  8. <a name='Bibliography'></a>Bibliography
+
+- [Dependency Injection in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection)
+- [Tag Helpers in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro)
+- [Unit Testing in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/test/)
+- [View Models vs Domain Models](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/overview)
+- [Moq Documentation](https://github.com/moq/moq4)
+- [xUnit Documentation](https://xunit.net/)
