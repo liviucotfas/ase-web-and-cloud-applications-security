@@ -37,7 +37,7 @@ Before starting this lab, you should have completed **Lab 04: Models, Database, 
 
 ##  3. <a name='PreparingtheController'></a>Preparing the Controller
 
-1. Modify the `HomeController` as highlighted below.
+1. The `HomeController` as highlighted below.
 
     ```C#
     using Microsoft.AspNetCore.Mvc;
