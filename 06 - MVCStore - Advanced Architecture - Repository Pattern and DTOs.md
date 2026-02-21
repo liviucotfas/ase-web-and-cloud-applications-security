@@ -199,7 +199,7 @@ namespace MVCStore.Models.DTOs
     {
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Product name must be between 2 and 100 characters")]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Price is required")]
         [Range(0.01, 999999.99, ErrorMessage = "Price must be between 0.01 and 999,999.99")]
@@ -222,7 +222,7 @@ namespace MVCStore.Models.DTOs
 
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(100, MinimumLength = 2)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Price is required")]
         [Range(0.01, 999999.99)]
@@ -277,7 +277,7 @@ namespace MVCStore.Models.DTOs
     {
         [Required(ErrorMessage = "Category name is required")]
         [StringLength(50, MinimumLength = 2)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     public class UpdateCategoryDto
@@ -287,7 +287,7 @@ namespace MVCStore.Models.DTOs
 
         [Required(ErrorMessage = "Category name is required")]
         [StringLength(50, MinimumLength = 2)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
 ```
