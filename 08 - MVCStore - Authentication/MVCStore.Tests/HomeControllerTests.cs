@@ -1,95 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MVCStore.Controllers;
-using MVCStore.Data;
 using MVCStore.Models;
-using MVCStore.ViewModels;
+using MVCStore.Models.DTOs;
+using MVCStore.Services;
 
 namespace MVCStore.Tests
 {
-    public class HomeControllerTests
-    {
-        [Fact]
-        public void Can_Use_Repository()
-        {
-            // Arrange
-            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
-            mock.Setup(m => m.Products).Returns(
-                (new Product[] {
-                    new Product {ProductID = 1, Name = "P1"},
-                    new Product {ProductID = 2, Name = "P2"}
-                    }).AsQueryable<Product>()
-                 );
-            HomeController controller = new HomeController(mock.Object);
+	public class HomeControllerTests
+	{
+		[Fact]
+		public async Task Can_Use_Service()
+		{
+			// Arrange
+			Mock<IProductService> mock = new Mock<IProductService>();
+			mock.Setup(m => m.GetAllProductsAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new List<ProductListItemDto>
+				{
+					new ProductListItemDto { ProductID = 1, Name = "P1", Price = 100m, CategoryName = "Category1" },
+					new ProductListItemDto { ProductID = 2, Name = "P2", Price = 200m, CategoryName = "Category1" }
+				});
 
-            // Act
-            // !!!! new/updated code {
-            ProductsListViewModel result = controller.Index()?.ViewData.Model as ProductsListViewModel ?? new();
-            // }
+			HomeController controller = new HomeController(mock.Object);
 
-            // Assert
-            // !!!! new/updated code {
-            Product[] prodArray = result.Products.ToArray();
-            // }
-            Assert.True(prodArray.Length == 2);
-            Assert.Equal("P1", prodArray[0].Name);
-            Assert.Equal("P2", prodArray[1].Name);
-        }
+			// Act
+			IEnumerable<ProductListItemDto>? result = (await controller.Index() as ViewResult)?.ViewData.Model as IEnumerable<ProductListItemDto>;
 
-        [Fact]
-        public void Can_Paginate()
-        {
-            // Arrange
-            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
-
-            mock.Setup(m => m.Products).Returns((new Product[] {
-                new Product {ProductID = 1, Name = "P1"},
-                new Product {ProductID = 2, Name = "P2"},
-                new Product {ProductID = 3, Name = "P3"},
-                new Product {ProductID = 4, Name = "P4"},
-                new Product {ProductID = 5, Name = "P5"}
-                }).AsQueryable<Product>());
-
-            HomeController controller = new HomeController(mock.Object);
-            controller.PageSize = 3;
-
-            // Act
-            // !!!! new/updated code {
-            ProductsListViewModel result =  controller.Index(2)?.ViewData.Model as ProductsListViewModel ?? new();
-            // }
-
-            // Assert
-            // !!!! new/updated code {
-            Product[] prodArray = result.Products.ToArray();
-            // }
-            Assert.True(prodArray.Length == 2);
-            Assert.Equal("P4", prodArray[0].Name);
-            Assert.Equal("P5", prodArray[1].Name);
-        }
-
-        [Fact]
-        public void Can_Send_Pagination_View_Model()
-        {
-            // Arrange
-            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
-            mock.Setup(m => m.Products).Returns((new Product[] {
-            new Product {ProductID = 1, Name = "P1"},
-            new Product {ProductID = 2, Name = "P2"},
-            new Product {ProductID = 3, Name = "P3"},
-            new Product {ProductID = 4, Name = "P4"},
-            new Product {ProductID = 5, Name = "P5"}
-            }).AsQueryable<Product>());
-            // Arrange
-            HomeController controller =
-            new HomeController(mock.Object) { PageSize = 3 };
-            // Act
-            ProductsListViewModel result = controller.Index(2)?.ViewData.Model as ProductsListViewModel ?? new();
-            // Assert
-            PagingInfo pageInfo = result.PagingInfo;
-            Assert.Equal(2, pageInfo.CurrentPage);
-            Assert.Equal(3, pageInfo.ItemsPerPage);
-            Assert.Equal(5, pageInfo.TotalItems);
-            Assert.Equal(2, pageInfo.TotalPages);
-        }
-    }
+			// Assert
+			ProductListItemDto[] prodArray = result?.ToArray() ?? Array.Empty<ProductListItemDto>();
+			Assert.True(prodArray.Length == 2);
+			Assert.Equal("P1", prodArray[0].Name);
+			Assert.Equal("P2", prodArray[1].Name);
+		}
+	}
 }

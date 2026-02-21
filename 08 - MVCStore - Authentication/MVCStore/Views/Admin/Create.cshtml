@@ -1,18 +1,17 @@
 ﻿@using MVCStore.Models.DTOs
-@model UpdateProductDto
+@model CreateProductDto
 
 @{
-    ViewBag.Title = "Edit Product";
+    ViewBag.Title = "New Product";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Edit Product</h1>
+<h1>New Product</h1>
 <hr />
 
-<form asp-action="Edit" method="post">
+<form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="ProductID" />
 
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
@@ -32,6 +31,6 @@
         <span asp-validation-for="CategoryID" class="text-danger"></span>
     </div>
 
-    <input type="submit" value="Save" class="btn btn-primary" />
+    <input type="submit" value="Create" class="btn btn-primary" />
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
