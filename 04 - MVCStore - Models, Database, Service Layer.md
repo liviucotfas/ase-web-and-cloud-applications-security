@@ -120,9 +120,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     }
     ```
 
-    > The `IConfiguration` interface provides access to the ASP.NET Core configuration system, which includes the contents of the `appsettings.json` file. Access to the configuration data is through the `builder.Configuration` property, which allows the database connection string to be obtained. Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSQLServer` method declares that SQL Server is being used.
-
-    >Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSQLServer` method declares that SQL Server is being used and the connection string is read via the `IConfiguration` object.
+    > The `IConfiguration` interface provides access to the ASP.NET Core configuration system, which includes the contents of the `appsettings.json` file. Access to the configuration data is through the `builder.Configuration` property, which allows the database connection string to be obtained. Entity Framework Core is configured with the `AddDbContext` method, which registers the database context class and configures the relationship with the database. The `UseSqlServer` method declares that SQL Server is being used.
 
 ##  7. <a name='CreatingaServiceLayer'></a>Creating a Service Layer
 
