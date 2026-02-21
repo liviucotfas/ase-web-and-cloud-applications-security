@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MVCStore.Data;
+using MVCStore.Services;
 
 namespace MVCStore
 {
@@ -17,7 +18,7 @@ namespace MVCStore
 				opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 			});
 
-			builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+			builder.Services.AddScoped<IProductService, ProductService>();
 
 			var app = builder.Build();
 			//app.MapGet("/", () => "Hello World!");

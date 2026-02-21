@@ -16,30 +16,54 @@ namespace MVCStore.Data
 					context.Database.Migrate();
 				}
 
+				if (!context.Categories.Any())
+				{
+					context.Categories.AddRange(
+						new Category
+						{
+							Name = "Security Software",
+							Products = new List<Product>()
+						},
+						new Category
+						{
+							Name = "Training & Certification",
+							Products = new List<Product>()
+						}
+					);
+
+					context.SaveChanges();
+				}
+
 				if (!context.Products.Any())
 				{
+					var securitySoftware = context.Categories.First(c => c.Name == "Security Software");
+					var training = context.Categories.First(c => c.Name == "Training & Certification");
+
 					context.Products.AddRange(
-					new Product
-					{
-						Name = "Kayak",
-						Description = "A boat for one person",
-						Category = "Watersports",
-						Price = 275
-					},
-					new Product
-					{
-						Name = "Lifejacket",
-						Description = "Protective and fashionable",
-						Category = "Watersports",
-						Price = 48.95m
-					},
-					new Product
-					{
-						Name = "Soccer Ball",
-						Description = "FIFA-approved size and weight",
-						Category = "Soccer",
-						Price = 19.50m
-					}
+						new Product
+						{
+							Name = "Enterprise Antivirus License",
+							Price = 299.99m,
+							CategoryID = securitySoftware.CategoryID
+						},
+						new Product
+						{
+							Name = "Password Manager Pro",
+							Price = 49.99m,
+							CategoryID = securitySoftware.CategoryID
+						},
+						new Product
+						{
+							Name = "Certified Ethical Hacker (CEH) Course",
+							Price = 1299.00m,
+							CategoryID = training.CategoryID
+						},
+						new Product
+						{
+							Name = "Security Awareness Training",
+							Price = 199.00m,
+							CategoryID = training.CategoryID
+						}
 					);
 
 					context.SaveChanges();
