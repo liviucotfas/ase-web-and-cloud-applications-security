@@ -510,7 +510,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
     ```
 
 ##  9. <a name='Bibliography'></a>Bibliography
-
 - [ASP.NET Core MVC Controllers](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions)
 - [Tag Helpers in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro)
 - [Model Validation in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation)
