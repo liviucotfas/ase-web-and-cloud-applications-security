@@ -1,42 +1,43 @@
-﻿@model IEnumerable<MVCStore.Models.Product>
+﻿@using MVCStore.Models.DTOs
+@model IEnumerable<ProductListItemDto>
 
 @{
-    ViewBag.Title = "Admin";
+    ViewBag.Title = "Admin – Products";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Products</h1>
 
-<p>
-    <a asp-action="Create">Add Product</a>
-</p>
- <table class="table table-striped table-bordered table-sm">
+<a asp-action="Create" class="btn btn-primary mb-3">Add Product</a>
+
+<table class="table table-striped table-bordered table-sm">
+    <thead>
         <tr>
-            <th class="text-right">ID</th>
+            <th class="text-end">ID</th>
             <th>Name</th>
-            <th class="text-right">Price</th>
+            <th>Category</th>
+            <th class="text-end">Price</th>
             <th class="text-center">Actions</th>
         </tr>
+    </thead>
+    <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td class="text-right">@item.ProductID</td>
+                <td class="text-end">@item.ProductID</td>
                 <td>@item.Name</td>
-                <td class="text-right">@item.Price</td>
+                <td>@item.CategoryName</td>
+                <td class="text-end">@item.Price.ToString("C")</td>
                 <td class="text-center">
-                    <a asp-action="Edit" class="btn btn-sm btn-warning"
-                    asp-route-productId="@item.ProductID">
-                        Edit
-                    </a>
-                    <form 
-                        asp-action="Delete" 
-                        method="post" style="display: inline">
-                        <input type="hidden" name="ProductId" value="@item.ProductID" />
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
+                    <a asp-action="Edit" asp-route-productId="@item.ProductID"
+                       class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="Delete" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@item.ProductID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                 </td>
             </tr>
         }
-    </table>
+    </tbody>
+</table>

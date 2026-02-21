@@ -1,27 +1,26 @@
-﻿  <!DOCTYPE html>
+﻿<!DOCTYPE html>
 
-    <html lang="en">
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-        <title>@ViewBag.Title</title>
-
-        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    </head>
-    <body>
-        <div class="bg-dark text-white p-2">
-            <span class="navbar-brand ml-2">MVC STORE</span>
-        </div>
-
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title</title>
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar bg-light navbar-expand-sm">
         <div class="container-fluid">
-            @if (TempData["message"] != null)
-            {
-                <div class="alert alert-success">@TempData["message"]</div>
-            }
-
-            @RenderBody()
+            <span class="navbar-brand mb-0">MVCStore Admin</span>
         </div>
+    </nav>
 
-        @await RenderSectionAsync("Scripts", required: false)
-    </body>
-    </html>
+    <div class="container-fluid mt-3">
+        @if (TempData["message"] != null)
+        {
+            <div class="alert alert-success">@TempData["message"]</div>
+        }
+        @RenderBody()
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
