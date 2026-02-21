@@ -337,58 +337,13 @@ Entity Framework Core must be configured so that it knows the type of database t
 
     > The controller receives an `IProductService` instance through constructor injection and uses it to retrieve products. This keeps the controller thin and focused on handling HTTP requests, while all business logic and data access is handled by the service.
 
-12. Update the `Index.cshtml` view in the `Views/Home` folder to display the products:
-
-    ```razor
-    @model List<MVCStore.Models.Product>
-
-    <div class="container mt-4">
-        <h2>Security Products & Training</h2>
-        <p class="text-muted">Browse our selection of security software and training courses</p>
-
-        @if (Model != null && Model.Any())
-        {
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var product in Model)
-                    {
-                        <tr>
-                            <td>@product.Name</td>
-                            <td>@product.Category?.Name</td>
-                            <td>@product.Price.ToString("C")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="alert alert-info" role="alert">
-                <h4 class="alert-heading">No products found</h4>
-                <p>The product catalog is currently empty. Please seed the database with sample data.</p>
-            </div>
-        }
-    </div>
-    ```
-
-    > The view is strongly typed to `List<MVCStore.Models.Product>`, which provides IntelliSense and compile-time type checking.
-
-    > The view uses Bootstrap classes for styling and displays products in a table format. The `?.` operator safely handles the nullable `Category` navigation property, preventing null reference exceptions if the category is not loaded.
-
-    > The `ToString("C")` method formats the price as currency according to the current culture settings.
+    > **Note**: The view for displaying products will be created in **Lab 05: Controllers, Actions and Views**, where you'll learn about Razor views, view models, and creating dynamic HTML content.
 
 ##  8. <a name='CreatingtheDatabaseMigration'></a>Creating the Database Migration
 
 > Entity Framework Core is able to generate the schema for the database using the data model classes through a feature called migrations. When you prepare a migration, Entity Framework Core creates a C# class that contains the SQL commands required to prepare the database.
 
-13. Run one of the following commands to generate the initial migration.
+12. Run one of the following commands to generate the initial migration.
 
     Package Manager Console panel:
     ```
@@ -400,7 +355,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     dotnet ef migrations add Initial
     ```
 
-14. Run the following command to update the database.
+13. Run the following command to update the database.
 
     Package Manager Console panel:
     ```
@@ -412,11 +367,11 @@ Entity Framework Core must be configured so that it knows the type of database t
     dotnet ef database update
     ```
 
-15. Check the tables that have been created in the database. You should see both `Products` and `Categories` tables, with a foreign key relationship between them.
+14. Check the tables that have been created in the database. You should see both `Products` and `Categories` tables, with a foreign key relationship between them.
 
 ##  9. <a name='CreatingSeedData'></a>Creating Seed Data
 
-16. To populate the database and provide some sample data, add a class file called `SeedData.cs` to the `Data` folder.
+15. To populate the database and provide some sample data, add a class file called `SeedData.cs` to the `Data` folder.
 
     ```C#
     using Microsoft.EntityFrameworkCore;
@@ -505,7 +460,7 @@ Entity Framework Core must be configured so that it knows the type of database t
     > 1. **Seed categories first**: Categories are created and saved to ensure they have valid `CategoryID` values
     > 2. **Seed products with category references**: After categories exist, products are created with valid `CategoryID` foreign keys
 
-17. Call the `EnsurePopulated` method in the `Main` method of the `Program` class:
+16. Call the `EnsurePopulated` method in the `Main` method of the `Program` class:
 
     ```C#
     using Microsoft.EntityFrameworkCore;
