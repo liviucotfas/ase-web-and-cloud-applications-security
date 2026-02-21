@@ -21,21 +21,6 @@ namespace MVCStore.Services
 				.ToListAsync(ct);
 		}
 
-		public Task<List<Product>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default)
-		{
-			return _context.Products
-				.Include(p => p.Category)  // Include navigation property
-				.OrderBy(p => p.ProductID)
-				.Skip((pageNumber - 1) * pageSize)
-				.Take(pageSize)
-				.ToListAsync(ct);
-		}
-
-		public Task<int> GetProductCountAsync(CancellationToken ct = default)
-		{
-			return _context.Products.CountAsync(ct);
-		}
-
 		public Task<Product?> GetProductByIdAsync(int id, CancellationToken ct = default)
 		{
 			return _context.Products

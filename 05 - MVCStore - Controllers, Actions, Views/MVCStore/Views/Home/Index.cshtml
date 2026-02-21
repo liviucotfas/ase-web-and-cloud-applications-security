@@ -9,7 +9,7 @@
 <div class="row">
     @foreach (var p in Model ?? Enumerable.Empty<Product>())
     {
-        <div class="col-md-3 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">@p.Name</h5>
@@ -22,5 +22,3 @@
         </div>
     }
 </div>
-
-<div class="text-center mt-4" page-model="@ViewBag.PagingInfo" page-action="Index"></div>
