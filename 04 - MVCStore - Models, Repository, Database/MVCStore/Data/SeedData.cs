@@ -11,10 +11,12 @@ namespace MVCStore.Data
 			{
 				var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (context.Database.GetPendingMigrations().Any())
-				{
-					context.Database.Migrate();
-				}
+				// Automatically applies pending migrations during development
+				// WARNING: Not recommended for production - use migration tools or CI/CD instead
+				//if (context.Database.GetPendingMigrations().Any())
+				//{
+				//	context.Database.Migrate();
+				//}
 
 				if (!context.Categories.Any())
 				{
