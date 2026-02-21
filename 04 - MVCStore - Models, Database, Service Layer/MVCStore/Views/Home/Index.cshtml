@@ -1,1 +1,36 @@
-﻿<h4>Welcome to MVCStore</h4>
+﻿@model List<MVCStore.Models.Product>
+
+<div class="container mt-4">
+    <h2>Security Products & Training</h2>
+    <p class="text-muted">Browse our selection of security software and training courses</p>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@product.Category?.Name</td>
+                        <td>@product.Price.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">No products found</h4>
+            <p>The product catalog is currently empty. Please seed the database with sample data.</p>
+        </div>
+    }
+</div>
