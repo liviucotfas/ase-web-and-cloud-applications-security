@@ -10,9 +10,9 @@
 * 7. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
-	numbering=true
-	autoSave=true
-	/vscode-markdown-toc-config -->
+    numbering=true
+    autoSave=true
+    /vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
@@ -27,20 +27,22 @@
 
     ```C#
     public class AdminController : Controller
-	{
-		private IStoreRepository repository;
-		public AdminController(IStoreRepository repo)
-		{
-			repository = repo;
-		}
-		public IActionResult Index()
-		{
-			return View(repository.Products);
-		}
-	}
+    {
+        private readonly IProductService _productService;
+        public AdminController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public async Task<IActionResult> Index(CancellationToken ct = default)
+        {
+            var products = await _productService.GetAllProductsAsync(ct);
+            return View(products);
+        }
+    }
     ```
 
-    > The controller constructor declares a dependency on the `IStoreRepository` interface, which will be resolved when instances are created. The controller defines a single action method, `Index`, that calls the `View` method to select the default view for the action, passing the set of products in the database as the view model.
+    > The controller constructor declares a dependency on the `IProductService` interface, which will be resolved by dependency injection. The controller defines an `Index` action that calls the service to obtain products and passes them to the view. The service layer contains business logic and performs data access using `ApplicationDbContext`.
 
 ##  3. <a name='DisplayingtheProducts'></a>Displaying the Products
 
@@ -75,7 +77,7 @@
 
     > For navbars that never collapse, add the `.navbar-expand` class on the navbar. Link: https://getbootstrap.com/docs/4.0/components/navbar/
 
-3. Add a veiew corrsponding to the `Index` action in the `Admin` controller.
+3. Add a view corresponding to the `Index` action in the `Admin` controller.
 
     ```CSHTML
    @model IEnumerable<Product>
@@ -123,12 +125,12 @@
 
 ##  4. <a name='EditingtheProducts'></a>Editing the Products
 
-4. Add an `Edit` action on the `AdminController` 
+4. Add an `Edit` action on the `AdminController` that uses the service to retrieve a single product.
 
     ```C#
-    public IActionResult Edit(int productId)
+    public async Task<IActionResult> Edit(int productId, CancellationToken ct = default)
     {
-        var product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
+        var product = await _productService.GetProductByIdAsync(productId, ct);
         return View(product);
     }
     ```
@@ -146,7 +148,7 @@
     <h1>Edit product</h1>
     <hr />
 
-    <form asp-action="Edit">
+    <form asp-action="Edit" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="ProductID" />
         <div class="form-group">
@@ -171,49 +173,51 @@
     </form>
     ```
 
-6. Add a `SaveProduct` method in the `IStoreRepository` interface.
+6. Implement save/update operations in the `IProductService` and `ProductService` rather than in a repository. Example service interface methods:
     ```C#
-    public interface IStoreRepository
-	{
-		IEnumerable<Product> Products { get; }
-
-		Task SaveProductAsync(Product product);
-	}
+    Task CreateProductAsync(Product product, CancellationToken ct = default);
+    Task UpdateProductAsync(Product product, CancellationToken ct = default);
     ```
 
-7. Implement the `SaveProduct` method as follows.
+7. Example implementation (in `ProductService`):
     ```C#
-    public async Task SaveProductAsync(Product product)
+    public async Task CreateProductAsync(Product product, CancellationToken ct = default)
     {
-        if (product.ProductID == 0)
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task UpdateProductAsync(Product product, CancellationToken ct = default)
+    {
+        var dbEntry = await _context.Products.FirstOrDefaultAsync(p => p.ProductID == product.ProductID, ct);
+        if (dbEntry != null)
         {
-            context.Products.Add(product);
+            dbEntry.Name = product.Name;
+            dbEntry.Description = product.Description;
+            dbEntry.Price = product.Price;
+            await _context.SaveChangesAsync(ct);
         }
-        else
-        {
-            Product dbEntry = context.Products
-                .FirstOrDefault(p => p.ProductID == product.ProductID);
-            if (dbEntry != null)
-            {
-                dbEntry.Name = product.Name;
-                dbEntry.Description = product.Description;
-                dbEntry.Price = product.Price;
-            }
-        }
-        await context.SaveChangesAsync();
     }
     ```
 
-8. Add the `Edit` action that will handle POST requests on the `AdminController`
+8. Add the `Edit` action that will handle POST requests on the `AdminController` and call the service.
 
     ```C#
     [HttpPost]
-    public async Task<IActionResult> Edit(Product product)
+    public async Task<IActionResult> Edit(Product product, CancellationToken ct = default)
     {
         if (ModelState.IsValid)
         {
-            await repository.SaveProductAsync(product);
-            TempData["message"] = $"{product.Name} has been saved";
+            if (product.ProductID == 0)
+            {
+                await _productService.CreateProductAsync(product, ct);
+                TempData["message"] = $"{product.Name} has been created";
+            }
+            else
+            {
+                await _productService.UpdateProductAsync(product, ct);
+                TempData["message"] = $"{product.Name} has been saved";
+            }
             return RedirectToAction("Index");
         }
         else
@@ -224,7 +228,7 @@
     }
     ```
 
-    > Notice the `TempData` object
+    > Notice the `TempData` object used to show success messages.
 
 9. Update the `_AdminLayout.cshtml` layout file in order to display the confirmation message.
 
@@ -235,20 +239,20 @@
     }
     ```
 
-10. Update the `Product` class as follows.
+10. Update the `Product` class as follows (validation attributes remain the same):
 
     ```C#
     public class Product {
         public int ProductID { get; set; }
-		[Required(ErrorMessage = "Please enter a product name")]
-		public string Name { get; set; }
-		[Required(ErrorMessage = "Please enter a description")]
-		public string Description { get; set; }
-		[Required]
-		[Range(0.01, double.MaxValue,ErrorMessage = "Please enter a positive price")]
-		[Column(TypeName = "decimal(8, 2)")]
-		public decimal Price { get; set; }
-		public string Category { get; set; }
+        [Required(ErrorMessage = "Please enter a product name")]
+        public string Name { get; set; }
+        [Required(ErrorMessage = "Please enter a description")]
+        public string Description { get; set; }
+        [Required]
+        [Range(0.01, double.MaxValue,ErrorMessage = "Please enter a positive price")]
+        [Column(TypeName = "decimal(8, 2)")]
+        public decimal Price { get; set; }
+        public string Category { get; set; }
     }
     ```
 
@@ -264,61 +268,60 @@
 
 ##  6. <a name='DeletingProducts'></a>Deleting Products
 
-12. Add a `DeleteProduct` method to the `IStoreRepository` interface.
+12. Define a delete method on the service interface instead of a repository method:
 
     ```C#
-    Task<Product> DeleteProductAsync(int productID);
+    Task<Product?> DeleteProductAsync(int productID, CancellationToken ct = default);
     ```
 
-13. Implement the method in the `EFProductRepository` class.
+13. Example implementation in `ProductService`:
 
     ```C#
-    public async Task<Product> DeleteProductAsync(int productID) { 
-        Product dbEntry = context.Products 
-                .FirstOrDefault(p => p.ProductID == productID); 
-    
-        if (dbEntry != null) { 
-            context.Products.Remove(dbEntry); 
-            await context.SaveChangesAsync(); 
-        } 
-    
-        return dbEntry; 
-    } 
+    public async Task<Product?> DeleteProductAsync(int productID, CancellationToken ct = default)
+    {
+        var dbEntry = await _context.Products.FirstOrDefaultAsync(p => p.ProductID == productID, ct);
+        if (dbEntry != null)
+        {
+            _context.Products.Remove(dbEntry);
+            await _context.SaveChangesAsync(ct);
+        }
+        return dbEntry;
+    }
     ```
-14. Add the corresponding action to the `AdminController`
+14. Add the corresponding action to the `AdminController` that calls the service:
 
     ```C#
-    [HttpPost] 
-    public async Task<IActionResult> Delete(int productId) { 
-        Product deletedProduct = await repository.DeleteProductAsync(productId); 
-        if (deletedProduct != null) { 
-            TempData["message"] = $"{deletedProduct.Name} was deleted"; 
-        } 
-        return RedirectToAction("Index"); 
-    } 
+    [HttpPost]
+    public async Task<IActionResult> Delete(int productId, CancellationToken ct = default)
+    {
+        var deletedProduct = await _productService.DeleteProductAsync(productId, ct);
+        if (deletedProduct != null)
+        {
+            TempData["message"] = $"{deletedProduct.Name} was deleted";
+        }
+        return RedirectToAction("Index");
+    }
     ```
 
-15. Add a new unit test class in the `MVCStore.Tests` project called `AdminControllerTests`. Add the follwing test method.
+15. Unit testing: mock `IProductService` instead of `IStoreRepository`. Example test for delete behavior:
 
     ```C#
     [Fact]
-    public void Can_Delete_Valid_Products() {
+    public async Task Can_Delete_Valid_Products()
+    {
         // Arrange - create a Product
-        Product prod = new Product { ProductID = 2, Name = "Test" };
-        // Arrange - create the mock repository
-        Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
-        mock.Setup(m => m.Products).Returns(new Product[] {
-            new Product {ProductID = 1, Name = "P1"},
-            prod,
-            new Product {ProductID = 3, Name = "P3"},
-        }.AsQueryable<Product>());
-        // Arrange - create the controller
-        AdminController target = new AdminController(mock.Object);
-        // Act - delete the product
-        target.Delete(prod.ProductID);
-        // Assert - ensure that the repository delete method was
-        // called with the correct Product
-        mock.Verify(m => m.DeleteProductAsync(prod.ProductID));
+        var prod = new Product { ProductID = 2, Name = "Test" };
+        var mock = new Mock<IProductService>();
+        mock.Setup(m => m.DeleteProductAsync(prod.ProductID, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(prod);
+
+        var controller = new AdminController(mock.Object);
+
+        // Act
+        var result = await controller.Delete(prod.ProductID);
+
+        // Assert - ensure the service delete method was called
+        mock.Verify(m => m.DeleteProductAsync(prod.ProductID, It.IsAny<CancellationToken>()));
     }
     ```
 ##  7. <a name='Bibliography'></a>Bibliography
