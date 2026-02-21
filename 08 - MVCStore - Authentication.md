@@ -2,11 +2,12 @@
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
-* 2. [Changing the Context Class](#ChangingtheContextClass)
-* 3. [Creating and Applying the Database Migration](#CreatingandApplyingtheDatabaseMigration)
-* 4. [Defining the Seed Data](#DefiningtheSeedData)
-* 5. [Applying a Basic Authorization Policy](#ApplyingaBasicAuthorizationPolicy)
-* 6. [Bibliography](#Bibliography)
+* 2. [Prerequisites](#Prerequisites)
+* 3. [Changing the Context Class](#ChangingtheContextClass)
+* 4. [Creating and Applying the Database Migration](#CreatingandApplyingtheDatabaseMigration)
+* 5. [Defining the Seed Data](#DefiningtheSeedData)
+* 6. [Applying a Basic Authorization Policy](#ApplyingaBasicAuthorizationPolicy)
+* 7. [Bibliography](#Bibliography)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -15,86 +16,130 @@
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='Objectives'></a>Objectives
-- implementing the identity framework;
+- Adding ASP.NET Core Identity to an existing MVC application
+- Extending `ApplicationDbContext` to support Identity
+- Creating and applying Identity database migrations
+- Seeding an initial admin user programmatically
+- Restricting access to controllers with the `[Authorize]` attribute
+- Scaffolding Login, Register, and LogOut Razor Pages
 
-##  2. <a name='ChangingtheContextClass'></a>Changing the Context Class
+##  2. <a name='Prerequisites'></a>Prerequisites
 
-1. Install the NuGet package "Microsoft.AspNetCore.Identity.EntityFrameworkCore".
-2. Change the `ApplicationDbContext` class as follows.
+Before starting this lab, you must have completed **Lab 07: CRUD**. Your project should already have:
 
-	```C#
+- `Models/DTOs/ProductDto.cs`, `CategoryDto.cs`, `MappingExtensions.cs`
+- `Repositories/IProductRepository.cs`, `ProductRepository.cs`
+- `Repositories/ICategoryRepository.cs`, `CategoryRepository.cs`
+- `Services/IProductService.cs`, `ProductService.cs`
+- `Controllers/AdminController.cs` with full CRUD actions
+- `Views/Admin/` — `Index.cshtml`, `Create.cshtml`, `Edit.cshtml`
+- `Views/Shared/_AdminLayout.cshtml`
+- `Program.cs` registering `IProductRepository`, `ICategoryRepository`, and `IProductService`
+
+##  3. <a name='ChangingtheContextClass'></a>Changing the Context Class
+
+1. Install the NuGet package `Microsoft.AspNetCore.Identity.EntityFrameworkCore`.
+
+2. Change the `ApplicationDbContext` class as follows. Add `using Microsoft.AspNetCore.Identity.EntityFrameworkCore;` and `using Microsoft.AspNetCore.Identity;` to the existing usings.
+
+	```csharp
 	public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 	{
-		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { }
-		
-		public DbSet<Product> Products { get; set; }
+	    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
+	    public DbSet<Product> Products { get; set; }
+	    public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure relationships
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
 	}
 	```
 
-	> The `ApplicationDbContext` class is derived from `IdentityDbContext`, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the `IdentityUser` class, which is the built-in class used to represent users. 
+	> The `ApplicationDbContext` class is derived from `IdentityDbContext`, which provides Identity-specific features for Entity Framework Core. For the type parameter, we used the `IdentityUser` class, which is the built-in class used to represent users.
 
-2. Install the package "Microsoft.AspNetCore.Identity.UI". In the `Program` class make the following changes in the `Main` method.
+	> **Important**: Keep both `Products` and `Categories` `DbSet` properties. Identity adds its own tables (users, roles, claims, etc.) alongside your existing tables.
 
-	```C#
-	 public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+3. Install the NuGet package `Microsoft.AspNetCore.Identity.UI`. Then update `Program.cs` with the highlighted changes:
 
-            // Add services to the container.
-           builder.Services.AddDbContext<ApplicationDbContext>(opts => {
-            opts.UseSqlServer(
-            builder.Configuration["ConnectionStrings:DefaultConnection"]);
-        });
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+	```csharp
+	using Microsoft.EntityFrameworkCore;
+	using Microsoft.AspNetCore.Identity;                   // new
+	using MVCStore.Data;
+	using MVCStore.Repositories;
+	using MVCStore.Services;
 
-			 // !!!! new/updated code {
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-			//}
-            builder.Services.AddControllersWithViews();
+	var builder = WebApplication.CreateBuilder(args);
 
-            var app = builder.Build();
+	// Database
+	builder.Services.AddDbContext<ApplicationDbContext>(opts =>
+	    opts.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseMigrationsEndPoint();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+	// !!!! new/updated code {
+	builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+	        options.SignIn.RequireConfirmedAccount = false)
+	    .AddEntityFrameworkStores<ApplicationDbContext>();
+	// }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+	// Repositories and Services (unchanged from Lab 06/07)
+	builder.Services.AddScoped<IProductRepository, ProductRepository>();
+	builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+	builder.Services.AddScoped<IProductService, ProductService>();
 
-            app.UseRouting();
+	builder.Services.AddControllersWithViews();
 
-			// !!!! new/updated code {
-            app.UseAuthentication();
-            app.UseAuthorization();
-			//}
+	var app = builder.Build();
 
-            app.MapControllerRoute("pagination",
-                "Products/Page{productPage}",
-                new { Controller = "Home", action = "Index" });
-            //}
-            app.MapDefaultControllerRoute();
-            // !!!! new/updated code {
-            app.MapRazorPages();
-            //}
+	if (app.Environment.IsDevelopment())
+	{
+	    app.UseMigrationsEndPoint();
+	}
+	else
+	{
+	    app.UseExceptionHandler("/Home/Error");
+	    app.UseHsts();
+	}
 
-            app.Run();
-        }
-    }
+	app.UseHttpsRedirection();
+	app.UseStaticFiles();
+	app.UseRouting();
+
+	// !!!! new/updated code {
+	app.UseAuthentication();
+	app.UseAuthorization();
+	// }
+
+	app.MapDefaultControllerRoute();
+	// !!!! new/updated code {
+	app.MapRazorPages();
+	// }
+
+	SeedData.EnsurePopulated(app);
+	// !!!! new/updated code {
+	await SeedDataIdentity.EnsurePopulatedAsync(app);
+	// }
+
+	app.Run();
 	```
+
+	> **Note**: Using `await` in top-level statements automatically makes the program entry point `async Task` — the compiler generates the `async Task Main` signature for you. No explicit `Main` method is required.
+
 	> The `AddDefaultIdentity` method adds a set of common identity services to the application, including a default UI, token providers, and configures authentication to use identity cookies. Further reading: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity
 
-##  3. <a name='CreatingandApplyingtheDatabaseMigration'></a>Creating and Applying the Database Migration
+	> **Note**: `app.UseAuthentication()` must appear **before** `app.UseAuthorization()` in the middleware pipeline. Placing them in the wrong order will cause authorization to silently fail.
+
+	> **Note**: The pagination route (`MapControllerRoute("pagination", ...)`) was removed in Lab 05 and is not present here.
+
+##  4. <a name='CreatingandApplyingtheDatabaseMigration'></a>Creating and Applying the Database Migration
 
 1. Add a new migration to our application by running the following command.
 
@@ -107,7 +152,7 @@
 	Update-Database
 	```
 
-##  4. <a name='DefiningtheSeedData'></a>Defining the Seed Data
+##  5. <a name='DefiningtheSeedData'></a>Defining the Seed Data
 
 1. Add a new class called `SeedDataIdentity` to the `Data` folder
 
@@ -116,9 +161,9 @@
     {
         private const string adminEmail = "admin@test.com";
         private const string adminPassword = "Secret123$";
-        public static async Task EnsurePopulatedAsync(IApplicationBuilder app)
+        public static async Task EnsurePopulatedAsync(WebApplication app)
         {
-            var serviceProvider = app.ApplicationServices
+            var serviceProvider = app.Services
             .CreateScope().ServiceProvider;
 
             using (var userManager = serviceProvider
@@ -136,20 +181,20 @@
     }
 	```
 
-2. Call the `EnsurePopulated` method in the `Configure` method of the `Startup` class. 
+2. Call `SeedDataIdentity.EnsurePopulatedAsync` from `Program.cs`, after `SeedData.EnsurePopulated(app)` and before `app.Run()`:
 
-	```C#
-	Task.Run(async () =>
-		{
-			await SeedDataIdentity.EnsurePopulatedAsync(app);
-		}).Wait(); 
+	```csharp
+	SeedData.EnsurePopulated(app);
+	await SeedDataIdentity.EnsurePopulatedAsync(app);
+
+	app.Run();
 	```
 
 ***Question**
 - What changes should be made to the application in order to store additional details for a User?
 	> Futher reading: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/add-user-data
 
-##  5. <a name='ApplyingaBasicAuthorizationPolicy'></a>Applying a Basic Authorization Policy
+##  6. <a name='ApplyingaBasicAuthorizationPolicy'></a>Applying a Basic Authorization Policy
 
 1. The `[Authorize]` attribute is used to restrict access to action methods or controllers. Decorate the `AdminController` with this attribute.
 
@@ -185,4 +230,13 @@
 
     > `d-inline-flex` creates an inline flexbox container: https://getbootstrap.com/docs/5.2/utilities/display/#notation. For `sm` check https://getbootstrap.com/docs/5.2/layout/breakpoints/#available-breakpoints .
 
-##  6. <a name='Bibliography'></a>Bibliography
+##  7. <a name='Bibliography'></a>Bibliography
+
+- [Introduction to Identity on ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity)
+- [AddDefaultIdentity API reference](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity)
+- [IdentityDbContext Class](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.entityframeworkcore.identitydbcontext)
+- [Scaffold Identity in ASP.NET Core projects](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity)
+- [Add, download, and delete user data to Identity in an ASP.NET Core project](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/add-user-data)
+- [Authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction)
+- [Simple authorization with the [Authorize] attribute](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/simple)
+- [ASP.NET Core Middleware — Authentication and Authorization order](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/)
