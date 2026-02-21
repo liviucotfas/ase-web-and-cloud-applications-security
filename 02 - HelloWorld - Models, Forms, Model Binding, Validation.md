@@ -572,4 +572,4 @@ After a successful form submission, the controller returns a redirect to a `GET`
 
 **Assignment (for you to solve)**
 1. Use the common "post/redirect/get" pattern for displaying the `Thanks.cshtml` View.
-    Hint: use `TempData` to pass information between actions. The `JsonSerializer` class from the `System.Text.Json` might be useful.
+    Hint: You can pass the viewmodel as a parameter to the RedirectToAction method. Alteratively, you can also use `TempData` to pass information between actions. The `JsonSerializer` class from the `System.Text.Json` might be useful.
