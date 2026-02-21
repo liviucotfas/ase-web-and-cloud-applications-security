@@ -1,4 +1,7 @@
-﻿using MVCStore.Models.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using MVCStore.Data;
+using MVCStore.Models;
+using MVCStore.Models.DTOs;
 using MVCStore.Repositories;
 
 namespace MVCStore.Services
@@ -9,35 +12,19 @@ namespace MVCStore.Services
 
 		public ProductService(IProductRepository productRepository)
 		{
-			_productRepository = productRepository;
+			_productRepository = productRepository;  // Now depends on repository, not DbContext!
 		}
 
 		public async Task<List<ProductListItemDto>> GetAllProductsAsync(CancellationToken ct = default)
 		{
 			var products = await _productRepository.GetAllAsync(ct);
-			return products.Select(p => p.ToListItemDto()).ToList();
-		}
-
-		public async Task<List<ProductListItemDto>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default)
-		{
-			var products = await _productRepository.GetAllAsync(ct);
-			return products
-				.Skip((pageNumber - 1) * pageSize)
-				.Take(pageSize)
-				.Select(p => p.ToListItemDto())
-				.ToList();
-		}
-
-		public async Task<int> GetProductCountAsync(CancellationToken ct = default)
-		{
-			var products = await _productRepository.GetAllAsync(ct);
-			return products.Count;
+			return products.Select(p => p.ToListItemDto()).ToList();  // Map to DTO
 		}
 
 		public async Task<ProductDetailsDto?> GetProductByIdAsync(int id, CancellationToken ct = default)
 		{
 			var product = await _productRepository.GetByIdAsync(id, ct);
-			return product?.ToDetailsDto();
+			return product?.ToDetailsDto();  // Map to DTO
 		}
 
 		public async Task<ProductDto> CreateProductAsync(CreateProductDto dto, CancellationToken ct = default)
@@ -47,10 +34,10 @@ namespace MVCStore.Services
 			// Business validation (separate from DTO validation)
 			ValidateProductDto(dto.Name, dto.Price);
 
-			var product = dto.ToEntity();
+			var product = dto.ToEntity();  // Convert DTO to entity
 			var created = await _productRepository.AddAsync(product, ct);
 
-			return created.ToDto();
+			return created.ToDto();  // Return DTO
 		}
 
 		public async Task UpdateProductAsync(UpdateProductDto dto, CancellationToken ct = default)
@@ -66,7 +53,7 @@ namespace MVCStore.Services
 				throw new InvalidOperationException($"Product with ID {dto.ProductID} not found.");
 			}
 
-			dto.UpdateEntity(product);
+			dto.UpdateEntity(product);  // Update existing entity
 			await _productRepository.UpdateAsync(product, ct);
 		}
 
