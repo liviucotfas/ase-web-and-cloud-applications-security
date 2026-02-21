@@ -1,4 +1,4 @@
-# MVCStore - Security
+# MVCStore - Authentication
 
 <!-- vscode-markdown-toc -->
 * 1. [Objectives](#Objectives)
