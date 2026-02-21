@@ -4,6 +4,8 @@
 	{
 		public int CategoryID { get; set; }
 		public required string Name { get; set; }
-		public required ICollection<Product> Products { get; set; }
+
+		// Navigation property
+		public ICollection<Product> Products { get; set; } = new List<Product>();
 	}
 }

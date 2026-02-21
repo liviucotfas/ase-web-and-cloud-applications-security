@@ -9,7 +9,7 @@ namespace MVCStore.Models
 		[Column(TypeName = "decimal(8, 2)")]
 		public decimal Price { get; set; }
 
+		// Navigation property
 		public int CategoryID { get; set; }
-
 	}
 }
