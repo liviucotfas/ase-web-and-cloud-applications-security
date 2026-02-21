@@ -71,73 +71,75 @@ Before starting this lab, you must have completed **Lab 07: CRUD**. Your project
 3. Install the NuGet package `Microsoft.AspNetCore.Identity.UI`. Then update `Program.cs` with the highlighted changes:
 
 	```csharp
-	using Microsoft.EntityFrameworkCore;
-	using Microsoft.AspNetCore.Identity;                   // new
-	using MVCStore.Data;
-	using MVCStore.Repositories;
-	using MVCStore.Services;
-
-	var builder = WebApplication.CreateBuilder(args);
-
-	// Database
-	builder.Services.AddDbContext<ApplicationDbContext>(opts =>
-	    opts.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]));
-	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-	// !!!! new/updated code {
-	builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-	        options.SignIn.RequireConfirmedAccount = false)
-	    .AddEntityFrameworkStores<ApplicationDbContext>();
-	// }
-
-	// Repositories and Services (unchanged from Lab 06/07)
-	builder.Services.AddScoped<IProductRepository, ProductRepository>();
-	builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-	builder.Services.AddScoped<IProductService, ProductService>();
-
-	builder.Services.AddControllersWithViews();
-
-	var app = builder.Build();
-
-	if (app.Environment.IsDevelopment())
+	public class Program
 	{
-	    app.UseMigrationsEndPoint();
+	    public static void Main(string[] args)
+	    {
+	        var builder = WebApplication.CreateBuilder(args);
+
+	        // Add services to the container.
+	        builder.Services.AddControllersWithViews();
+
+	        // Configure Entity Framework Core to use SQL Server
+	        builder.Services.AddDbContext<ApplicationDbContext>(opts =>
+	        {
+	            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	            if (builder.Environment.IsDevelopment())
+	            {
+	                opts.EnableSensitiveDataLogging();
+	            }
+	        });
+
+	        // !!!! new/updated code {
+	        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+	                options.SignIn.RequireConfirmedAccount = false)
+	            .AddEntityFrameworkStores<ApplicationDbContext>();
+	        // }
+
+	        // Register Repository and Service layers (unchanged from Lab 06/07)
+	        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+	        builder.Services.AddScoped<IProductService, ProductService>();
+	        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+	        var app = builder.Build();
+
+	        if (!app.Environment.IsDevelopment())
+	        {
+	            app.UseHsts();
+	        }
+
+	        app.UseHttpsRedirection();
+	        app.UseRouting();
+
+	        // !!!! new/updated code {
+	        app.UseAuthentication();
+	        app.UseAuthorization();
+	        // }
+
+	        app.MapStaticAssets();
+
+	        // Seed the database
+	        SeedData.EnsurePopulated(app);
+
+	        app.MapControllerRoute(
+	                name: "default",
+	                pattern: "{controller=Home}/{action=Index}/{id?}")
+	            .WithStaticAssets();
+
+	        // !!!! new/updated code {
+	        app.MapRazorPages();
+	        // }
+
+	        app.Run();
+	    }
 	}
-	else
-	{
-	    app.UseExceptionHandler("/Home/Error");
-	    app.UseHsts();
-	}
-
-	app.UseHttpsRedirection();
-	app.UseStaticFiles();
-	app.UseRouting();
-
-	// !!!! new/updated code {
-	app.UseAuthentication();
-	app.UseAuthorization();
-	// }
-
-	app.MapDefaultControllerRoute();
-	// !!!! new/updated code {
-	app.MapRazorPages();
-	// }
-
-	SeedData.EnsurePopulated(app);
-	// !!!! new/updated code {
-	await SeedDataIdentity.EnsurePopulatedAsync(app);
-	// }
-
-	app.Run();
 	```
-
-	> **Note**: Using `await` in top-level statements automatically makes the program entry point `async Task` — the compiler generates the `async Task Main` signature for you. No explicit `Main` method is required.
 
 	> The `AddDefaultIdentity` method adds a set of common identity services to the application, including a default UI, token providers, and configures authentication to use identity cookies. Further reading: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.identityservicecollectionuiextensions.adddefaultidentity
 
 	> **Note**: `app.UseAuthentication()` must appear **before** `app.UseAuthorization()` in the middleware pipeline. Placing them in the wrong order will cause authorization to silently fail.
 
-	> **Note**: The pagination route (`MapControllerRoute("pagination", ...)`) was removed in Lab 05 and is not present here.
+	> **Note**: `MapStaticAssets()` replaces `UseStaticFiles()` in .NET 9 and enables fingerprinting for static files, improving caching behaviour. `WithStaticAssets()` chains this support to a specific route.
 
 ##  4. <a name='CreatingandApplyingtheDatabaseMigration'></a>Creating and Applying the Database Migration
 
@@ -181,7 +183,7 @@ Before starting this lab, you must have completed **Lab 07: CRUD**. Your project
     }
 	```
 
-2. Call `SeedDataIdentity.EnsurePopulatedAsync` from `Program.cs`, after `SeedData.EnsurePopulated(app)` and before `app.Run()`:
+2. Because `EnsurePopulatedAsync` must be awaited, change the `Main` method signature from `void` to `async Task`. Then call `SeedDataIdentity.EnsurePopulatedAsync` after `SeedData.EnsurePopulated(app)` and before `app.Run()`:
 
 	```csharp
 	SeedData.EnsurePopulated(app);
