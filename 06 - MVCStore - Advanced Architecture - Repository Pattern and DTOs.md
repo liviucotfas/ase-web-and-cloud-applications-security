@@ -31,11 +31,13 @@
 
 ##  2. <a name='Prerequisites'></a>Prerequisites
 
-Before starting this lab, you should have completed **Lab 04: Models, Database, and Service Layer** and have:
+Before starting this lab, you should have completed **Lab 05: Controllers, Actions, and Views** and have:
 - A working MVCStore application with Entity Framework Core
 - Domain models (`Product`, `Category`)
 - A database context (`ApplicationDbContext`)
 - A service layer (`ProductService`) that uses `DbContext` directly
+- Controllers, views, and paging functionality
+- Tag helpers for pagination
 - Basic understanding of dependency injection
 
 ##  3. <a name='IntroductionWhyAdvancedPatterns'></a>Introduction: Why Advanced Patterns?
@@ -508,10 +510,12 @@ namespace MVCStore.Repositories
 }
 ```
 
-> **Key Points:**
+>**Key Points:**
 > - `Include()` eagerly loads the `Category` to prevent N+1 queries
 > - `AsNoTracking()` improves performance for read-only operations
 > - All EF Core specific logic is contained here
+> 
+> **Note on Paging**: This implementation doesn't include database-level paging methods. For this lab, paging is handled in the service layer using LINQ on the in-memory collection returned by `GetAllAsync()`. In production applications with large datasets, you should add paging methods to the repository that use `.Skip()` and `.Take()` at the database level for better performance.
 
 ##  8. <a name='RefactoringtheServiceLayer'></a>Refactoring the Service Layer
 
@@ -527,6 +531,8 @@ namespace MVCStore.Services
     public interface IProductService
     {
         Task<List<ProductListItemDto>> GetAllProductsAsync(CancellationToken ct = default);
+        Task<List<ProductListItemDto>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default);
+        Task<int> GetProductCountAsync(CancellationToken ct = default);
         Task<ProductDetailsDto?> GetProductByIdAsync(int id, CancellationToken ct = default);
         Task<ProductDto> CreateProductAsync(CreateProductDto dto, CancellationToken ct = default);
         Task UpdateProductAsync(UpdateProductDto dto, CancellationToken ct = default);
@@ -560,6 +566,22 @@ namespace MVCStore.Services
         {
             var products = await _productRepository.GetAllAsync(ct);
             return products.Select(p => p.ToListItemDto()).ToList();  // Map to DTO
+        }
+
+        public async Task<List<ProductListItemDto>> GetProductsPageAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+        {
+            var products = await _productRepository.GetAllAsync(ct);
+            return products
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => p.ToListItemDto())
+                .ToList();
+        }
+
+        public async Task<int> GetProductCountAsync(CancellationToken ct = default)
+        {
+            var products = await _productRepository.GetAllAsync(ct);
+            return products.Count;
         }
 
         public async Task<ProductDetailsDto?> GetProductByIdAsync(int id, CancellationToken ct = default)
@@ -649,7 +671,7 @@ public static void Main(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddControllersWithViews();
-    
+
     builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     {
         opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -661,82 +683,165 @@ public static void Main(string[] args)
 
     // Register Repository layer
     builder.Services.AddScoped<IProductRepository, ProductRepository>();
-    
+
     // Register Service layer (now depends on repository)
     builder.Services.AddScoped<IProductService, ProductService>();
 
     var app = builder.Build();
-    
+
     // ... rest of configuration
 }
 ```
+
+### Update View Imports
+
+Update `Views\_ViewImports.cshtml` to include the DTOs namespace so Razor views can recognize DTO types:
+
+```cshtml
+@using MVCStore
+@using MVCStore.Models
+@using MVCStore.Models.DTOs
+@using MVCStore.ViewModels
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, MVCStore
+```
+
+> **Important**: Without adding `@using MVCStore.Models.DTOs`, your views will not be able to reference DTO types like `ProductListItemDto` or `ProductDetailsDto`.
 
 ##  10. <a name='TestingtheRefactoredArchitecture'></a>Testing the Refactored Architecture
 
 ### Update Your Controller
 
+The `HomeController` already uses the service layer, so it will automatically work with DTOs. The controller doesn't need to know whether it's receiving `Product` entities or `ProductListItemDto` objects - it just passes them to the view:
+
 ```csharp
 using Microsoft.AspNetCore.Mvc;
-using MVCStore.Models.DTOs;
 using MVCStore.Services;
+using MVCStore.ViewModels;
 
 namespace MVCStore.Controllers
 {
-    public class ProductsController : Controller
+    public class HomeController : Controller
     {
         private readonly IProductService _productService;
+        public int PageSize = 4;  // Number of products per page
 
-        public ProductsController(IProductService productService)
+        public HomeController(IProductService productService)
         {
             _productService = productService;
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index(CancellationToken ct)
+        public async Task<IActionResult> Index(int productPage = 1, CancellationToken ct = default)
         {
-            var products = await _productService.GetAllProductsAsync(ct);
+            var products = await _productService.GetProductsPageAsync(productPage, PageSize, ct);
+            var totalProducts = await _productService.GetProductCountAsync(ct);
+
+            ViewBag.PagingInfo = new PagingInfoViewModel
+            {
+                CurrentPage = productPage,
+                ItemsPerPage = PageSize,
+                TotalItems = totalProducts
+            };
+
             return View(products);  // Returns List<ProductListItemDto>
-        }
-
-        // GET: Products/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Products/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateProductDto dto, CancellationToken ct)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);  // Return with validation errors
-            }
-
-            try
-            {
-                await _productService.CreateProductAsync(dto, ct);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(dto);
-            }
         }
     }
 }
 ```
 
+> **Note**: The controller code remains unchanged because it works through the `IProductService` abstraction. This demonstrates the power of dependency inversion!
+
+### Update the View
+
+Update `Views\Home\Index.cshtml` to use the DTO:
+
+```cshtml
+@model IEnumerable<ProductListItemDto>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Products</h1>
+
+<div class="row">
+    @foreach (var p in Model ?? Enumerable.Empty<ProductListItemDto>())
+    {
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@p.Name</h5>
+                    <p class="card-text">
+                        <strong>Price:</strong> @p.Price.ToString("c")<br />
+                        <strong>Category:</strong> @p.CategoryName
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center mt-4" page-model="@ViewBag.PagingInfo" page-action="Index"></div>
+```
+
+> **Key Changes in View:**
+> - Changed `@model` from `IEnumerable<Product>` to `IEnumerable<ProductListItemDto>`
+> - Changed `@p.Category?.Name ?? "Unknown"` to `@p.CategoryName` (flattened property)
+> - No need for null-conditional operator on CategoryName since it's a string property with a default value
+
+### Update Unit Tests
+
+Update `HomeControllerTests.cs` to use DTOs in mock setups:
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using MVCStore.Controllers;
+using MVCStore.Models.DTOs;
+using MVCStore.Services;
+using MVCStore.ViewModels;
+
+namespace MVCStore.Tests
+{
+    public class HomeControllerTests
+    {
+        [Fact]
+        public async Task Can_Use_Service()
+        {
+            // Arrange
+            Mock<IProductService> mock = new Mock<IProductService>();
+            mock.Setup(m => m.GetProductsPageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<ProductListItemDto>
+                {
+                    new ProductListItemDto { ProductID = 1, Name = "P1", Price = 100m, CategoryName = "Category1" },
+                    new ProductListItemDto { ProductID = 2, Name = "P2", Price = 200m, CategoryName = "Category1" }
+                });
+            mock.Setup(m => m.GetProductCountAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(2);
+
+            HomeController controller = new HomeController(mock.Object);
+
+            // Act
+            IEnumerable<ProductListItemDto>? result = (await controller.Index() as ViewResult)?.ViewData.Model as IEnumerable<ProductListItemDto>;
+
+            // Assert
+            ProductListItemDto[] prodArray = result?.ToArray() ?? Array.Empty<ProductListItemDto>();
+            Assert.True(prodArray.Length == 2);
+            Assert.Equal("P1", prodArray[0].Name);
+            Assert.Equal("P2", prodArray[1].Name);
+        }
+    }
+}
+```
+
+> **Testing Benefits**: Tests now mock the repository instead of the DbContext, making them faster and more focused on business logic.
+
 ### Run and Test
 
 1. Start the application
-2. Navigate to Products
-3. Try creating a product with:
-   - Empty name → See validation error
-   - Negative price → See validation error
-   - Valid data → Success!
+2. Navigate to the home page to see the paginated product list
+3. Test the pagination by clicking through pages
+4. All products now display using DTOs, providing better security and separation of concerns
 
 ##  11. <a name='UnderstandingSOLIDPrinciples'></a>Understanding SOLID Principles
 
