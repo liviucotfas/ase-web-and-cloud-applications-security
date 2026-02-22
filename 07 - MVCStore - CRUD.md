@@ -76,10 +76,14 @@ namespace MVCStore.Repositories
         }
 
         public Task<List<Category>> GetAllAsync(CancellationToken ct = default)
-            => _context.Categories.OrderBy(c => c.Name).AsNoTracking().ToListAsync(ct);
+        {
+            return _context.Categories.OrderBy(c => c.Name).AsNoTracking().ToListAsync(ct);
+        } 
 
         public Task<Category?> GetByIdAsync(int id, CancellationToken ct = default)
-            => _context.Categories.FirstOrDefaultAsync(c => c.CategoryID == id, ct);
+        {
+            return _context.Categories.FirstOrDefaultAsync(c => c.CategoryID == id, ct);
+        }
     }
 }
 ```
@@ -161,7 +165,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 3. Add a view `Views/Admin/Index.cshtml` for the `Index` action. The model is `IEnumerable<ProductListItemDto>` — the lightweight DTO returned by `IProductService.GetAllProductsAsync`.
 
     ```cshtml
-    @using MVCStore.Models.DTOs
     @model IEnumerable<ProductListItemDto>
 
     @{
@@ -244,7 +247,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 5. Add the view `Views/Admin/Edit.cshtml`. The model is `UpdateProductDto`.
 
     ```cshtml
-    @using MVCStore.Models.DTOs
     @model UpdateProductDto
 
     @{
@@ -328,7 +330,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 8. Add the view `Views/Admin/Create.cshtml`. The model is `CreateProductDto` (no `ProductID` field).
 
     ```cshtml
-    @using MVCStore.Models.DTOs
     @model CreateProductDto
 
     @{
