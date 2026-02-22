@@ -123,6 +123,8 @@ Before starting this lab, you should have completed **Lab 04: Models, Database, 
     }
     ```
 
+    > If you are not able to run the test due to Windows Smart Screen, you can run the test from the command line using `dotnet test` in the test project directory.
+
     > **Testing Challenges**: Notice that this test requires creating full `Product` domain models with all their properties. This approach has some limitations:
     > 
     > 1. **Dependency on Domain Models**: Tests depend on the exact structure of domain models. If you change `Product`, tests may break.
