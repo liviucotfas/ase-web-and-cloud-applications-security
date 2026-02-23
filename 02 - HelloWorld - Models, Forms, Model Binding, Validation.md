@@ -389,7 +389,8 @@ Imagine that we want to implement an application that allows people to electroni
 
 2. Update the `RsvpForm` action on the `HomeController` as follows. We check to see whether there has been a validation problem using the `ModelState.IsValid` property in the controller class.
 
-    > `ModelState` is a property of the `Controller` class that provides details of the outcome of the model binding process. If the `ModelState.IsValid` property returns true, then the model binder has not been able to satisfy the validation constraints specified through the attributes on the `GuestResponse` class.
+    > `ModelState` is a property of the `Controller` class that provides details of the outcome of the model binding process. If the `ModelState.IsValid` property returns true, it means that the model binder has been able to satisfy the validation constraints specified through the attributes on the `GuestResponse` class.
+    > `ModelState` contains both model-binding errors (e.g., type conversion failures, missing form fields) and validation errors produced by attributes such as [Required], [EmailAddress], and [Phone]. ModelState.IsValid is true only when there are no such errors. When ModelState.IsValid is false, the controller typically returns the view so the validation messages can be displayed; you can inspect specific problems with ModelState.Values.SelectMany(v => v.Errors) or add custom errors with ModelState.AddModelError("Key", "Message").
 
     ```C#
     [HttpPost]
